@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Chat UI Strings -->
+  <data name="Provider" xml:space="preserve">
+    <value>Provider</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="SelectedDirectories" xml:space="preserve">
+    <value>Selected Directories</value>
+  </data>
+  <data name="Context" xml:space="preserve">
+    <value>Context</value>
+  </data>
+  <data name="NewChat" xml:space="preserve">
+    <value>New Chat</value>
+  </data>
+  <data name="EnterMessage" xml:space="preserve">
+    <value>Enter message...</value>
+  </data>
+  <data name="NoDirectoriesSelected" xml:space="preserve">
+    <value>No directories are currently selected. Please check directories in the 'Dir to RAG' tab to enable RAG functionality.</value>
+  </data>
+  <data name="ClearChatTitle" xml:space="preserve">
+    <value>Clear Chat History</value>
+  </data>
+  <data name="ClearChatConfirmation" xml:space="preserve">
+    <value>Are you sure you want to clear the chat history? This action cannot be undone.</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="LastContextUsed" xml:space="preserve">
+    <value>Last Context Used</value>
+  </data>
+  <data name="NoContextUsedYet" xml:space="preserve">
+    <value>No context has been used yet. Select folders in the Dir to RAG tab to enable RAG.</value>
+  </data>
+
+  <!-- Error Messages -->
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="VectorizationError" xml:space="preserve">
+    <value>Vectorization Error</value>
+  </data>
+  <data name="FailedToSendMessage" xml:space="preserve">
+    <value>Failed to send message to the chat service.</value>
+  </data>
+  <data name="ErrorType" xml:space="preserve">
+    <value>Error Type</value>
+  </data>
+  <data name="ErrorMessage" xml:space="preserve">
+    <value>Error Message</value>
+  </data>
+  <data name="SuggestedActions" xml:space="preserve">
+    <value>Suggested actions</value>
+  </data>
+  <data name="CheckAPIConfiguration" xml:space="preserve">
+    <value>Check your API configuration in Settings</value>
+  </data>
+  <data name="VerifyInternetConnection" xml:space="preserve">
+    <value>Verify your internet connection</value>
+  </data>
+  <data name="CheckServiceAvailability" xml:space="preserve">
+    <value>Check if the service is available</value>
+  </data>
+  <data name="ReviewErrorDetails" xml:space="preserve">
+    <value>Review the error details above</value>
+  </data>
+
+  <!-- Tab Names -->
+  <data name="TabDirToRag" xml:space="preserve">
+    <value>Dir to RAG</value>
+  </data>
+  <data name="TabSettings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="TabChat" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="TabRAG" xml:space="preserve">
+    <value>RAG</value>
+  </data>
+  <data name="TabTheme" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="TabMCP" xml:space="preserve">
+    <value>MCP</value>
+  </data>
+
+  <!-- Settings Labels -->
+  <data name="APIProvider" xml:space="preserve">
+    <value>API Provider</value>
+  </data>
+  <data name="BaseURL" xml:space="preserve">
+    <value>Base URL</value>
+  </data>
+  <data name="APIKey" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="FontSize" xml:space="preserve">
+    <value>Font Size</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="ClaudeCodePath" xml:space="preserve">
+    <value>Claude Code CLI Path</value>
+  </data>
+  <data name="ClaudeModel" xml:space="preserve">
+    <value>Claude Model</value>
+  </data>
+
+  <!-- RAG Settings -->
+  <data name="EmbeddingURL" xml:space="preserve">
+    <value>Embedding URL</value>
+  </data>
+  <data name="EmbeddingModel" xml:space="preserve">
+    <value>Embedding Model</value>
+  </data>
+  <data name="ModelContextLength" xml:space="preserve">
+    <value>Model Context Length</value>
+  </data>
+  <data name="ChunkSize" xml:space="preserve">
+    <value>Chunk Size</value>
+  </data>
+  <data name="ChunkOverlap" xml:space="preserve">
+    <value>Chunk Overlap</value>
+  </data>
+  <data name="TotalMaxContextLength" xml:space="preserve">
+    <value>Total Max Context Length (chars)</value>
+  </data>
+  <data name="TopKChunks" xml:space="preserve">
+    <value>Top K Chunks</value>
+  </data>
+  <data name="UseNativeEmbedding" xml:space="preserve">
+    <value>Use Native Embedding</value>
+  </data>
+
+  <!-- Buttons -->
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Test" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="Load" xml:space="preserve">
+    <value>Load</value>
+  </data>
+  <data name="Indexing" xml:space="preserve">
+    <value>Indexing</value>
+  </data>
+  <data name="Summarize" xml:space="preserve">
+    <value>Summarize</value>
+  </data>
+
+  <!-- Configuration Messages -->
+  <data name="ConfigurationRequired" xml:space="preserve">
+    <value>Configuration Required</value>
+  </data>
+  <data name="APIConfigurationRequired" xml:space="preserve">
+    <value>API configuration is required to use this application.</value>
+  </data>
+
+  <!-- MCP -->
+  <data name="MCPServers" xml:space="preserve">
+    <value>MCP Servers</value>
+  </data>
+  <data name="AddMCPServer" xml:space="preserve">
+    <value>Add MCP Server</value>
+  </data>
+  <data name="EditMCPServer" xml:space="preserve">
+    <value>Edit MCP Server</value>
+  </data>
+  <data name="RemoveMCPServer" xml:space="preserve">
+    <value>Remove MCP Server</value>
+  </data>
+  <data name="TestMCPServer" xml:space="preserve">
+    <value>Test MCP Server</value>
+  </data>
+  <data name="LoadMCPServers" xml:space="preserve">
+    <value>Load MCP Servers</value>
+  </data>
+  <data name="RAGEnabled" xml:space="preserve">
+    <value>RAG enabled. Please restart the application to apply the changes.</value>
+  </data>
+  <data name="RAGDisabled" xml:space="preserve">
+    <value>RAG disabled. Please restart the application to apply the changes.</value>
+  </data>
+  <data name="SelectedDirectories" xml:space="preserve">
+    <value>Selected Directories</value>
+  </data>
+  <data name="SelectedDirectoriesCount" xml:space="preserve">
+    <value>{0} selected directories</value>
+  </data>
+  <data name="NoDirectoriesSelectedShort" xml:space="preserve">
+    <value>No directories</value>
+  </data>
+</root>

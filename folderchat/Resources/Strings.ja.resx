@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Chat UI Strings -->
+  <data name="Provider" xml:space="preserve">
+    <value>プロバイダー</value>
+  </data>
+  <data name="Model" xml:space="preserve">
+    <value>モデル</value>
+  </data>
+  <data name="SelectedDirectories" xml:space="preserve">
+    <value>選択されたディレクトリ</value>
+  </data>
+  <data name="Context" xml:space="preserve">
+    <value>コンテキスト</value>
+  </data>
+  <data name="NewChat" xml:space="preserve">
+    <value>新しいチャット</value>
+  </data>
+  <data name="EnterMessage" xml:space="preserve">
+    <value>メッセージを入力...</value>
+  </data>
+  <data name="NoDirectoriesSelected" xml:space="preserve">
+    <value>ディレクトリが選択されていません。RAG機能を有効にするには、「Dir to RAG」タブでディレクトリを選択してください。</value>
+  </data>
+  <data name="ClearChatTitle" xml:space="preserve">
+    <value>チャット履歴をクリア</value>
+  </data>
+  <data name="ClearChatConfirmation" xml:space="preserve">
+    <value>チャット履歴をクリアしてもよろしいですか？この操作は元に戻せません。</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>キャンセル</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="LastContextUsed" xml:space="preserve">
+    <value>最後に使用したコンテキスト</value>
+  </data>
+  <data name="NoContextUsedYet" xml:space="preserve">
+    <value>コンテキストはまだ使用されていません。RAGを有効にするには、Dir to RAGタブでフォルダを選択してください。</value>
+  </data>
+
+  <!-- Error Messages -->
+  <data name="Error" xml:space="preserve">
+    <value>エラー</value>
+  </data>
+  <data name="VectorizationError" xml:space="preserve">
+    <value>ベクトル化エラー</value>
+  </data>
+  <data name="FailedToSendMessage" xml:space="preserve">
+    <value>チャットサービスへのメッセージ送信に失敗しました。</value>
+  </data>
+  <data name="ErrorType" xml:space="preserve">
+    <value>エラータイプ</value>
+  </data>
+  <data name="ErrorMessage" xml:space="preserve">
+    <value>エラーメッセージ</value>
+  </data>
+  <data name="SuggestedActions" xml:space="preserve">
+    <value>推奨アクション</value>
+  </data>
+  <data name="CheckAPIConfiguration" xml:space="preserve">
+    <value>設定でAPI設定を確認してください</value>
+  </data>
+  <data name="VerifyInternetConnection" xml:space="preserve">
+    <value>インターネット接続を確認してください</value>
+  </data>
+  <data name="CheckServiceAvailability" xml:space="preserve">
+    <value>サービスが利用可能か確認してください</value>
+  </data>
+  <data name="ReviewErrorDetails" xml:space="preserve">
+    <value>上記のエラーの詳細を確認してください</value>
+  </data>
+
+  <!-- Tab Names -->
+  <data name="TabDirToRag" xml:space="preserve">
+    <value>RAGディレクトリ</value>
+  </data>
+  <data name="TabSettings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="TabChat" xml:space="preserve">
+    <value>チャット</value>
+  </data>
+  <data name="TabRAG" xml:space="preserve">
+    <value>RAG</value>
+  </data>
+  <data name="TabTheme" xml:space="preserve">
+    <value>テーマ</value>
+  </data>
+  <data name="TabMCP" xml:space="preserve">
+    <value>MCP</value>
+  </data>
+
+  <!-- Settings Labels -->
+  <data name="APIProvider" xml:space="preserve">
+    <value>APIプロバイダー</value>
+  </data>
+  <data name="BaseURL" xml:space="preserve">
+    <value>ベースURL</value>
+  </data>
+  <data name="APIKey" xml:space="preserve">
+    <value>APIキー</value>
+  </data>
+  <data name="FontSize" xml:space="preserve">
+    <value>フォントサイズ</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>言語</value>
+  </data>
+  <data name="ClaudeCodePath" xml:space="preserve">
+    <value>Claude Code CLIパス</value>
+  </data>
+  <data name="ClaudeModel" xml:space="preserve">
+    <value>Claudeモデル</value>
+  </data>
+
+  <!-- RAG Settings -->
+  <data name="EmbeddingURL" xml:space="preserve">
+    <value>埋め込みURL</value>
+  </data>
+  <data name="EmbeddingModel" xml:space="preserve">
+    <value>埋め込みモデル</value>
+  </data>
+  <data name="ModelContextLength" xml:space="preserve">
+    <value>モデルコンテキスト長</value>
+  </data>
+  <data name="ChunkSize" xml:space="preserve">
+    <value>チャンクサイズ</value>
+  </data>
+  <data name="ChunkOverlap" xml:space="preserve">
+    <value>チャンクオーバーラップ</value>
+  </data>
+  <data name="TotalMaxContextLength" xml:space="preserve">
+    <value>合計最大コンテキスト長</value>
+  </data>
+  <data name="TopKChunks" xml:space="preserve">
+    <value>トップKチャンク</value>
+  </data>
+  <data name="UseNativeEmbedding" xml:space="preserve">
+    <value>ネイティブ埋め込みを使用</value>
+  </data>
+
+  <!-- Buttons -->
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>更新</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>追加</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>編集</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="Test" xml:space="preserve">
+    <value>テスト</value>
+  </data>
+  <data name="Load" xml:space="preserve">
+    <value>読み込み</value>
+  </data>
+  <data name="Indexing" xml:space="preserve">
+    <value>インデックス作成</value>
+  </data>
+  <data name="Summarize" xml:space="preserve">
+    <value>要約</value>
+  </data>
+
+  <!-- Configuration Messages -->
+  <data name="ConfigurationRequired" xml:space="preserve">
+    <value>設定が必要です</value>
+  </data>
+  <data name="APIConfigurationRequired" xml:space="preserve">
+    <value>このアプリケーションを使用するにはAPI設定が必要です。</value>
+  </data>
+
+  <!-- MCP -->
+  <data name="MCPServers" xml:space="preserve">
+    <value>MCPサーバー</value>
+  </data>
+  <data name="AddMCPServer" xml:space="preserve">
+    <value>MCPサーバーを追加</value>
+  </data>
+  <data name="EditMCPServer" xml:space="preserve">
+    <value>MCPサーバーを編集</value>
+  </data>
+  <data name="RemoveMCPServer" xml:space="preserve">
+    <value>MCPサーバーを削除</value>
+  </data>
+  <data name="TestMCPServer" xml:space="preserve">
+    <value>MCPサーバーをテスト</value>
+  </data>
+  <data name="LoadMCPServers" xml:space="preserve">
+    <value>MCPサーバーを読み込み</value>
+  </data>
+  <data name="RAGEnabled" xml:space="preserve">
+    <value>RAGを有効にしました。変更を適用するにはアプリケーションを再起動してください。</value>
+  </data>
+  <data name="RAGDisabled" xml:space="preserve">
+    <value>RAGを無効にしました。変更を適用するにはアプリケーションを再起動してください。</value>
+  </data>
+  <data name="SelectedDirectories" xml:space="preserve">
+    <value>選択されたディレクトリ</value>
+  </data>
+  <data name="SelectedDirectoriesCount" xml:space="preserve">
+    <value>{0}個のディレクトリ</value>
+  </data>
+  <data name="NoDirectoriesSelectedShort" xml:space="preserve">
+    <value>ディレクトリなし</value>
+  </data>
+</root>

@@ -1,0 +1,87 @@
+@using folderchat.Services.Mcp
+@using Microsoft.JSInterop
+@using System.Text.Json
+@inject IJSRuntime JSRuntime
+
+@if (isVisible)
+{
+    <div class="modal show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Title</h5>
+                    <button type="button" class="btn-close" @onclick="Close" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+                    @if (tools.Count == 0)
+                    {
+                        <p class="text-muted">No tools available for this server.</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-3">Total: <strong>@tools.Count</strong> tools</p>
+                        <div class="list-group">
+                            @foreach (var tool in tools)
+                            {
+                                <div class="list-group-item">
+                                    <h6 class="mb-1">@tool.Name</h6>
+                                    <p class="mb-1 text-muted small">@tool.Description</p>
+                                    @if (tool.InputSchema != null)
+                                    {
+                                        try
+                                        {
+                                            var schemaJson = JsonSerializer.Serialize(tool.InputSchema);
+                                            var schemaDict = JsonSerializer.Deserialize<Dictionary<string, object>>(schemaJson);
+                                            if (schemaDict != null && schemaDict.ContainsKey("properties"))
+                                            {
+                                                var propsJson = JsonSerializer.Serialize(schemaDict["properties"]);
+                                                var props = JsonSerializer.Deserialize<Dictionary<string, object>>(propsJson);
+                                                if (props != null && props.Count > 0)
+                                                {
+                                                    <p class="mb-0 text-muted small">
+                                                        <strong>Parameters:</strong> @string.Join(", ", props.Keys)
+                                                    </p>
+                                                }
+                                            }
+                                        }
+                                        catch
+                                        {
+                                            // Ignore schema parsing errors
+                                        }
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool isVisible = false;
+    private string Title { get; set; } = "MCP Tools";
+    private List<Tool> tools = new List<Tool>();
+
+    public async Task ShowAsync(string serverName, List<Tool> serverTools)
+    {
+        Title = $"{serverName} - Tools";
+        tools = serverTools ?? new List<Tool>();
+        isVisible = true;
+        StateHasChanged();
+
+        // Focus the dialog for accessibility
+        await Task.Delay(100);
+        await JSRuntime.InvokeVoidAsync("eval", "document.querySelector('.modal-dialog')?.focus();");
+    }
+
+    private void Close()
+    {
+        isVisible = false;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,731 @@
+@using folderchat.Services
+@using folderchat.Services.Mcp
+@using folderchat.Models
+@using folderchat.Forms
+@using Microsoft.JSInterop
+@using System.Text
+@using System.Text.Json
+@inject IChatService ChatService
+@inject MainForm MainForm
+@inject IJSRuntime JSRuntime
+@inject ILocalizationService Localization
+@implements IDisposable
+
+<div class="container-fluid d-flex flex-column vh-100 p-3">
+    <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted small">
+                <span class="me-3">@Localization.GetString("Provider"): <strong>@apiProvider</strong></span>
+                <span>@Localization.GetString("Model"): <strong>@modelName</strong></span>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-outline-primary" @onclick="ClearChat">@Localization.GetString("NewChat")</button>
+            </div>
+        </div>
+        <div class="d-flex align-items-center mt-2">
+            <label class="text-muted small me-2">@Localization.GetString("FontSize"):</label>
+            <input type="range" class="form-range flex-grow-1" style="max-width: 200px;"
+                   min="10" max="32" step="1" value="@fontSize"
+                   @oninput="OnFontSizeChanged" />
+            <span class="text-muted small ms-2">@fontSize px</span>
+        </div>
+    </div>
+    <div id="chatContainer" class="border rounded p-3 mb-3 flex-grow-1" style="overflow-y: auto; font-size: @(fontSize)px;">
+        @foreach (var message in chatHistory)
+        {
+            <div class="@(message.IsUser ? "text-end" : "text-start") mb-2">
+                <span class="badge @GetMessageCssClass(message) p-2 text-wrap chat-message"
+                      style="max-width: 80%; display: inline-block; text-align: left; @GetMessageStyle(message)">
+                    @if (message.IsUser && message.Type == MessageType.Normal)
+                    {
+                        @message.Text
+                    }
+                    else
+                    {
+                        @((MarkupString)message.Text.Replace("\n", "<br>"))
+                    }
+                </span>
+            </div>
+        }
+        @if (isWaitingForResponse)
+        {
+            <div class="text-start mb-2">
+                <span class="badge bg-secondary p-2">
+                    <span class="dots-animation">
+                        <span>.</span><span>.</span><span>.</span>
+                    </span>
+                </span>
+            </div>
+        }
+    </div>
+    <div class="input-group">
+        <input type="text" class="form-control" placeholder="@Localization.GetString("EnterMessage")"
+               @bind="currentMessage" @bind:event="oninput" @onkeypress="@(async e => { if (e.Key == "Enter") await SendMessageAsync(); })" />
+        <button class="btn btn-primary" @onclick="SendMessageAsync">&#x2197;</button>
+    </div>
+    <div class="mt-2 p-2 border rounded bg-light">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       id="use-rag"
+                       checked="@useRag"
+                       @onchange="@(async (e) => await ToggleRagAsync((bool?)e.Value ?? false))" />
+                <label class="form-check-label text-muted small" for="use-rag">
+                    Use RAG
+                </label>
+            </div>
+            @if (useRag)
+            {
+                <span class="text-muted small ms-2">
+                    @if (checkedFolders.Count > 0)
+                    {
+                        <a href="javascript:void(0)" @onclick="ShowSelectedDirectoriesDialog" class="text-decoration-none">
+                            @string.Format(Localization.GetString("SelectedDirectoriesCount"), checkedFolders.Count)
+                        </a>
+                    }
+                    else
+                    {
+                        @Localization.GetString("NoDirectoriesSelectedShort")
+                    }
+                    <span class="ms-2">(MCP Servers are disabled)</span>
+                </span>
+            }
+            @if (!useRag && mcpServers.Count > 0)
+            {
+                <span class="text-muted small mx-2">|</span>
+                <span class="text-muted small me-2">MCP Server:</span>
+                @foreach (var server in mcpServers)
+                {
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch"
+                               id="mcp-@server.Id"
+                               checked="@server.IsEnabled"
+                               @onchange="@(async (e) => await ToggleMcpServerAsync(server.Id, (bool?)e.Value ?? false))" />
+                        <label class="form-check-label text-muted small" for="mcp-@server.Id">
+                            @if (server.IsEnabled)
+                            {
+                                <a href="javascript:void(0)" @onclick="@(async () => await ShowServerToolsAsync(server.Id))" class="text-decoration-none">
+                                    @server.Name
+                                </a>
+                            }
+                            else
+                            {
+                                @server.Name
+                            }
+                        </label>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<folderchat.Pages.Components.ConfirmDialog @ref="confirmDialog" OnClose="HandleConfirmDialogResult" />
+<folderchat.Pages.Components.McpToolsDialog @ref="mcpToolsDialog" />
+<folderchat.Pages.Components.SelectedDirectoriesDialog @ref="selectedDirectoriesDialog" />
+
+@code {
+    private List<ChatMessage> chatHistory = new List<ChatMessage>();
+    private string currentMessage = string.Empty;
+    private bool isWaitingForResponse = false;
+    private int fontSize = 14;
+    private System.Threading.Timer? timer;
+    private string apiProvider = "";
+    private string modelName = "";
+    private List<string> checkedFolders = new List<string>();
+    private folderchat.Pages.Components.ConfirmDialog confirmDialog = null!;
+    private bool clearChatPending = false;
+    private bool shouldScrollToBottom = false;
+    private List<McpServerConfig> mcpServers = new List<McpServerConfig>();
+    private IMcpService? _mcpService;
+    private folderchat.Pages.Components.McpToolsDialog mcpToolsDialog = null!;
+    private folderchat.Pages.Components.SelectedDirectoriesDialog selectedDirectoriesDialog = null!;
+    private bool useRag = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (shouldScrollToBottom)
+        {
+            shouldScrollToBottom = false;
+            await ScrollToBottomAsync();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        fontSize = folderchat.Properties.Settings.Default.Chat_FontSize;
+        useRag = folderchat.Properties.Settings.Default.UseRAG;
+
+        // Load API Provider and Model information
+        var chatMethod = folderchat.Properties.Settings.Default.ChatMethod;
+        if (chatMethod == "GGUF")
+        {
+            apiProvider = "Local GGUF";
+            modelName = folderchat.Properties.Settings.Default.ChatGGUFModel;
+        }
+        else
+        {
+            apiProvider = folderchat.Properties.Settings.Default.API_Provider;
+            modelName = GetModelNameForProvider(apiProvider);
+        }
+
+        // Get initial checked folders
+        checkedFolders = MainForm.GetCheckedFolders();
+
+        // Load MCP servers
+        await LoadMcpServersAsync();
+
+        // Subscribe to theme changes
+        MainForm.ThemeChanged += OnThemeChanged;
+
+        // Subscribe to MCP server changes
+        MainForm.McpServersChanged += OnMcpServersChanged;
+
+        // Apply initial theme
+        await ApplyThemeAsync(MainForm.GetThemeMode());
+
+        // Subscribe to culture change events
+        if (Localization != null)
+        {
+            Localization.CultureChanged += OnCultureChanged;
+        }
+
+        // Register this component with MainForm
+        MainForm.RegisterChatComponent(this);
+
+        timer = new System.Threading.Timer(async _ =>
+        {
+            var newFontSize = folderchat.Properties.Settings.Default.Chat_FontSize;
+            if (fontSize != newFontSize)
+            {
+                fontSize = newFontSize;
+                await InvokeAsync(StateHasChanged);
+            }
+
+            // Update API Provider and Model if changed
+            var chatMethod = folderchat.Properties.Settings.Default.ChatMethod;
+            string newApiProvider;
+            string newModelName;
+
+            if (chatMethod == "GGUF")
+            {
+                newApiProvider = "Local GGUF";
+                newModelName = folderchat.Properties.Settings.Default.ChatGGUFModel;
+            }
+            else
+            {
+                newApiProvider = folderchat.Properties.Settings.Default.API_Provider;
+                newModelName = GetModelNameForProvider(newApiProvider);
+            }
+
+            // Update checked folders
+            var newCheckedFolders = MainForm.GetCheckedFolders();
+            bool foldersChanged = !checkedFolders.SequenceEqual(newCheckedFolders);
+
+            if (apiProvider != newApiProvider || modelName != newModelName || foldersChanged)
+            {
+                apiProvider = newApiProvider;
+                modelName = newModelName;
+                checkedFolders = newCheckedFolders;
+                await InvokeAsync(StateHasChanged);
+            }
+        }, null, TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100));
+    }
+
+    private async Task SendMessageAsync()
+    {
+        if (string.IsNullOrWhiteSpace(currentMessage))
+            return;
+
+        string userMessage = currentMessage;
+        currentMessage = string.Empty;
+
+        // Don't add user message to chat history yet - wait for actual message from service
+        isWaitingForResponse = true;
+        shouldScrollToBottom = true;
+        StateHasChanged();
+
+        try
+        {
+            var result = await ChatService.SendMessageAsync(userMessage);
+
+            isWaitingForResponse = false;
+
+            // Add the actual user message that was sent to LLM (may include RAG context)
+            chatHistory.Add(new ChatMessage { Text = result.ActualUserMessage, IsUser = true });
+
+            // Determine message type based on response content
+            var messageType = MessageType.Normal;
+            var errorPrefix = $"[{Localization.GetString("Error")}]";
+            var vectorizationErrorPrefix = $"[{Localization.GetString("VectorizationError")}";
+            if (result.AssistantResponse.StartsWith(vectorizationErrorPrefix) || result.AssistantResponse.StartsWith(errorPrefix) ||
+                result.AssistantResponse.StartsWith("[Vectorization Error") || result.AssistantResponse.StartsWith("[Error]"))
+            {
+                messageType = MessageType.Error;
+            }
+
+            chatHistory.Add(new ChatMessage { Text = result.AssistantResponse, IsUser = false, Type = messageType });
+        }
+        catch (Exception ex)
+        {
+            isWaitingForResponse = false;
+
+            // Create error message with exception details
+            var errorMessage = $"[{Localization.GetString("Error")}]\n\n{Localization.GetString("FailedToSendMessage")}\n\n" +
+                             $"{Localization.GetString("ErrorType")}: {ex.GetType().Name}\n" +
+                             $"{Localization.GetString("ErrorMessage")}: {ex.Message}\n\n" +
+                             $"{Localization.GetString("SuggestedActions")}:\n" +
+                             $"• {Localization.GetString("CheckAPIConfiguration")}\n" +
+                             $"• {Localization.GetString("VerifyInternetConnection")}\n" +
+                             $"• {Localization.GetString("CheckServiceAvailability")}\n" +
+                             $"• {Localization.GetString("ReviewErrorDetails")}";
+
+            // Add error message to chat history (use original user input since service failed)
+            chatHistory.Add(new ChatMessage {
+                Text = userMessage,
+                IsUser = true,
+                Type = MessageType.Normal
+            });
+            chatHistory.Add(new ChatMessage {
+                Text = errorMessage,
+                IsUser = false,
+                Type = MessageType.Error
+            });
+        }
+
+        shouldScrollToBottom = true;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+
+        // Unsubscribe from culture change events
+        if (Localization != null)
+        {
+            Localization.CultureChanged -= OnCultureChanged;
+        }
+
+        // Unsubscribe from theme change events
+        if (MainForm != null)
+        {
+            MainForm.ThemeChanged -= OnThemeChanged;
+            MainForm.McpServersChanged -= OnMcpServersChanged;
+        }
+    }
+
+    private async void OnThemeChanged(object? sender, string themeMode)
+    {
+        await ApplyThemeAsync(themeMode);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void OnMcpServersChanged(object? sender, EventArgs e)
+    {
+        // Reload MCP server configurations
+        await LoadMcpServersAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ApplyThemeAsync(string themeMode)
+    {
+        try
+        {
+            // Remove all theme classes first
+            await JSRuntime.InvokeVoidAsync("eval", "document.body.classList.remove('dark-mode', 'dark-mode-indigo')");
+
+            // Apply the appropriate theme class
+            if (themeMode == "dark-indigo")
+            {
+                await JSRuntime.InvokeVoidAsync("eval", "document.body.classList.add('dark-mode-indigo')");
+            }
+            else if (themeMode == "dark")
+            {
+                await JSRuntime.InvokeVoidAsync("eval", "document.body.classList.add('dark-mode')");
+            }
+            // For "light" mode, no class is added (already removed above)
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error applying theme: {ex.Message}");
+        }
+    }
+
+    private void OnCultureChanged(object? sender, System.Globalization.CultureInfo e)
+    {
+        // Refresh UI when culture changes
+        InvokeAsync(StateHasChanged);
+    }
+
+    public enum MessageType
+    {
+        Normal,
+        Error,
+        Info
+    }
+
+    private class ChatMessage
+    {
+        public string Text { get; set; } = string.Empty;
+        public bool IsUser { get; set; }
+        public MessageType Type { get; set; } = MessageType.Normal;
+    }
+
+    private string GetMessageCssClass(ChatMessage message)
+    {
+        if (message.Type == MessageType.Error)
+            return "border border-danger bg-danger-subtle text-danger";
+        if (message.Type == MessageType.Info)
+            return message.IsUser ? "border border-info bg-info-subtle text-dark" : "border border-info bg-info-subtle text-dark";
+
+        return message.IsUser ? "bg-primary" : "bg-secondary";
+    }
+
+    private string GetMessageStyle(ChatMessage message)
+    {
+        if (message.Type == MessageType.Error)
+            return "border-width: 2px !important;";
+        if (message.Type == MessageType.Info)
+            return "border-width: 1px !important;";
+        return "";
+    }
+
+    private async Task ScrollToBottomAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("chatFunctions.scrollToBottom", "chatContainer");
+    }
+
+    private async Task ClearChat()
+    {
+        // If there's no chat history, nothing to clear
+        if (chatHistory.Count == 0)
+            return;
+
+        // Set flag to indicate clear chat is pending
+        clearChatPending = true;
+
+        // Show confirmation dialog using custom component
+        await confirmDialog.ShowAsync(
+            Localization.GetString("ClearChatTitle"),
+            Localization.GetString("ClearChatConfirmation"),
+            Localization.GetString("OK"),
+            Localization.GetString("Cancel")
+        );
+    }
+
+    private void HandleConfirmDialogResult(bool confirmed)
+    {
+        if (clearChatPending && confirmed)
+        {
+            // Clear the chat history
+            chatHistory.Clear();
+
+            // Reset the current message
+            currentMessage = string.Empty;
+
+            // Reset waiting state
+            isWaitingForResponse = false;
+
+            // Update the UI
+            StateHasChanged();
+        }
+
+        // Reset the pending flag
+        clearChatPending = false;
+    }
+
+    private void OnFontSizeChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int newSize))
+        {
+            fontSize = newSize;
+            // Save the font size to settings
+            folderchat.Properties.Settings.Default.Chat_FontSize = fontSize;
+            folderchat.Properties.Settings.Default.Save();
+            StateHasChanged();
+        }
+    }
+
+    private string GetModelNameForProvider(string provider)
+    {
+        return provider switch
+        {
+            "Claude Code" => folderchat.Properties.Settings.Default.ClaudeCode_Model,
+            "Azure AI Foundry" => folderchat.Properties.Settings.Default.AzureAI_SelectedModel,
+            "OpenRouter" => folderchat.Properties.Settings.Default.OpenRouter_SelectedModel,
+            "Ollama" => folderchat.Properties.Settings.Default.Ollama_SelectedModel,
+            "OpenAI" => folderchat.Properties.Settings.Default.OpenAIAPI_SelectedModel,
+            "Gemini" => folderchat.Properties.Settings.Default.Gemini_SelectedModel,
+            "Claude" => folderchat.Properties.Settings.Default.Claude_SelectedModel,
+            _ => folderchat.Properties.Settings.Default.OpenAI_SelectedModel // OpenAI Compatible
+        };
+    }
+
+    private async Task LoadMcpServersAsync()
+    {
+        try
+        {
+            // Load MCP server configurations from MainForm
+            mcpServers = MainForm.GetMcpServerConfigs();
+
+            // Initialize MCP service from MainForm
+            _mcpService = MainForm.GetMcpService();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading MCP servers: {ex.Message}");
+        }
+    }
+
+    private async Task ToggleMcpServerAsync(string serverId, bool isEnabled)
+    {
+        try
+        {
+            var server = mcpServers.FirstOrDefault(s => s.Id == serverId);
+            if (server == null) return;
+
+            // Update the server's enabled state
+            server.IsEnabled = isEnabled;
+
+            // Save the configuration through MainForm
+            MainForm.SaveMcpServerConfigs();
+
+            // If MCP service is available, load/unload the server
+            if (_mcpService != null)
+            {
+                if (isEnabled)
+                {
+                    await _mcpService.LoadServerAsync(server);
+                }
+                else
+                {
+                    await _mcpService.UnloadServerAsync(serverId);
+                }
+            }
+
+            // Refresh SettingsPanel UI to reflect the change
+            MainForm.RefreshMcpServerUI();
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error toggling MCP server: {ex.Message}");
+        }
+    }
+
+    private async Task ShowServerToolsAsync(string serverId)
+    {
+        try
+        {
+            if (_mcpService == null)
+            {
+                return;
+            }
+
+            var server = mcpServers.FirstOrDefault(s => s.Id == serverId);
+            if (server == null) return;
+
+            var tools = await _mcpService.GetServerToolsAsync(serverId);
+            await mcpToolsDialog.ShowAsync(server.Name, tools);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error showing MCP tools: {ex.Message}");
+        }
+    }
+
+    private async Task ToggleRagAsync(bool isEnabled)
+    {
+        try
+        {
+            useRag = isEnabled;
+
+            // Save the setting
+            folderchat.Properties.Settings.Default.UseRAG = isEnabled;
+            folderchat.Properties.Settings.Default.Save();
+
+            // Show message to user that restart is needed
+            chatHistory.Add(new ChatMessage
+            {
+                Text = $"[{Localization.GetString("Info")}]\n" +
+                       (isEnabled
+                           ? Localization.GetString("RAGEnabled")
+                           : Localization.GetString("RAGDisabled")),
+                IsUser = true,
+                Type = MessageType.Info
+            });
+
+            shouldScrollToBottom = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error toggling RAG: {ex.Message}");
+        }
+    }
+
+    private async Task ShowSelectedDirectoriesDialog()
+    {
+        await selectedDirectoriesDialog.ShowAsync(checkedFolders);
+    }
+
+    /// <summary>
+    /// Adds a message to the chat history (for external use like folder summarization)
+    /// </summary>
+    public async Task AddMessageToChatAsync(string text, bool isUser, MessageType type = MessageType.Normal)
+    {
+        chatHistory.Add(new ChatMessage { Text = text, IsUser = isUser, Type = type });
+        shouldScrollToBottom = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Sends a message to the chat service and displays both user and assistant messages
+    /// </summary>
+    public async Task SendExternalMessageAsync(string userMessage)
+    {
+        if (string.IsNullOrWhiteSpace(userMessage))
+            return;
+
+        isWaitingForResponse = true;
+        shouldScrollToBottom = true;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            var result = await ChatService.SendMessageAsync(userMessage);
+
+            isWaitingForResponse = false;
+
+            // Add the actual user message that was sent to LLM
+            chatHistory.Add(new ChatMessage { Text = result.ActualUserMessage, IsUser = true });
+
+            // Log the actual user message with its role
+            MainForm.LogChatMessage("user", result.ActualUserMessage);
+
+            // Determine message type based on response content
+            var messageType = MessageType.Normal;
+            var errorPrefix = $"[{Localization.GetString("Error")}]";
+            var vectorizationErrorPrefix = $"[{Localization.GetString("VectorizationError")}";
+            if (result.AssistantResponse.StartsWith(vectorizationErrorPrefix) || result.AssistantResponse.StartsWith(errorPrefix) ||
+                result.AssistantResponse.StartsWith("[Vectorization Error") || result.AssistantResponse.StartsWith("[Error]"))
+            {
+                messageType = MessageType.Error;
+            }
+
+            chatHistory.Add(new ChatMessage { Text = result.AssistantResponse, IsUser = false, Type = messageType });
+
+            // Log the assistant's response with its role
+            MainForm.LogChatMessage("assistant", result.AssistantResponse);
+        }
+        catch (Exception ex)
+        {
+            isWaitingForResponse = false;
+
+            // Create error message with exception details
+            var errorMessage = $"[{Localization.GetString("Error")}]\n\n{Localization.GetString("FailedToSendMessage")}\n\n" +
+                             $"{Localization.GetString("ErrorType")}: {ex.GetType().Name}\n" +
+                             $"{Localization.GetString("ErrorMessage")}: {ex.Message}\n\n" +
+                             $"{Localization.GetString("SuggestedActions")}:\n" +
+                             $"• {Localization.GetString("CheckAPIConfiguration")}\n" +
+                             $"• {Localization.GetString("VerifyInternetConnection")}\n" +
+                             $"• {Localization.GetString("CheckServiceAvailability")}\n" +
+                             $"• {Localization.GetString("ReviewErrorDetails")}";
+
+            chatHistory.Add(new ChatMessage {
+                Text = userMessage,
+                IsUser = true,
+                Type = MessageType.Normal
+            });
+            chatHistory.Add(new ChatMessage {
+                Text = errorMessage,
+                IsUser = false,
+                Type = MessageType.Error
+            });
+
+            // Log error messages with roles
+            MainForm.LogChatMessage("user", userMessage);
+            MainForm.LogChatMessage("assistant", errorMessage);
+        }
+
+        shouldScrollToBottom = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Sends a message using a specific chat service (bypasses RAG even if enabled)
+    /// Used for operations like folder summarization where RAG is not appropriate
+    /// </summary>
+    public async Task SendMessageWithSpecificServiceAsync(string userMessage, IChatService chatService)
+    {
+        if (string.IsNullOrWhiteSpace(userMessage))
+            return;
+
+        isWaitingForResponse = true;
+        shouldScrollToBottom = true;
+        await InvokeAsync(StateHasChanged);
+
+        try
+        {
+            var result = await chatService.SendMessageAsync(userMessage);
+
+            isWaitingForResponse = false;
+
+            // Add the actual user message that was sent to LLM
+            chatHistory.Add(new ChatMessage { Text = result.ActualUserMessage, IsUser = true });
+
+            // Log the actual user message with its role
+            MainForm.LogChatMessage("user", result.ActualUserMessage);
+
+            // Determine message type based on response content
+            var messageType = MessageType.Normal;
+            var errorPrefix = $"[{Localization.GetString("Error")}]";
+            var vectorizationErrorPrefix = $"[{Localization.GetString("VectorizationError")}";
+            if (result.AssistantResponse.StartsWith(vectorizationErrorPrefix) || result.AssistantResponse.StartsWith(errorPrefix) ||
+                result.AssistantResponse.StartsWith("[Vectorization Error") || result.AssistantResponse.StartsWith("[Error]"))
+            {
+                messageType = MessageType.Error;
+            }
+
+            chatHistory.Add(new ChatMessage { Text = result.AssistantResponse, IsUser = false, Type = messageType });
+
+            // Log the assistant's response with its role
+            MainForm.LogChatMessage("assistant", result.AssistantResponse);
+        }
+        catch (Exception ex)
+        {
+            isWaitingForResponse = false;
+
+            // Create error message with exception details
+            var errorMessage = $"[{Localization.GetString("Error")}]\n\n{Localization.GetString("FailedToSendMessage")}\n\n" +
+                             $"{Localization.GetString("ErrorType")}: {ex.GetType().Name}\n" +
+                             $"{Localization.GetString("ErrorMessage")}: {ex.Message}\n\n" +
+                             $"{Localization.GetString("SuggestedActions")}:\n" +
+                             $"• {Localization.GetString("CheckAPIConfiguration")}\n" +
+                             $"• {Localization.GetString("VerifyInternetConnection")}\n" +
+                             $"• {Localization.GetString("CheckServiceAvailability")}\n" +
+                             $"• {Localization.GetString("ReviewErrorDetails")}";
+
+            chatHistory.Add(new ChatMessage {
+                Text = userMessage,
+                IsUser = true,
+                Type = MessageType.Normal
+            });
+            chatHistory.Add(new ChatMessage {
+                Text = errorMessage,
+                IsUser = false,
+                Type = MessageType.Error
+            });
+
+            // Log error messages with roles
+            MainForm.LogChatMessage("user", userMessage);
+            MainForm.LogChatMessage("assistant", errorMessage);
+        }
+
+        shouldScrollToBottom = true;
+        await InvokeAsync(StateHasChanged);
+    }
+}

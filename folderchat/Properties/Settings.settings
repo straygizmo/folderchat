@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="folderchat.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="OpenAI_BaseUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://localhost:1234</Value>
+    </Setting>
+    <Setting Name="OpenAI_ApiKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">abc</Value>
+    </Setting>
+    <Setting Name="Chat_FontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">14</Value>
+    </Setting>
+    <Setting Name="UI_Theme" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="Embedding_Url" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://localhost:1234/v1</Value>
+    </Setting>
+    <Setting Name="Embedding_Model" Type="System.String" Scope="User">
+      <Value Profile="(Default)">text-embedding-embeddinggemma-300m</Value>
+    </Setting>
+    <Setting Name="Embedding_EncodingFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">float</Value>
+    </Setting>
+    <Setting Name="Embedding_Dimensions" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="FolderTree_State" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="OpenAI_ModelList" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="OpenAI_SelectedModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="RAG_ContextLength" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2048</Value>
+    </Setting>
+    <Setting Name="RAG_ChunkSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">500</Value>
+    </Setting>
+    <Setting Name="RAG_ChunkOverlap" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="UseNativeEmbedding" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="API_Provider" Type="System.String" Scope="User">
+      <Value Profile="(Default)">OpenAI Compatible</Value>
+    </Setting>
+    <Setting Name="ClaudeCode_CLIPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">claude</Value>
+    </Setting>
+    <Setting Name="ClaudeCode_Model" Type="System.String" Scope="User">
+      <Value Profile="(Default)">sonnet</Value>
+    </Setting>
+    <Setting Name="RAG_TopKChunks" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="RAG_MaxContextLength" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">8000</Value>
+    </Setting>
+    <Setting Name="MCP_Servers" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="PreferredLanguage" Type="System.String" Scope="User">
+      <Value Profile="(Default)">en-US</Value>
+    </Setting>
+    <Setting Name="EmbeddingMethod" Type="System.String" Scope="User">
+      <Value Profile="(Default)">API</Value>
+    </Setting>
+    <Setting Name="EmbeddingGGUFModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ChatMethod" Type="System.String" Scope="User">
+      <Value Profile="(Default)">API</Value>
+    </Setting>
+    <Setting Name="ChatGGUFModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AzureAI_ProviderName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Azure AI Foundry</Value>
+    </Setting>
+    <Setting Name="AzureAI_ApiUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://YOUR_RESOURCE_NAME.openai.azure.com</Value>
+    </Setting>
+    <Setting Name="AzureAI_ApiVersion" Type="System.String" Scope="User">
+      <Value Profile="(Default)">2025-01-01-preview</Value>
+    </Setting>
+    <Setting Name="AzureAI_ApiKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AzureAI_ModelList" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AzureAI_SelectedModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="OpenRouter_ApiUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://openrouter.ai/api/v1</Value>
+    </Setting>
+    <Setting Name="OpenRouter_ApiKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="OpenRouter_ModelList" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="OpenRouter_SelectedModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Ollama_ApiUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://localhost:11434</Value>
+    </Setting>
+    <Setting Name="Ollama_ModelList" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Ollama_SelectedModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="OpenAIAPI_ApiUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://api.openai.com/v1</Value>
+    </Setting>
+    <Setting Name="OpenAIAPI_ApiKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="OpenAIAPI_ModelList" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="OpenAIAPI_SelectedModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Gemini_ApiUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://generativelanguage.googleapis.com/v1beta</Value>
+    </Setting>
+    <Setting Name="Gemini_ApiKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Gemini_ModelList" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Gemini_SelectedModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="UseRAG" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ClaudeCode_SupportsSystemRole" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AzureAI_SupportsSystemRole" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="OpenRouter_SupportsSystemRole" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Ollama_SupportsSystemRole" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="OpenAIAPI_SupportsSystemRole" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Gemini_SupportsSystemRole" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="OpenAI_SupportsSystemRole" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Claude_ApiUrl" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://api.anthropic.com/v1</Value>
+    </Setting>
+    <Setting Name="Claude_ApiKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Claude_ModelList" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Claude_SelectedModel" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Claude_SupportsSystemRole" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

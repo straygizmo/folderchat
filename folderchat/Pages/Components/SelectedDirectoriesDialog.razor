@@ -1,0 +1,66 @@
+@using Microsoft.JSInterop
+@using folderchat.Services
+@inject IJSRuntime JSRuntime
+@inject ILocalizationService Localization
+
+@if (isVisible)
+{
+    <div class="modal show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Localization.GetString("SelectedDirectories")</h5>
+                    <button type="button" class="btn-close" @onclick="Close" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+                    @if (directories.Count == 0)
+                    {
+                        <p class="text-muted">@Localization.GetString("NoDirectoriesSelected")</p>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-3">Total: <strong>@directories.Count</strong> @(directories.Count == 1 ? "directory" : "directories")</p>
+                        <div class="list-group">
+                            @foreach (var (dir, index) in directories.Select((d, i) => (d, i)))
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">@(index + 1). @System.IO.Path.GetFileName(dir)</h6>
+                                            <p class="mb-0 text-muted small">@dir</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool isVisible = false;
+    private List<string> directories = new List<string>();
+
+    public async Task ShowAsync(List<string> selectedDirectories)
+    {
+        directories = selectedDirectories ?? new List<string>();
+        isVisible = true;
+        StateHasChanged();
+
+        // Focus the dialog for accessibility
+        await Task.Delay(100);
+        await JSRuntime.InvokeVoidAsync("eval", "document.querySelector('.modal-dialog')?.focus();");
+    }
+
+    private void Close()
+    {
+        isVisible = false;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,64 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+
+@if (isVisible)
+{
+    <div class="modal show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Title</h5>
+                    <button type="button" class="btn-close" @onclick="Cancel" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@Message</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Cancel">@CancelText</button>
+                    <button type="button" class="btn btn-primary" @onclick="Confirm">@ConfirmText</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string Title { get; set; } = "Confirm";
+    [Parameter] public string Message { get; set; } = "Are you sure?";
+    [Parameter] public string ConfirmText { get; set; } = "OK";
+    [Parameter] public string CancelText { get; set; } = "Cancel";
+    [Parameter] public EventCallback<bool> OnClose { get; set; }
+
+    private bool isVisible = false;
+
+    public async Task ShowAsync(string title, string message, string? confirmText = null, string? cancelText = null)
+    {
+        Title = title;
+        Message = message;
+        if (!string.IsNullOrEmpty(confirmText))
+            ConfirmText = confirmText;
+        if (!string.IsNullOrEmpty(cancelText))
+            CancelText = cancelText;
+
+        isVisible = true;
+        StateHasChanged();
+
+        // Focus the dialog for accessibility
+        await Task.Delay(100);
+        await JSRuntime.InvokeVoidAsync("eval", "document.querySelector('.modal-dialog')?.focus();");
+    }
+
+    private async Task Confirm()
+    {
+        isVisible = false;
+        await OnClose.InvokeAsync(true);
+        StateHasChanged();
+    }
+
+    private async Task Cancel()
+    {
+        isVisible = false;
+        await OnClose.InvokeAsync(false);
+        StateHasChanged();
+    }
+}
