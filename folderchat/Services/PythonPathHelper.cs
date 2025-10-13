@@ -39,35 +39,38 @@ namespace folderchat.Services
                 return true;
             #else
                 // Additional runtime checks
-                var debuggerAttached = Debugger.IsAttached;
-                var currentDir = AppDomain.CurrentDomain.BaseDirectory;
-
-                // Check if running from bin\Debug or bin\Release
-                var isDevelopmentPath = currentDir.Contains(@"\bin\Debug") ||
-                                       currentDir.Contains(@"\bin\Release") ||
-                                       currentDir.Contains(@"/bin/Debug") ||
-                                       currentDir.Contains(@"/bin/Release");
-
-                return debuggerAttached || isDevelopmentPath;
+                return Debugger.IsAttached;
             #endif
         }
 
         private static string GetPythonToolsDirectory()
         {
+            // Always check for python_tools in the same directory as the executable first.
+            var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+                        ?? AppDomain.CurrentDomain.BaseDirectory;
+            var localPythonToolsDir = Path.Combine(exeDir, "python_tools");
+
+            if (Directory.Exists(localPythonToolsDir))
+            {
+                return localPythonToolsDir;
+            }
+
+            // If not found, and we are in a debug environment, try to find it in the solution root.
             if (_isDebugMode)
             {
                 // Development mode: Navigate up to solution directory
                 var baseDir = AppDomain.CurrentDomain.BaseDirectory;
                 var solutionDir = Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", ".."));
-                return Path.Combine(solutionDir, "python_tools");
+                var solutionPythonToolsDir = Path.Combine(solutionDir, "python_tools");
+                if (Directory.Exists(solutionPythonToolsDir))
+                {
+                    return solutionPythonToolsDir;
+                }
             }
-            else
-            {
-                // Release mode: python_tools is in the same directory as the executable
-                var exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-                            ?? AppDomain.CurrentDomain.BaseDirectory;
-                return Path.Combine(exeDir, "python_tools");
-            }
+
+            // If still not found, return the path next to the executable, 
+            // so the subsequent error message is clear.
+            return localPythonToolsDir;
         }
 
         private static string GetPythonExecutablePath()
