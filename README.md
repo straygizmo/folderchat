@@ -1,4 +1,4 @@
-# folderchat - One of the easiest ways to chat with directories
+# folderchat - One of the easiest ways to chat with your folders
 
 ![folderchat Screenshot](folderchat_img.png)
 
@@ -6,7 +6,7 @@ folderchat is a Windows desktop application that provides an AI chat interface e
 
 ## Features
 
-- **Multi-Provider Support**: Works with OpenAI-compatible APIs, Claude Code CLI, and custom providers
+- **Multi-Provider Support**: Works with OpenAI-compatible APIs, Claude Code CLI, and others
 - **RAG Integration**: Automatically processes and indexes documents from selected folders to provide contextual information
 - **MCP (Model Context Protocol) Support**: Enables LLMs to interact with external tools and services through MCP servers
 - **Native Embedding Support**: Includes local embedding model support (Gemma) for offline RAG functionality without external API dependencies
@@ -19,7 +19,6 @@ folderchat is a Windows desktop application that provides an AI chat interface e
 
 - Windows 10 or later
 - .NET 9.0 SDK
-- Visual Studio 2022 (for building from source)
 - Python 3.x
 - uv
 
@@ -85,9 +84,9 @@ You can use local GGUF chat models without an external API. Place your GGUF mode
 python_tools/models/chat/[provider_name]/[modelfile_name].gguf
 ```
 
-For example:
+For example, download a model from [unsloth/gemma-3n-E4B-it-GGUF](https://huggingface.co/unsloth/gemma-3n-E4B-it-GGUF/tree/main) and place it as:
 ```
-python_tools/models/chat/bartowski/gemma-2-2b-it-Q4_K_M.gguf
+python_tools/models/chat/unsloth/gemma-3n-E4B-it-Q4_K_M.gguf
 ```
 
 This allows you to run chat models entirely offline using LLamaSharp.
