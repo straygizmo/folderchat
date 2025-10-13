@@ -67,7 +67,7 @@
             blazorWebView1.Dock = DockStyle.Fill;
             blazorWebView1.Location = new Point(0, 0);
             blazorWebView1.Name = "blazorWebView1";
-            blazorWebView1.Size = new Size(828, 595);
+            blazorWebView1.Size = new Size(829, 595);
             blazorWebView1.TabIndex = 0;
             blazorWebView1.Text = "blazorWebView1";
             // 
@@ -80,7 +80,7 @@
             tabMain.Margin = new Padding(3, 2, 3, 2);
             tabMain.Name = "tabMain";
             tabMain.SelectedIndex = 0;
-            tabMain.Size = new Size(354, 595);
+            tabMain.Size = new Size(353, 595);
             tabMain.TabIndex = 2;
             // 
             // tabPageDir
@@ -91,7 +91,7 @@
             tabPageDir.Margin = new Padding(3, 2, 3, 2);
             tabPageDir.Name = "tabPageDir";
             tabPageDir.Padding = new Padding(3, 2, 3, 2);
-            tabPageDir.Size = new Size(346, 567);
+            tabPageDir.Size = new Size(345, 567);
             tabPageDir.TabIndex = 0;
             tabPageDir.Text = "📁Dir to RAG";
             tabPageDir.UseVisualStyleBackColor = true;
@@ -105,7 +105,7 @@
             ktvFolderTree.Margin = new Padding(3, 2, 3, 2);
             ktvFolderTree.MultiSelect = true;
             ktvFolderTree.Name = "ktvFolderTree";
-            ktvFolderTree.Size = new Size(340, 561);
+            ktvFolderTree.Size = new Size(339, 561);
             ktvFolderTree.TabIndex = 0;
             ktvFolderTree.MouseDown += ktvFolderTree_MouseDown;
             // 
@@ -150,7 +150,7 @@
             lblRagStatus.Location = new Point(3, 563);
             lblRagStatus.Margin = new Padding(3, 2, 3, 2);
             lblRagStatus.Name = "lblRagStatus";
-            lblRagStatus.Size = new Size(340, 2);
+            lblRagStatus.Size = new Size(339, 2);
             lblRagStatus.TabIndex = 2;
             lblRagStatus.Values.Text = "";
             // 
@@ -161,7 +161,7 @@
             tabPageSettings.Margin = new Padding(3, 2, 3, 2);
             tabPageSettings.Name = "tabPageSettings";
             tabPageSettings.Padding = new Padding(9, 8, 9, 8);
-            tabPageSettings.Size = new Size(354, 495);
+            tabPageSettings.Size = new Size(347, 555);
             tabPageSettings.TabIndex = 2;
             tabPageSettings.Text = "⚙️Settings";
             tabPageSettings.UseVisualStyleBackColor = true;
@@ -200,7 +200,7 @@
             // 
             splitContainerMain.Panel2.Controls.Add(blazorWebView1);
             splitContainerMain.Size = new Size(1186, 595);
-            splitContainerMain.SplitterDistance = 354;
+            splitContainerMain.SplitterDistance = 353;
             splitContainerMain.TabIndex = 5;
             // 
             // kListViewBottomLog

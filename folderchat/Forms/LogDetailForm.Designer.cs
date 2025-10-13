@@ -49,13 +49,13 @@ namespace folderchat.Forms
             kryptonPanel1.Dock = DockStyle.Fill;
             kryptonPanel1.Location = new Point(0, 0);
             kryptonPanel1.Name = "kryptonPanel1";
-            kryptonPanel1.Size = new Size(622, 315);
+            kryptonPanel1.Size = new Size(626, 303);
             kryptonPanel1.TabIndex = 0;
             // 
             // btnClose
             // 
             btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnClose.Location = new Point(487, 288);
+            btnClose.Location = new Point(491, 276);
             btnClose.Name = "btnClose";
             btnClose.Size = new Size(90, 25);
             btnClose.TabIndex = 4;
@@ -70,7 +70,7 @@ namespace folderchat.Forms
             txtMessage.Multiline = true;
             txtMessage.Name = "txtMessage";
             txtMessage.ScrollBars = ScrollBars.Vertical;
-            txtMessage.Size = new Size(596, 186);
+            txtMessage.Size = new Size(600, 174);
             txtMessage.TabIndex = 3;
             // 
             // lblMessageHeader
@@ -101,7 +101,7 @@ namespace folderchat.Forms
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(622, 315);
+            ClientSize = new Size(626, 303);
             Controls.Add(kryptonPanel1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
