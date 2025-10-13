@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -28,9 +28,6 @@
 
   <ItemGroup>
     <None Update="Scripts\**\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="wwwroot\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -70,6 +67,16 @@
   <Target Name="CopyPythonTools" AfterTargets="Build">
     <Copy SourceFiles="@(PythonTools)" DestinationFiles="@(PythonTools->'$(OutputPath)python_tools\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" />
     <Message Text="Copied python_tools to output directory" Importance="high" />
+  </Target>
+
+  <!-- Copy wwwroot folder to output directory -->
+  <ItemGroup>
+    <WwwRootFiles Include="wwwroot\**\*.*" />
+  </ItemGroup>
+
+  <Target Name="CopyWwwRoot" AfterTargets="Build">
+    <Copy SourceFiles="@(WwwRootFiles)" DestinationFiles="@(WwwRootFiles->'$(OutputPath)wwwroot\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" />
+    <Message Text="Copied wwwroot to output directory" Importance="high" />
   </Target>
 
 </Project>

@@ -6,6 +6,7 @@ using folderchat.Services.Mcp;
 using folderchat.Models;
 using Krypton.Toolkit;
 using System.Text.Json;
+using System.Reflection;
 
 namespace folderchat.Forms
 {
@@ -363,24 +364,21 @@ namespace folderchat.Forms
 
         public void ReinitializeBlazorWebView()
         {
-            // If already initialized, dispose existing Blazor WebView
-            if (blazorWebView1.Services != null)
+            LogSystemMessage("Reinitializing Blazor WebView");
+
+            // Dispose the existing service provider
+            if (blazorWebView1.Services is IDisposable disposable)
             {
-                LogSystemMessage("Reinitializing Blazor WebView");
-
-                // Clear root components first
-                blazorWebView1.RootComponents.Clear();
-
-                // Dispose the service provider if it implements IDisposable
-                if (blazorWebView1.Services is IDisposable disposable)
-                {
-                    disposable.Dispose();
-                }
-
-                blazorWebView1.Services = null;
+                disposable.Dispose();
             }
 
-            // Initialize/Reinitialize with new settings
+            // Set services to null BEFORE clearing components
+            blazorWebView1.Services = null;
+
+            // Now clear the root components
+            blazorWebView1.RootComponents.Clear();
+
+            // Initialize with new settings
             InitializeBlazorWebView();
         }
 
@@ -389,7 +387,7 @@ namespace folderchat.Forms
             // Set HostPage first, before any other operations
             if (string.IsNullOrEmpty(blazorWebView1.HostPage))
             {
-                blazorWebView1.HostPage = "wwwroot\\index.html";
+                blazorWebView1.HostPage = "index.html";
             }
 
             var services = new ServiceCollection();
