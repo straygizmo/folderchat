@@ -68,6 +68,12 @@ namespace folderchat.Services.Mcp
                     WorkingDirectory = workingDirectory ?? Environment.CurrentDirectory
                 };
 
+                // Ensure EnvironmentVariables directory is initialized (avoid NullReferenceException)
+                transportOptions.EnvironmentVariables ??= new Dictionary<string, string>();
+
+                // Log working directory for diagnostics
+                LogMessage?.Invoke(this, $"working directory: {transportOptions.WorkingDirectory}");
+
                 // Add environment variables to transport options
                 if (envVars.Count > 0)
                 {
@@ -75,6 +81,14 @@ namespace folderchat.Services.Mcp
                     {
                         transportOptions.EnvironmentVariables[kvp.Key] = kvp.Value;
                     }
+
+                    // Log only environment variable keys
+                    try
+                    {
+                        var keys = string.Join(", ", envVars.Keys);
+                        LogMessage?.Invoke(this, $"Environment variable keys set: [{keys}]");
+                    }
+                    catch { }
                 }
 
                 // Create the transport
@@ -93,7 +107,8 @@ namespace folderchat.Services.Mcp
             }
             catch (Exception ex)
             {
-                LogMessage?.Invoke(this, $"Failed to connect to MCP server: {ex.Message}");
+                // Log full exception including stack trace for diagnostics
+                LogMessage?.Invoke(this, $"Failed to connect to MCP server: {ex}");
                 _isConnected = false;
                 return false;
             }

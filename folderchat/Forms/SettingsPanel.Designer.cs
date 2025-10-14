@@ -150,12 +150,12 @@
             // 
             // kPanelChatSettingTop
             // 
+            kPanelChatSettingTop.Controls.Add(cmbChatGGUFModel);
             kPanelChatSettingTop.Controls.Add(cmbAPIProvider);
             kPanelChatSettingTop.Controls.Add(lblAPIProvider);
             kPanelChatSettingTop.Controls.Add(rbChatAPI);
             kPanelChatSettingTop.Controls.Add(rbChatGGUF);
             kPanelChatSettingTop.Controls.Add(lblChatMethod);
-            kPanelChatSettingTop.Controls.Add(cmbChatGGUFModel);
             kPanelChatSettingTop.Dock = DockStyle.Top;
             kPanelChatSettingTop.Location = new Point(3, 2);
             kPanelChatSettingTop.Margin = new Padding(3, 2, 3, 2);
@@ -253,6 +253,7 @@
             // 
             // kPanelRAGTop
             // 
+            kPanelRAGTop.Controls.Add(cmbGGUFModel);
             kPanelRAGTop.Controls.Add(nudMaxContextLength);
             kPanelRAGTop.Controls.Add(lblTotalMaxContextLength);
             kPanelRAGTop.Controls.Add(nudTopKChunks);
@@ -262,16 +263,15 @@
             kPanelRAGTop.Controls.Add(nudModelContextLength);
             kPanelRAGTop.Controls.Add(txtEmbeddingModel);
             kPanelRAGTop.Controls.Add(txtEmbeddingUrl);
-            kPanelRAGTop.Controls.Add(lblEmbeddingUrl);
-            kPanelRAGTop.Controls.Add(lblEmbeddingModel);
             kPanelRAGTop.Controls.Add(lblModelContextLength);
             kPanelRAGTop.Controls.Add(lblChunkSize);
             kPanelRAGTop.Controls.Add(lblChunkOverlap);
             kPanelRAGTop.Controls.Add(rbEmbeddingAPI);
             kPanelRAGTop.Controls.Add(rbEmbeddingGGUF);
-            kPanelRAGTop.Controls.Add(cmbGGUFModel);
             kPanelRAGTop.Controls.Add(lblEmbeddingMethod);
             kPanelRAGTop.Controls.Add(btnTestEmbedding);
+            kPanelRAGTop.Controls.Add(lblEmbeddingUrl);
+            kPanelRAGTop.Controls.Add(lblEmbeddingModel);
             kPanelRAGTop.Dock = DockStyle.Fill;
             kPanelRAGTop.Location = new Point(3, 2);
             kPanelRAGTop.Margin = new Padding(3, 2, 3, 2);
@@ -283,7 +283,7 @@
             // 
             nudMaxContextLength.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             nudMaxContextLength.Increment = new decimal(new int[] { 500, 0, 0, 0 });
-            nudMaxContextLength.Location = new Point(222, 270);
+            nudMaxContextLength.Location = new Point(223, 270);
             nudMaxContextLength.Margin = new Padding(3, 2, 3, 2);
             nudMaxContextLength.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
             nudMaxContextLength.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
