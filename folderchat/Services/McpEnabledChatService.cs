@@ -187,7 +187,7 @@ namespace folderchat.Services
             sb.AppendLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             sb.AppendLine();
             sb.AppendLine("You have access to tools that can interact with the file system and perform actions.");
-            sb.AppendLine("When you need to use a tool, respond with a code block using 'tool' language identifier.");
+            sb.AppendLine("When you need to use a tool, respond with a code block using 'yaml' language identifier and YAML format.");
             sb.AppendLine();
             sb.AppendLine("IMPORTANT RULES:");
             sb.AppendLine("1. If the user asks about files or directories, you MUST use the appropriate tool");
@@ -195,74 +195,86 @@ namespace folderchat.Services
             sb.AppendLine("3. Do NOT guess directory contents - always use list_directory tool");
             sb.AppendLine("4. First provide your reasoning, THEN use the tool");
             sb.AppendLine();
-            sb.AppendLine("TOOL CALL FORMAT:");
-            sb.AppendLine("```tool");
-            sb.AppendLine("tool_name_here");
-            sb.AppendLine("{");
-            sb.AppendLine("  \"parameter_name\": \"parameter_value\"");
-            sb.AppendLine("}");
+            sb.AppendLine("TOOL CALL FORMAT (YAML):");
+            sb.AppendLine("```yaml");
+            sb.AppendLine("tool:");
+            sb.AppendLine("  name: tool_name_here");
+            sb.AppendLine("  parameter_name: \"parameter_value\"");
             sb.AppendLine("```");
             sb.AppendLine();
             sb.AppendLine("EXAMPLE:");
             sb.AppendLine("User: \"List files in C:\\\\Users\\\\Documents\"");
-            sb.AppendLine("Assistant: \"I'll list the files in that directory for you.");
-            sb.AppendLine("```tool");
-            sb.AppendLine("list_directory");
-            sb.AppendLine("{");
-            sb.AppendLine("  \"path\": \"C:\\\\Users\\\\Documents\"");
-            sb.AppendLine("}");
-            sb.AppendLine("```\"");
+            sb.AppendLine("Assistant: \"I'll list the files in that directory for you.\"");
+            sb.AppendLine("```yaml");
+            sb.AppendLine("tool:");
+            sb.AppendLine("  name: list_directory");
+            sb.AppendLine("  path: \"C:\\\\Users\\\\Documents\"");
+            sb.AppendLine("```");
             sb.AppendLine();
             sb.AppendLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             sb.AppendLine("AVAILABLE TOOLS:");
             sb.AppendLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            sb.AppendLine();
+            sb.AppendLine("```yaml");
 
             foreach (var tool in tools)
             {
-                sb.AppendLine($"📌 {tool.Name}");
-                sb.AppendLine($"   {tool.Description}");
+                sb.AppendLine($"- name: {tool.Name}");
+                if (!string.IsNullOrEmpty(tool.Description))
+                {
+                    sb.AppendLine($"  description: \"{tool.Description.Replace("\"", "\\\"")}\"");
+                }
 
-                // Try to extract schema information
                 if (tool.InputSchema != null)
                 {
                     try
                     {
-                        var schemaJson = JsonSerializer.Serialize(tool.InputSchema);
+                        var schemaJson = JsonSerializer.Serialize(tool.InputSchema, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
                         var schemaDict = JsonSerializer.Deserialize<Dictionary<string, object>>(schemaJson);
-                        if (schemaDict != null && schemaDict.ContainsKey("properties"))
+
+                        if (schemaDict != null && schemaDict.TryGetValue("properties", out var propertiesObj))
                         {
-                            var propsJson = JsonSerializer.Serialize(schemaDict["properties"]);
-                            var props = JsonSerializer.Deserialize<Dictionary<string, object>>(propsJson);
+                            var propsJson = JsonSerializer.Serialize(propertiesObj);
+                            var props = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(propsJson);
+
+                            List<string> required = new List<string>();
+                            if (schemaDict.TryGetValue("required", out var requiredObj))
+                            {
+                                var requiredJson = JsonSerializer.Serialize(requiredObj);
+                                required = JsonSerializer.Deserialize<List<string>>(requiredJson) ?? new List<string>();
+                            }
+
                             if (props != null && props.Count > 0)
                             {
-                                sb.AppendLine("   Parameters: " + string.Join(", ", props.Keys));
-                            }
-                        }
-
-                        // Check for required fields
-                        if (schemaDict != null && schemaDict.ContainsKey("required"))
-                        {
-                            var requiredJson = JsonSerializer.Serialize(schemaDict["required"]);
-                            var required = JsonSerializer.Deserialize<List<string>>(requiredJson);
-                            if (required != null && required.Count > 0)
-                            {
-                                sb.AppendLine("   Required: " + string.Join(", ", required));
+                                sb.AppendLine("  parameters:");
+                                foreach (var prop in props)
+                                {
+                                    sb.AppendLine($"    - name: {prop.Key}");
+                                    if (prop.Value.TryGetValue("description", out var description) && description != null)
+                                    {
+                                        sb.AppendLine($"      description: \"{description.ToString().Replace("\"", "\\\"")}\"");
+                                    }
+                                    if (prop.Value.TryGetValue("type", out var type) && type != null)
+                                    {
+                                        sb.AppendLine($"      type: {type}");
+                                    }
+                                    sb.AppendLine($"      required: {(required.Contains(prop.Key) ? "true" : "false")}");
+                                }
                             }
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        // Ignore schema parsing errors
+                        System.Diagnostics.Debug.WriteLine($"[MCP] Error parsing tool schema for {tool.Name}: {ex.Message}");
+                        // Fallback to simpler output if schema parsing fails
+                        sb.AppendLine("  parameters: (schema parsing failed)");
                     }
                 }
-
-                sb.AppendLine();
             }
-
+            sb.AppendLine("```");
+            sb.AppendLine();
             sb.AppendLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             sb.AppendLine();
-            sb.AppendLine("Remember: When you need to use a tool, use the ```tool code block format shown above!");
+            sb.AppendLine("Remember: When you need to use a tool, use the ```yaml code block with YAML format shown above!");
 
             return sb.ToString();
         }
@@ -270,68 +282,120 @@ namespace folderchat.Services
         private List<ToolCall> ExtractToolCallsFromResponse(string response)
         {
             var toolCalls = new List<ToolCall>();
-
-            // Look for tool call blocks in markdown code fence format
             var lines = response.Split('\n');
-            bool inToolBlock = false;
-            string? currentToolName = null;
-            var currentArgsLines = new List<string>();
 
-            for (int i = 0; i < lines.Length; i++)
-            {
-                var line = lines[i].Trim();
+            var blockLines = new List<string>();
+            bool inFencedBlock = false;
+            bool inUnfencedBlock = false;
 
-                if (line == "```tool" || line.StartsWith("```tool"))
+            Action<List<string>> parseAndClear = (block) => {
+                if (!block.Any()) return;
+
+                try
                 {
-                    inToolBlock = true;
-                    currentToolName = null;
-                    currentArgsLines.Clear();
-                    continue;
-                }
+                    string? toolName = null;
+                    var argsDict = new Dictionary<string, object>();
+                    bool inToolSection = false;
 
-                if (line == "```" && inToolBlock)
-                {
-                    // End of tool block
-                    if (currentToolName != null)
+                    foreach (var blockLine in block)
                     {
-                        var argsJson = string.Join("\n", currentArgsLines);
-                        object? arguments = null;
+                        if (string.IsNullOrWhiteSpace(blockLine)) continue;
 
-                        if (!string.IsNullOrWhiteSpace(argsJson))
+                        if (blockLine.Trim() == "tool:")
                         {
-                            try
-                            {
-                                arguments = JsonSerializer.Deserialize<Dictionary<string, object>>(argsJson);
-                            }
-                            catch
-                            {
-                                // If parsing fails, treat as empty arguments
-                                arguments = new Dictionary<string, object>();
-                            }
+                            inToolSection = true;
+                            continue;
                         }
 
-                        toolCalls.Add(new ToolCall { ToolName = currentToolName, Arguments = arguments });
+                        if (inToolSection)
+                        {
+                            if (!blockLine.StartsWith("  ") && !blockLine.StartsWith("\t")) continue;
+
+                            var parts = blockLine.Trim().Split(new[] { ':' }, 2);
+                            if (parts.Length != 2) continue;
+
+                            var key = parts[0].Trim();
+                            var value = parts[1].Trim();
+
+                            if (key.Equals("name", StringComparison.OrdinalIgnoreCase))
+                            {
+                                toolName = value;
+                            }
+                            else
+                            {
+                                if (value.Length >= 2 && value.StartsWith("\"") && value.EndsWith("\""))
+                                {
+                                    argsDict[key] = value.Substring(1, value.Length - 2);
+                                }
+                                else
+                                {
+                                    argsDict[key] = value;
+                                }
+                            }
+                        }
                     }
 
-                    inToolBlock = false;
-                    currentToolName = null;
-                    currentArgsLines.Clear();
+                    if (!string.IsNullOrEmpty(toolName))
+                    {
+                        toolCalls.Add(new ToolCall { ToolName = toolName, Arguments = argsDict });
+                    }
+                }
+                catch { /* Ignore parsing errors */ }
+
+                block.Clear();
+            };
+
+            foreach (var line in lines)
+            {
+                var trimmedLine = line.Trim();
+
+                if (inFencedBlock)
+                {
+                    if (trimmedLine == "```")
+                    {
+                        parseAndClear(blockLines);
+                        inFencedBlock = false;
+                    }
+                    else
+                    {
+                        blockLines.Add(line);
+                    }
                     continue;
                 }
 
-                if (inToolBlock)
+                if (inUnfencedBlock)
                 {
-                    if (currentToolName == null && !string.IsNullOrWhiteSpace(line))
+                    if (line.StartsWith("  ") || line.StartsWith("\t") || string.IsNullOrWhiteSpace(line))
                     {
-                        // First non-empty line is the tool name
-                        currentToolName = line;
+                        blockLines.Add(line);
                     }
-                    else if (currentToolName != null)
+                    else
                     {
-                        // Subsequent lines are arguments
-                        currentArgsLines.Add(line);
+                        parseAndClear(blockLines);
+                        inUnfencedBlock = false;
+                        // Fall through to check if the current line starts a new block
                     }
                 }
+
+                // This check happens if not in a block, or after an unfenced block ends
+                if (!inFencedBlock && !inUnfencedBlock)
+                {
+                    if (trimmedLine.StartsWith("```yaml"))
+                    {
+                        inFencedBlock = true;
+                    }
+                    else if (trimmedLine == "tool:")
+                    {
+                        inUnfencedBlock = true;
+                        blockLines.Add(line);
+                    }
+                }
+            }
+
+            // If the response ends while in a block
+            if (blockLines.Any())
+            {
+                parseAndClear(blockLines);
             }
 
             return toolCalls;
