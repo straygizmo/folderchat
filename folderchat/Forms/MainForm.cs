@@ -362,23 +362,28 @@ namespace folderchat.Forms
             return blazorWebView1.Services == null;
         }
 
-        public void ReinitializeBlazorWebView()
+                        public void ReinitializeBlazorWebView()
         {
-            LogSystemMessage("Reinitializing Blazor WebView");
+            LogSystemMessage("Reinitializing Blazor WebView by recreating the control.");
 
-            // Dispose the existing service provider
-            if (blazorWebView1.Services is IDisposable disposable)
+            // 親コントロールから古いWebViewを削除
+            if (blazorWebView1 != null)
             {
-                disposable.Dispose();
+                splitContainerMain.Panel2.Controls.Remove(blazorWebView1);
+                blazorWebView1.Dispose();
             }
 
-            // Set services to null BEFORE clearing components
-            blazorWebView1.Services = null;
+            // 新しいBlazorWebViewインスタンスを作成
+            blazorWebView1 = new Microsoft.AspNetCore.Components.WebView.WindowsForms.BlazorWebView();
+            blazorWebView1.Dock = DockStyle.Fill;
+            blazorWebView1.Location = new Point(0, 0);
+            blazorWebView1.Name = "blazorWebView1";
+            blazorWebView1.TabIndex = 0;
 
-            // Now clear the root components
-            blazorWebView1.RootComponents.Clear();
+            // 親コントロールに新しいWebViewを追加
+            splitContainerMain.Panel2.Controls.Add(blazorWebView1);
 
-            // Initialize with new settings
+            // 新しいWebViewを初期化
             InitializeBlazorWebView();
         }
 

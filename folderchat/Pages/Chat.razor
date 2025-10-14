@@ -537,7 +537,7 @@
         }
     }
 
-    private async Task ToggleRagAsync(bool isEnabled)
+        private async Task ToggleRagAsync(bool isEnabled)
     {
         try
         {
@@ -547,23 +547,26 @@
             folderchat.Properties.Settings.Default.UseRAG = isEnabled;
             folderchat.Properties.Settings.Default.Save();
 
-            // Show message to user that restart is needed
-            chatHistory.Add(new ChatMessage
+            // Reinitialize the Blazor WebView to apply the new chat service
+            // This needs to be invoked on the UI thread
+            MainForm.Invoke(() =>
             {
-                Text = $"[{Localization.GetString("Info")}]\n" +
-                       (isEnabled
-                           ? Localization.GetString("RAGEnabled")
-                           : Localization.GetString("RAGDisabled")),
-                IsUser = true,
-                Type = MessageType.Info
+                try
+                {
+                    MainForm.ReinitializeBlazorWebView();
+                    MainForm.LogSystemMessage($"RAG setting changed to: {(isEnabled ? "Enabled" : "Disabled")}");
+                }
+                catch (Exception ex)
+                {
+                    MainForm.LogError($"Failed to reinitialize Blazor WebView after toggling RAG: {ex.Message}");
+                }
             });
 
-            shouldScrollToBottom = true;
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error toggling RAG: {ex.Message}");
+            MainForm.LogError($"Error toggling RAG: {ex.Message}");
         }
     }
 
