@@ -7,12 +7,22 @@ namespace folderchat.Forms
     /// </summary>
     public partial class LogDetailForm : KryptonForm
     {
-        public LogDetailForm(string date, string type, string message)
+                public LogDetailForm(string date, string type, string message)
         {
             InitializeComponent();
             lblDate.Text = $"Date: {date}";
             lblType.Text = $"Type: {type}";
-            txtMessage.Text = message;
+
+            // Normalize newlines to ensure they are displayed correctly in the TextBox
+            if (message != null)
+            {
+                txtMessage.Text = message.Replace("\r\n", "\n").Replace("\n", Environment.NewLine);
+            }
+            else
+            {
+                txtMessage.Text = "";
+            }
+
             txtMessage.SelectionStart = 0;
             txtMessage.SelectionLength = 0;
         }

@@ -204,17 +204,19 @@ namespace folderchat.Forms
 
         private void kListViewBottomLog_DoubleClick(object? sender, EventArgs e)
         {
-            if (kListViewBottomLog.SelectedItems.Count == 0)
+                        if (kListViewBottomLog.SelectedItems.Count == 0)
                 return;
 
-            var item = kListViewBottomLog.SelectedItems[0];
-            var date = item.SubItems[0].Text;
-            var type = item.SubItems[1].Text;
-            var message = item.SubItems[2].Text;
+            if (kListViewBottomLog.SelectedItems[0] is LogListViewItem item)
+            {
+                var date = item.SubItems[0].Text;
+                var type = item.SubItems[1].Text;
+                var message = item.OriginalMessage; // Get the original message
 
-            // Create and show modeless dialog
-            var detailForm = new LogDetailForm(date, type, message);
-            detailForm.Show(this);
+                // Create and show modeless dialog
+                var detailForm = new LogDetailForm(date, type, message);
+                detailForm.Show(this);
+            }
         }
 
         public void LogRAGMessage(string message)
@@ -274,8 +276,13 @@ namespace folderchat.Forms
                     kListViewBottomLog.Items.RemoveAt(0);
                 }
 
-                var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                var item = new ListViewItem(new[] { timestamp, type, message });
+                                var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                // Replace newlines with spaces for single-line display in the list view
+                var displayMessage = message.Replace('\n', ' ').Replace('\r', ' ');
+
+                // Use the custom LogListViewItem to store the original message
+                var item = new LogListViewItem(new[] { timestamp, type, displayMessage }, message);
 
                 kListViewBottomLog.Items.Add(item);
 
@@ -1160,7 +1167,7 @@ namespace folderchat.Forms
             return chatService;
         }
 
-        private void ktvFolderTree_MouseDown(object sender, MouseEventArgs e)
+                private void ktvFolderTree_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
             {
@@ -1177,6 +1184,16 @@ namespace folderchat.Forms
                 {
                     LogSystemMessage($"Right-clicked but no node found at position ({e.X}, {e.Y})");
                 }
+            }
+        }
+
+        public class LogListViewItem : ListViewItem
+        {
+            public string OriginalMessage { get; set; }
+
+            public LogListViewItem(string[] items, string originalMessage) : base(items)
+            {
+                OriginalMessage = originalMessage;
             }
         }
     }
