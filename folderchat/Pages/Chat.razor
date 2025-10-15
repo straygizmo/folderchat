@@ -117,7 +117,7 @@
 <folderchat.Pages.Components.SelectedDirectoriesDialog @ref="selectedDirectoriesDialog" />
 
 @code {
-    private List<ChatMessage> chatHistory = new List<ChatMessage>();
+    private List<ChatMessageModel> chatHistory = new List<ChatMessageModel>();
     private string currentMessage = string.Empty;
     private bool isWaitingForResponse = false;
     private int fontSize = 14;
@@ -245,7 +245,7 @@
             isWaitingForResponse = false;
 
             // Add the actual user message that was sent to LLM (may include RAG context)
-            chatHistory.Add(new ChatMessage { Text = result.ActualUserMessage, IsUser = true });
+            chatHistory.Add(new ChatMessageModel { Text = result.ActualUserMessage, IsUser = true });
 
             // Determine message type based on response content
             var messageType = MessageType.Normal;
@@ -257,7 +257,7 @@
                 messageType = MessageType.Error;
             }
 
-            chatHistory.Add(new ChatMessage { Text = result.AssistantResponse, IsUser = false, Type = messageType });
+            chatHistory.Add(new ChatMessageModel { Text = result.AssistantResponse, IsUser = false, Type = messageType });
         }
         catch (Exception ex)
         {
@@ -274,12 +274,12 @@
                              $"• {Localization.GetString("ReviewErrorDetails")}";
 
             // Add error message to chat history (use original user input since service failed)
-            chatHistory.Add(new ChatMessage {
+            chatHistory.Add(new ChatMessageModel {
                 Text = userMessage,
                 IsUser = true,
                 Type = MessageType.Normal
             });
-            chatHistory.Add(new ChatMessage {
+            chatHistory.Add(new ChatMessageModel {
                 Text = errorMessage,
                 IsUser = false,
                 Type = MessageType.Error
@@ -351,21 +351,7 @@
         InvokeAsync(StateHasChanged);
     }
 
-    public enum MessageType
-    {
-        Normal,
-        Error,
-        Info
-    }
-
-    private class ChatMessage
-    {
-        public string Text { get; set; } = string.Empty;
-        public bool IsUser { get; set; }
-        public MessageType Type { get; set; } = MessageType.Normal;
-    }
-
-    private string GetMessageCssClass(ChatMessage message)
+    private string GetMessageCssClass(ChatMessageModel message)
     {
         if (message.Type == MessageType.Error)
             return "border border-danger bg-danger-subtle text-danger";
@@ -375,7 +361,7 @@
         return message.IsUser ? "bg-primary" : "bg-secondary";
     }
 
-    private string GetMessageStyle(ChatMessage message)
+    private string GetMessageStyle(ChatMessageModel message)
     {
         if (message.Type == MessageType.Error)
             return "border-width: 2px !important;";
@@ -572,7 +558,7 @@
     /// </summary>
     public async Task AddMessageToChatAsync(string text, bool isUser, MessageType type = MessageType.Normal)
     {
-        chatHistory.Add(new ChatMessage { Text = text, IsUser = isUser, Type = type });
+        chatHistory.Add(new ChatMessageModel { Text = text, IsUser = isUser, Type = type });
         shouldScrollToBottom = true;
         await InvokeAsync(StateHasChanged);
     }
@@ -596,7 +582,7 @@
             isWaitingForResponse = false;
 
             // Add the actual user message that was sent to LLM
-            chatHistory.Add(new ChatMessage { Text = result.ActualUserMessage, IsUser = true });
+            chatHistory.Add(new ChatMessageModel { Text = result.ActualUserMessage, IsUser = true });
 
             // Log the actual user message with its role
             MainForm.LogChatMessage("user", result.ActualUserMessage);
@@ -611,7 +597,7 @@
                 messageType = MessageType.Error;
             }
 
-            chatHistory.Add(new ChatMessage { Text = result.AssistantResponse, IsUser = false, Type = messageType });
+            chatHistory.Add(new ChatMessageModel { Text = result.AssistantResponse, IsUser = false, Type = messageType });
 
             // Log the assistant's response with its role
             MainForm.LogChatMessage("assistant", result.AssistantResponse);
@@ -630,12 +616,12 @@
                              $"• {Localization.GetString("CheckServiceAvailability")}\n" +
                              $"• {Localization.GetString("ReviewErrorDetails")}";
 
-            chatHistory.Add(new ChatMessage {
+            chatHistory.Add(new ChatMessageModel {
                 Text = userMessage,
                 IsUser = true,
                 Type = MessageType.Normal
             });
-            chatHistory.Add(new ChatMessage {
+            chatHistory.Add(new ChatMessageModel {
                 Text = errorMessage,
                 IsUser = false,
                 Type = MessageType.Error
@@ -670,7 +656,7 @@
             isWaitingForResponse = false;
 
             // Add the actual user message that was sent to LLM
-            chatHistory.Add(new ChatMessage { Text = result.ActualUserMessage, IsUser = true });
+            chatHistory.Add(new ChatMessageModel { Text = result.ActualUserMessage, IsUser = true });
 
             // Log the actual user message with its role
             MainForm.LogChatMessage("user", result.ActualUserMessage);
@@ -685,7 +671,7 @@
                 messageType = MessageType.Error;
             }
 
-            chatHistory.Add(new ChatMessage { Text = result.AssistantResponse, IsUser = false, Type = messageType });
+            chatHistory.Add(new ChatMessageModel { Text = result.AssistantResponse, IsUser = false, Type = messageType });
 
             // Log the assistant's response with its role
             MainForm.LogChatMessage("assistant", result.AssistantResponse);
@@ -704,12 +690,12 @@
                              $"• {Localization.GetString("CheckServiceAvailability")}\n" +
                              $"• {Localization.GetString("ReviewErrorDetails")}";
 
-            chatHistory.Add(new ChatMessage {
+            chatHistory.Add(new ChatMessageModel {
                 Text = userMessage,
                 IsUser = true,
                 Type = MessageType.Normal
             });
-            chatHistory.Add(new ChatMessage {
+            chatHistory.Add(new ChatMessageModel {
                 Text = errorMessage,
                 IsUser = false,
                 Type = MessageType.Error

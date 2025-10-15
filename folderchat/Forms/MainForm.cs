@@ -7,6 +7,10 @@ using folderchat.Models;
 using Krypton.Toolkit;
 using System.Text.Json;
 using System.Reflection;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+using System.Text.Json.Serialization;
 
 namespace folderchat.Forms
 {
@@ -16,6 +20,7 @@ namespace folderchat.Forms
         private Pages.Chat? _chatComponent;
         private TreeNode? _rightClickedNode;
         private IndexingService? _indexingService;
+        private WebApplication? _apiServer;
 
         // Event to notify Blazor about theme changes
         public event EventHandler<string>? ThemeChanged;
@@ -73,6 +78,7 @@ namespace folderchat.Forms
             InitializeContextMenu();
             InitializeTreeViewEvents();
             InitializeIndexingService();
+            _ = StartApiServer(); // Fire-and-forget to not block the UI thread
         }
 
         private void InitializeIndexingService()
@@ -765,9 +771,16 @@ namespace folderchat.Forms
             }
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             SaveTreeState();
+
+            if (_apiServer != null)
+            {
+                LogSystemMessage("Stopping internal API server...");
+                await _apiServer.StopAsync();
+                await _apiServer.DisposeAsync();
+            }
         }
 
         private void RestoreTreeState()
@@ -1084,7 +1097,7 @@ namespace folderchat.Forms
                     await _chatComponent.AddMessageToChatAsync(
                         $"Error during summarization: {ex.Message}",
                         false,
-                        Pages.Chat.MessageType.Error
+                        MessageType.Error
                     );
                 }
             }
@@ -1196,5 +1209,152 @@ namespace folderchat.Forms
                 OriginalMessage = originalMessage;
             }
         }
+
+        private async Task StartApiServer()
+        {
+            try
+            {
+                var builder = WebApplication.CreateBuilder();
+
+                // Configure Kestrel to listen on the specified port
+                builder.WebHost.UseUrls("http://localhost:11550");
+
+                // Add this form instance as a singleton
+                builder.Services.AddSingleton(this);
+
+                var app = builder.Build();
+
+                // Define the OpenAI compatible endpoint
+                app.MapPost("/v1/chat/completions", async (ChatCompletionRequest request, MainForm mainForm) =>
+                {
+                    // Get the currently configured chat service (without RAG)
+                    var chatService = mainForm.GetChatServiceForSummarization();
+                    var userMessage = request.Messages.LastOrDefault(m => m.Role == "user")?.Content ?? "";
+
+                    if (string.IsNullOrEmpty(userMessage))
+                    {
+                        return Results.BadRequest("User message cannot be empty.");
+                    }
+
+                    // Send the message to the LLM
+                    var result = await chatService.SendMessageAsync(userMessage);
+
+                    // Update the UI on the UI thread
+                    if (mainForm._chatComponent != null)
+                    {
+                        await mainForm.InvokeAsync(async () =>
+                        {
+                            // Log and display the user message
+                            mainForm.LogChatMessage("user (API)", result.ActualUserMessage);
+                            await mainForm._chatComponent.AddMessageToChatAsync(result.ActualUserMessage, true, MessageType.User);
+
+                            // Log and display the assistant response
+                            mainForm.LogChatMessage("assistant (API)", result.AssistantResponse);
+                            await mainForm._chatComponent.AddMessageToChatAsync(result.AssistantResponse, false, MessageType.Assistant);
+                        });
+                    }
+
+                    // Create and return an OpenAI-compatible response with the actual assistant response
+                    var response = new ChatCompletionResponse
+                    {
+                        Id = $"chatcmpl-integrated-{Guid.NewGuid()}",
+                        Object = "chat.completion",
+                        Created = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                        Model = request.Model, // Note: This might not be the actual model used, but it's what the client sent.
+                        Choices = new List<ChatCompletionChoice>
+                        {
+                            new ChatCompletionChoice
+                            {
+                                Index = 0,
+                                Message = new ResponseMessage
+                                {
+                                    Role = "assistant",
+                                    Content = result.AssistantResponse // Use the actual response here
+                                },
+                                FinishReason = "stop"
+                            }
+                        },
+                        Usage = new Usage() // Dummy usage, as token count is not easily available here
+                    };
+
+                    return Results.Ok(response);
+                });
+
+                _apiServer = app;
+                LogSystemMessage("Internal API server starting on http://localhost:11550");
+                await _apiServer.RunAsync(); // This will run until the application closes
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to start internal API server: {ex.Message}");
+            }
+        }
+    }
+
+    // --- OpenAI Compatible Models ---
+
+    public record ChatCompletionRequest(
+        [property: JsonPropertyName("model")] string Model,
+        [property: JsonPropertyName("messages")] List<ChatMessage> Messages,
+        [property: JsonPropertyName("stream")] bool? Stream = false
+    );
+
+    public record ChatMessage(
+        [property: JsonPropertyName("role")] string Role,
+        [property: JsonPropertyName("content")] string Content
+    );
+
+    public record ChatCompletionResponse
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; }
+
+        [JsonPropertyName("object")]
+        public string Object { get; set; }
+
+        [JsonPropertyName("created")]
+        public long Created { get; set; }
+
+        [JsonPropertyName("model")]
+        public string Model { get; set; }
+
+        [JsonPropertyName("choices")]
+        public List<ChatCompletionChoice> Choices { get; set; }
+
+        [JsonPropertyName("usage")]
+        public Usage Usage { get; set; }
+    }
+
+    public record ChatCompletionChoice
+    {
+        [JsonPropertyName("index")]
+        public int Index { get; set; }
+
+        [JsonPropertyName("message")]
+        public ResponseMessage Message { get; set; }
+
+        [JsonPropertyName("finish_reason")]
+        public string FinishReason { get; set; }
+    }
+
+    public record ResponseMessage
+    {
+        [JsonPropertyName("role")]
+        public string Role { get; set; }
+
+        [JsonPropertyName("content")]
+        public string Content { get; set; }
+    }
+
+    public record Usage
+    {
+        [JsonPropertyName("prompt_tokens")]
+        public int PromptTokens { get; set; }
+
+        [JsonPropertyName("completion_tokens")]
+        public int CompletionTokens { get; set; }
+
+        [JsonPropertyName("total_tokens")]
+        public int TotalTokens { get; set; }
     }
 }
