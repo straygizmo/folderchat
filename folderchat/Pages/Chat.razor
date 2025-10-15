@@ -36,15 +36,7 @@
             <div class="@(message.IsUser ? "text-end" : "text-start") mb-2">
                 <span class="badge @GetMessageCssClass(message) p-2 text-wrap chat-message"
                       style="max-width: 80%; display: inline-block; text-align: left; @GetMessageStyle(message)">
-                    @if (message.IsUser && message.Type == MessageType.Normal)
-                    {
-                        @message.Text
-                    }
-                    else
-                    {
-                        @((MarkupString)message.Text.Replace("\n", "<br>"))
-                    }
-                </span>
+                                            @((MarkupString)message.Text.Replace("\n", "<br>"))                </span>
             </div>
         }
         @if (isWaitingForResponse)

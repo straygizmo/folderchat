@@ -182,27 +182,27 @@ namespace folderchat.Services
                 sb.AppendLine();
             }
 
-            sb.AppendLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            sb.AppendLine("🔧 TOOL USE CAPABILITY ENABLED");
-            sb.AppendLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            sb.AppendLine("# 🔧 TOOL USE CAPABILITY ENABLED");
             sb.AppendLine();
-            sb.AppendLine("You have access to tools that can interact with the file system and perform actions.");
-            sb.AppendLine("When you need to use a tool, respond with a code block using 'yaml' language identifier and YAML format.");
+            sb.AppendLine("You have access to tools to perform a variety of tasks.");
+            sb.AppendLine("To use a tool, respond with a `yaml` code block as shown in the examples.");
             sb.AppendLine();
-            sb.AppendLine("IMPORTANT RULES:");
+            sb.AppendLine("## IMPORTANT RULES:");
             sb.AppendLine("1. If the user asks about files or directories, you MUST use the appropriate tool");
             sb.AppendLine("2. Do NOT make up file contents - always use read_file tool");
             sb.AppendLine("3. Do NOT guess directory contents - always use list_directory tool");
             sb.AppendLine("4. First provide your reasoning, THEN use the tool");
             sb.AppendLine();
-            sb.AppendLine("TOOL CALL FORMAT (YAML):");
+            sb.AppendLine("## TOOL CALL FORMAT (YAML):");
+            sb.AppendLine();
             sb.AppendLine("```yaml");
             sb.AppendLine("tool:");
             sb.AppendLine("  name: tool_name_here");
             sb.AppendLine("  parameter_name: \"parameter_value\"");
             sb.AppendLine("```");
             sb.AppendLine();
-            sb.AppendLine("EXAMPLE:");
+            sb.AppendLine("## EXAMPLE:");
+            sb.AppendLine();
             sb.AppendLine("User: \"List files in C:\\\\Users\\\\Documents\"");
             sb.AppendLine("Assistant: \"I'll list the files in that directory for you.\"");
             sb.AppendLine("```yaml");
@@ -211,9 +211,8 @@ namespace folderchat.Services
             sb.AppendLine("  path: \"C:\\\\Users\\\\Documents\"");
             sb.AppendLine("```");
             sb.AppendLine();
-            sb.AppendLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            sb.AppendLine("AVAILABLE TOOLS:");
-            sb.AppendLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            sb.AppendLine("## AVAILABLE TOOLS:");
+            sb.AppendLine();
             sb.AppendLine("```yaml");
 
             foreach (var tool in tools)
@@ -271,8 +270,6 @@ namespace folderchat.Services
                 }
             }
             sb.AppendLine("```");
-            sb.AppendLine();
-            sb.AppendLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             sb.AppendLine();
             sb.AppendLine("Remember: When you need to use a tool, use the ```yaml code block with YAML format shown above!");
 
