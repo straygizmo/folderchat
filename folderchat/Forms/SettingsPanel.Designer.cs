@@ -75,6 +75,11 @@
             kryptonLabel1 = new Krypton.Toolkit.KryptonLabel();
             lblLanguage = new Krypton.Toolkit.KryptonLabel();
             cmbLanguage = new Krypton.Toolkit.KryptonComboBox();
+            tabPageServer = new TabPage();
+            kPanelAPI = new Krypton.Toolkit.KryptonPanel();
+            nudServerPort = new Krypton.Toolkit.KryptonNumericUpDown();
+            lblServerPort = new Krypton.Toolkit.KryptonLabel();
+            chkEnableAPIServer = new Krypton.Toolkit.KryptonCheckBox();
             claudeCodeSettingsControl = new folderchat.Forms.ProviderSettings.ClaudeCodeProviderSettingsControl();
             openAISettingsControl = new folderchat.Forms.ProviderSettings.OpenAIProviderSettingsControl();
             azureAIFoundrySettingsControl = new folderchat.Forms.ProviderSettings.AzureAIFoundryProviderSettingsControl();
@@ -83,11 +88,7 @@
             openAIAPISettingsControl = new folderchat.Forms.ProviderSettings.OpenAIAPIProviderSettingsControl();
             geminiSettingsControl = new folderchat.Forms.ProviderSettings.GeminiProviderSettingsControl();
             claudeSettingsControl = new folderchat.Forms.ProviderSettings.ClaudeProviderSettingsControl();
-            tabPageServer = new TabPage();
-            kPanelAPI = new Krypton.Toolkit.KryptonPanel();
-            chkEnableAPIServer = new Krypton.Toolkit.KryptonCheckBox();
-            lblServerPort = new Krypton.Toolkit.KryptonLabel();
-            nudServerPort = new Krypton.Toolkit.KryptonNumericUpDown();
+            btnSaveAPIServerSettings = new Krypton.Toolkit.KryptonButton();
             tabSettings.SuspendLayout();
             tabPageChat.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)kPanelGGUFProviderSettings).BeginInit();
@@ -640,6 +641,55 @@
             cmbLanguage.TabIndex = 16;
             cmbLanguage.SelectedIndexChanged += cmbLanguage_SelectedIndexChanged;
             // 
+            // tabPageServer
+            // 
+            tabPageServer.Controls.Add(kPanelAPI);
+            tabPageServer.Controls.Add(btnSaveAPIServerSettings);
+            tabPageServer.Location = new Point(4, 24);
+            tabPageServer.Name = "tabPageServer";
+            tabPageServer.Size = new Size(337, 525);
+            tabPageServer.TabIndex = 4;
+            tabPageServer.Text = "API Server";
+            tabPageServer.UseVisualStyleBackColor = true;
+            // 
+            // kPanelAPI
+            // 
+            kPanelAPI.Controls.Add(nudServerPort);
+            kPanelAPI.Controls.Add(lblServerPort);
+            kPanelAPI.Controls.Add(chkEnableAPIServer);
+            kPanelAPI.Dock = DockStyle.Fill;
+            kPanelAPI.Location = new Point(0, 0);
+            kPanelAPI.Name = "kPanelAPI";
+            kPanelAPI.Size = new Size(337, 495);
+            kPanelAPI.TabIndex = 0;
+            // 
+            // nudServerPort
+            // 
+            nudServerPort.Increment = new decimal(new int[] { 1, 0, 0, 0 });
+            nudServerPort.Location = new Point(98, 61);
+            nudServerPort.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
+            nudServerPort.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
+            nudServerPort.Name = "nudServerPort";
+            nudServerPort.Size = new Size(88, 22);
+            nudServerPort.TabIndex = 2;
+            nudServerPort.Value = new decimal(new int[] { 11550, 0, 0, 0 });
+            // 
+            // lblServerPort
+            // 
+            lblServerPort.Location = new Point(22, 62);
+            lblServerPort.Name = "lblServerPort";
+            lblServerPort.Size = new Size(73, 20);
+            lblServerPort.TabIndex = 1;
+            lblServerPort.Values.Text = "Server Port:";
+            // 
+            // chkEnableAPIServer
+            // 
+            chkEnableAPIServer.Location = new Point(22, 26);
+            chkEnableAPIServer.Name = "chkEnableAPIServer";
+            chkEnableAPIServer.Size = new Size(119, 20);
+            chkEnableAPIServer.TabIndex = 0;
+            chkEnableAPIServer.Values.Text = "Enable API Server";
+            // 
             // claudeCodeSettingsControl
             // 
             claudeCodeSettingsControl.Location = new Point(0, 0);
@@ -696,53 +746,17 @@
             claudeSettingsControl.Size = new Size(550, 240);
             claudeSettingsControl.TabIndex = 8;
             // 
-            // tabPageServer
+            // btnSaveAPIServerSettings
             // 
-            tabPageServer.Controls.Add(kPanelAPI);
-            tabPageServer.Location = new Point(4, 24);
-            tabPageServer.Name = "tabPageServer";
-            tabPageServer.Size = new Size(337, 525);
-            tabPageServer.TabIndex = 4;
-            tabPageServer.Text = "API Server";
-            tabPageServer.UseVisualStyleBackColor = true;
-            // 
-            // kPanelAPI
-            // 
-            kPanelAPI.Controls.Add(nudServerPort);
-            kPanelAPI.Controls.Add(lblServerPort);
-            kPanelAPI.Controls.Add(chkEnableAPIServer);
-            kPanelAPI.Dock = DockStyle.Fill;
-            kPanelAPI.Location = new Point(0, 0);
-            kPanelAPI.Name = "kPanelAPI";
-            kPanelAPI.Size = new Size(337, 525);
-            kPanelAPI.TabIndex = 0;
-            // 
-            // chkEnableAPIServer
-            // 
-            chkEnableAPIServer.Location = new Point(22, 26);
-            chkEnableAPIServer.Name = "chkEnableAPIServer";
-            chkEnableAPIServer.Size = new Size(119, 20);
-            chkEnableAPIServer.TabIndex = 0;
-            chkEnableAPIServer.Values.Text = "Enable API Server";
-            // 
-            // lblServerPort
-            // 
-            lblServerPort.Location = new Point(22, 62);
-            lblServerPort.Name = "lblServerPort";
-            lblServerPort.Size = new Size(73, 20);
-            lblServerPort.TabIndex = 1;
-            lblServerPort.Values.Text = "Server Port:";
-            // 
-            // nudServerPort
-            // 
-            nudServerPort.Increment = new decimal(new int[] { 1, 0, 0, 0 });
-            nudServerPort.Location = new Point(98, 61);
-            nudServerPort.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
-            nudServerPort.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
-            nudServerPort.Name = "nudServerPort";
-            nudServerPort.Size = new Size(88, 22);
-            nudServerPort.TabIndex = 2;
-            nudServerPort.Value = new decimal(new int[] { 11550, 0, 0, 0 });
+            btnSaveAPIServerSettings.Dock = DockStyle.Bottom;
+            btnSaveAPIServerSettings.Location = new Point(0, 495);
+            btnSaveAPIServerSettings.Margin = new Padding(3, 2, 3, 2);
+            btnSaveAPIServerSettings.Name = "btnSaveAPIServerSettings";
+            btnSaveAPIServerSettings.Size = new Size(337, 30);
+            btnSaveAPIServerSettings.TabIndex = 3;
+            btnSaveAPIServerSettings.Values.DropDownArrowColor = Color.Empty;
+            btnSaveAPIServerSettings.Values.Text = "Save";
+            btnSaveAPIServerSettings.Click += btnSave_Click;
             // 
             // SettingsPanel
             // 
@@ -843,5 +857,6 @@
         private Krypton.Toolkit.KryptonCheckBox chkEnableAPIServer;
         private Krypton.Toolkit.KryptonNumericUpDown nudServerPort;
         private Krypton.Toolkit.KryptonLabel lblServerPort;
+        private Krypton.Toolkit.KryptonButton btnSaveAPIServerSettings;
     }
 }
