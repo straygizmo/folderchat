@@ -33,15 +33,16 @@
             kPanelGGUFProviderSettings = new Krypton.Toolkit.KryptonPanel();
             kPanelAPIProviderSettings = new Krypton.Toolkit.KryptonPanel();
             kPanelChatSettingTop = new Krypton.Toolkit.KryptonPanel();
+            cmbChatGGUFModel = new Krypton.Toolkit.KryptonComboBox();
             cmbAPIProvider = new Krypton.Toolkit.KryptonComboBox();
             lblAPIProvider = new Krypton.Toolkit.KryptonLabel();
             rbChatAPI = new Krypton.Toolkit.KryptonRadioButton();
             rbChatGGUF = new Krypton.Toolkit.KryptonRadioButton();
             lblChatMethod = new Krypton.Toolkit.KryptonLabel();
-            cmbChatGGUFModel = new Krypton.Toolkit.KryptonComboBox();
             btnSaveChatSettings = new Krypton.Toolkit.KryptonButton();
             tabPageRAG = new TabPage();
             kPanelRAGTop = new Krypton.Toolkit.KryptonPanel();
+            cmbGGUFModel = new Krypton.Toolkit.KryptonComboBox();
             nudMaxContextLength = new Krypton.Toolkit.KryptonNumericUpDown();
             lblTotalMaxContextLength = new Krypton.Toolkit.KryptonLabel();
             nudTopKChunks = new Krypton.Toolkit.KryptonNumericUpDown();
@@ -51,23 +52,16 @@
             nudModelContextLength = new Krypton.Toolkit.KryptonNumericUpDown();
             txtEmbeddingModel = new Krypton.Toolkit.KryptonTextBox();
             txtEmbeddingUrl = new Krypton.Toolkit.KryptonTextBox();
-            lblEmbeddingUrl = new Krypton.Toolkit.KryptonLabel();
-            lblEmbeddingModel = new Krypton.Toolkit.KryptonLabel();
             lblModelContextLength = new Krypton.Toolkit.KryptonLabel();
             lblChunkSize = new Krypton.Toolkit.KryptonLabel();
             lblChunkOverlap = new Krypton.Toolkit.KryptonLabel();
             rbEmbeddingAPI = new Krypton.Toolkit.KryptonRadioButton();
             rbEmbeddingGGUF = new Krypton.Toolkit.KryptonRadioButton();
-            cmbGGUFModel = new Krypton.Toolkit.KryptonComboBox();
             lblEmbeddingMethod = new Krypton.Toolkit.KryptonLabel();
             btnTestEmbedding = new Krypton.Toolkit.KryptonButton();
+            lblEmbeddingUrl = new Krypton.Toolkit.KryptonLabel();
+            lblEmbeddingModel = new Krypton.Toolkit.KryptonLabel();
             btnSaveRAGSettings = new Krypton.Toolkit.KryptonButton();
-            tabPageTheme = new TabPage();
-            kryptonThemeListBox1 = new Krypton.Toolkit.KryptonThemeListBox();
-            kryptonPanel4 = new Krypton.Toolkit.KryptonPanel();
-            kryptonLabel1 = new Krypton.Toolkit.KryptonLabel();
-            lblLanguage = new Krypton.Toolkit.KryptonLabel();
-            cmbLanguage = new Krypton.Toolkit.KryptonComboBox();
             tabPageMCP = new TabPage();
             dgvMcpServers = new Krypton.Toolkit.KryptonDataGridView();
             kPanelMCPBottom = new Krypton.Toolkit.KryptonPanel();
@@ -75,6 +69,12 @@
             btnEditMcpServer = new Krypton.Toolkit.KryptonButton();
             btnRemoveMcpServer = new Krypton.Toolkit.KryptonButton();
             rtbMcpLog = new Krypton.Toolkit.KryptonRichTextBox();
+            tabPageGeneral = new TabPage();
+            kryptonThemeListBox1 = new Krypton.Toolkit.KryptonThemeListBox();
+            kryptonPanel4 = new Krypton.Toolkit.KryptonPanel();
+            kryptonLabel1 = new Krypton.Toolkit.KryptonLabel();
+            lblLanguage = new Krypton.Toolkit.KryptonLabel();
+            cmbLanguage = new Krypton.Toolkit.KryptonComboBox();
             claudeCodeSettingsControl = new folderchat.Forms.ProviderSettings.ClaudeCodeProviderSettingsControl();
             openAISettingsControl = new folderchat.Forms.ProviderSettings.OpenAIProviderSettingsControl();
             azureAIFoundrySettingsControl = new folderchat.Forms.ProviderSettings.AzureAIFoundryProviderSettingsControl();
@@ -83,34 +83,43 @@
             openAIAPISettingsControl = new folderchat.Forms.ProviderSettings.OpenAIAPIProviderSettingsControl();
             geminiSettingsControl = new folderchat.Forms.ProviderSettings.GeminiProviderSettingsControl();
             claudeSettingsControl = new folderchat.Forms.ProviderSettings.ClaudeProviderSettingsControl();
+            tabPageServer = new TabPage();
+            kPanelAPI = new Krypton.Toolkit.KryptonPanel();
+            chkEnableAPIServer = new Krypton.Toolkit.KryptonCheckBox();
+            lblServerPort = new Krypton.Toolkit.KryptonLabel();
+            nudServerPort = new Krypton.Toolkit.KryptonNumericUpDown();
             tabSettings.SuspendLayout();
             tabPageChat.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)kPanelGGUFProviderSettings).BeginInit();
             ((System.ComponentModel.ISupportInitialize)kPanelAPIProviderSettings).BeginInit();
             ((System.ComponentModel.ISupportInitialize)kPanelChatSettingTop).BeginInit();
             kPanelChatSettingTop.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)cmbAPIProvider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)cmbChatGGUFModel).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)cmbAPIProvider).BeginInit();
             tabPageRAG.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)kPanelRAGTop).BeginInit();
             kPanelRAGTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)cmbGGUFModel).BeginInit();
-            tabPageTheme.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)kryptonPanel4).BeginInit();
-            kryptonPanel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)cmbLanguage).BeginInit();
             tabPageMCP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvMcpServers).BeginInit();
             ((System.ComponentModel.ISupportInitialize)kPanelMCPBottom).BeginInit();
             kPanelMCPBottom.SuspendLayout();
+            tabPageGeneral.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)kryptonPanel4).BeginInit();
+            kryptonPanel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)cmbLanguage).BeginInit();
+            tabPageServer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)kPanelAPI).BeginInit();
+            kPanelAPI.SuspendLayout();
             SuspendLayout();
             // 
             // tabSettings
             // 
             tabSettings.Controls.Add(tabPageChat);
             tabSettings.Controls.Add(tabPageRAG);
-            tabSettings.Controls.Add(tabPageTheme);
             tabSettings.Controls.Add(tabPageMCP);
+            tabSettings.Controls.Add(tabPageGeneral);
+            tabSettings.Controls.Add(tabPageServer);
             tabSettings.Dock = DockStyle.Fill;
             tabSettings.Location = new Point(0, 0);
             tabSettings.Margin = new Padding(3, 2, 3, 2);
@@ -163,6 +172,18 @@
             kPanelChatSettingTop.Size = new Size(331, 84);
             kPanelChatSettingTop.TabIndex = 0;
             // 
+            // cmbChatGGUFModel
+            // 
+            cmbChatGGUFModel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbChatGGUFModel.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbChatGGUFModel.DropDownWidth = 304;
+            cmbChatGGUFModel.Location = new Point(8, 53);
+            cmbChatGGUFModel.Margin = new Padding(3, 2, 3, 2);
+            cmbChatGGUFModel.Name = "cmbChatGGUFModel";
+            cmbChatGGUFModel.Size = new Size(320, 22);
+            cmbChatGGUFModel.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
+            cmbChatGGUFModel.TabIndex = 18;
+            // 
             // cmbAPIProvider
             // 
             cmbAPIProvider.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
@@ -213,18 +234,6 @@
             lblChatMethod.Size = new Size(85, 20);
             lblChatMethod.TabIndex = 17;
             lblChatMethod.Values.Text = "Chat Method:";
-            // 
-            // cmbChatGGUFModel
-            // 
-            cmbChatGGUFModel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            cmbChatGGUFModel.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbChatGGUFModel.DropDownWidth = 304;
-            cmbChatGGUFModel.Location = new Point(8, 53);
-            cmbChatGGUFModel.Margin = new Padding(3, 2, 3, 2);
-            cmbChatGGUFModel.Name = "cmbChatGGUFModel";
-            cmbChatGGUFModel.Size = new Size(320, 22);
-            cmbChatGGUFModel.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
-            cmbChatGGUFModel.TabIndex = 18;
             // 
             // btnSaveChatSettings
             // 
@@ -278,6 +287,18 @@
             kPanelRAGTop.Name = "kPanelRAGTop";
             kPanelRAGTop.Size = new Size(331, 491);
             kPanelRAGTop.TabIndex = 0;
+            // 
+            // cmbGGUFModel
+            // 
+            cmbGGUFModel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbGGUFModel.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbGGUFModel.DropDownWidth = 295;
+            cmbGGUFModel.Location = new Point(6, 55);
+            cmbGGUFModel.Margin = new Padding(3, 2, 3, 2);
+            cmbGGUFModel.Name = "cmbGGUFModel";
+            cmbGGUFModel.Size = new Size(304, 22);
+            cmbGGUFModel.TabIndex = 9;
+            cmbGGUFModel.Visible = false;
             // 
             // nudMaxContextLength
             // 
@@ -382,24 +403,6 @@
             txtEmbeddingUrl.TabIndex = 11;
             txtEmbeddingUrl.Text = "http://localhost:/1234";
             // 
-            // lblEmbeddingUrl
-            // 
-            lblEmbeddingUrl.Location = new Point(3, 34);
-            lblEmbeddingUrl.Margin = new Padding(3, 2, 3, 2);
-            lblEmbeddingUrl.Name = "lblEmbeddingUrl";
-            lblEmbeddingUrl.Size = new Size(101, 20);
-            lblEmbeddingUrl.TabIndex = 10;
-            lblEmbeddingUrl.Values.Text = "Embedding URL:";
-            // 
-            // lblEmbeddingModel
-            // 
-            lblEmbeddingModel.Location = new Point(3, 85);
-            lblEmbeddingModel.Margin = new Padding(3, 2, 3, 2);
-            lblEmbeddingModel.Name = "lblEmbeddingModel";
-            lblEmbeddingModel.Size = new Size(114, 20);
-            lblEmbeddingModel.TabIndex = 12;
-            lblEmbeddingModel.Values.Text = "Embedding Model:";
-            // 
             // lblModelContextLength
             // 
             lblModelContextLength.Location = new Point(17, 144);
@@ -447,18 +450,6 @@
             rbEmbeddingGGUF.Values.Text = "GGUF";
             rbEmbeddingGGUF.CheckedChanged += rbEmbeddingGGUF_CheckedChanged;
             // 
-            // cmbGGUFModel
-            // 
-            cmbGGUFModel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            cmbGGUFModel.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbGGUFModel.DropDownWidth = 295;
-            cmbGGUFModel.Location = new Point(6, 55);
-            cmbGGUFModel.Margin = new Padding(3, 2, 3, 2);
-            cmbGGUFModel.Name = "cmbGGUFModel";
-            cmbGGUFModel.Size = new Size(304, 22);
-            cmbGGUFModel.TabIndex = 9;
-            cmbGGUFModel.Visible = false;
-            // 
             // lblEmbeddingMethod
             // 
             lblEmbeddingMethod.Location = new Point(3, 10);
@@ -480,6 +471,24 @@
             btnTestEmbedding.Values.Text = "Test Embedding";
             btnTestEmbedding.Click += btnTestEmbedding_Click;
             // 
+            // lblEmbeddingUrl
+            // 
+            lblEmbeddingUrl.Location = new Point(3, 34);
+            lblEmbeddingUrl.Margin = new Padding(3, 2, 3, 2);
+            lblEmbeddingUrl.Name = "lblEmbeddingUrl";
+            lblEmbeddingUrl.Size = new Size(101, 20);
+            lblEmbeddingUrl.TabIndex = 10;
+            lblEmbeddingUrl.Values.Text = "Embedding URL:";
+            // 
+            // lblEmbeddingModel
+            // 
+            lblEmbeddingModel.Location = new Point(3, 85);
+            lblEmbeddingModel.Margin = new Padding(3, 2, 3, 2);
+            lblEmbeddingModel.Name = "lblEmbeddingModel";
+            lblEmbeddingModel.Size = new Size(114, 20);
+            lblEmbeddingModel.TabIndex = 12;
+            lblEmbeddingModel.Values.Text = "Embedding Model:";
+            // 
             // btnSaveRAGSettings
             // 
             btnSaveRAGSettings.Dock = DockStyle.Bottom;
@@ -491,68 +500,6 @@
             btnSaveRAGSettings.Values.DropDownArrowColor = Color.Empty;
             btnSaveRAGSettings.Values.Text = "Save";
             btnSaveRAGSettings.Click += btnSave_Click;
-            // 
-            // tabPageTheme
-            // 
-            tabPageTheme.Controls.Add(kryptonThemeListBox1);
-            tabPageTheme.Controls.Add(kryptonPanel4);
-            tabPageTheme.Location = new Point(4, 24);
-            tabPageTheme.Name = "tabPageTheme";
-            tabPageTheme.Size = new Size(337, 525);
-            tabPageTheme.TabIndex = 2;
-            tabPageTheme.Text = "UI";
-            tabPageTheme.UseVisualStyleBackColor = true;
-            // 
-            // kryptonThemeListBox1
-            // 
-            kryptonThemeListBox1.DefaultPalette = Krypton.Toolkit.PaletteMode.Microsoft365Blue;
-            kryptonThemeListBox1.Dock = DockStyle.Fill;
-            kryptonThemeListBox1.Location = new Point(0, 75);
-            kryptonThemeListBox1.Name = "kryptonThemeListBox1";
-            kryptonThemeListBox1.Size = new Size(337, 450);
-            kryptonThemeListBox1.TabIndex = 0;
-            kryptonThemeListBox1.SelectedIndexChanged += KryptonThemeListBox1_SelectedIndexChanged;
-            // 
-            // kryptonPanel4
-            // 
-            kryptonPanel4.Controls.Add(kryptonLabel1);
-            kryptonPanel4.Controls.Add(lblLanguage);
-            kryptonPanel4.Controls.Add(cmbLanguage);
-            kryptonPanel4.Dock = DockStyle.Top;
-            kryptonPanel4.Location = new Point(0, 0);
-            kryptonPanel4.Name = "kryptonPanel4";
-            kryptonPanel4.Size = new Size(337, 75);
-            kryptonPanel4.TabIndex = 1;
-            // 
-            // kryptonLabel1
-            // 
-            kryptonLabel1.Location = new Point(2, 55);
-            kryptonLabel1.Margin = new Padding(3, 2, 3, 2);
-            kryptonLabel1.Name = "kryptonLabel1";
-            kryptonLabel1.Size = new Size(50, 20);
-            kryptonLabel1.TabIndex = 17;
-            kryptonLabel1.Values.Text = "Theme:";
-            // 
-            // lblLanguage
-            // 
-            lblLanguage.Location = new Point(3, 8);
-            lblLanguage.Margin = new Padding(3, 2, 3, 2);
-            lblLanguage.Name = "lblLanguage";
-            lblLanguage.Size = new Size(67, 20);
-            lblLanguage.TabIndex = 15;
-            lblLanguage.Values.Text = "Language:";
-            // 
-            // cmbLanguage
-            // 
-            cmbLanguage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            cmbLanguage.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbLanguage.DropDownWidth = 289;
-            cmbLanguage.Location = new Point(4, 30);
-            cmbLanguage.Margin = new Padding(3, 2, 3, 2);
-            cmbLanguage.Name = "cmbLanguage";
-            cmbLanguage.Size = new Size(330, 22);
-            cmbLanguage.TabIndex = 16;
-            cmbLanguage.SelectedIndexChanged += cmbLanguage_SelectedIndexChanged;
             // 
             // tabPageMCP
             // 
@@ -630,6 +577,69 @@
             rtbMcpLog.TabIndex = 6;
             rtbMcpLog.Text = "";
             // 
+            // tabPageGeneral
+            // 
+            tabPageGeneral.Controls.Add(kryptonThemeListBox1);
+            tabPageGeneral.Controls.Add(kryptonPanel4);
+            tabPageGeneral.Location = new Point(4, 24);
+            tabPageGeneral.Name = "tabPageGeneral";
+            tabPageGeneral.Size = new Size(337, 525);
+            tabPageGeneral.TabIndex = 2;
+            tabPageGeneral.Text = "General";
+            tabPageGeneral.UseVisualStyleBackColor = true;
+            // 
+            // kryptonThemeListBox1
+            // 
+            kryptonThemeListBox1.DefaultPalette = Krypton.Toolkit.PaletteMode.Microsoft365Blue;
+            kryptonThemeListBox1.Dock = DockStyle.Fill;
+            kryptonThemeListBox1.Location = new Point(0, 88);
+            kryptonThemeListBox1.Name = "kryptonThemeListBox1";
+            kryptonThemeListBox1.Size = new Size(337, 437);
+            kryptonThemeListBox1.TabIndex = 0;
+            kryptonThemeListBox1.SelectedIndexChanged += KryptonThemeListBox1_SelectedIndexChanged;
+            // 
+            // kryptonPanel4
+            // 
+            kryptonPanel4.Controls.Add(kryptonLabel1);
+            kryptonPanel4.Controls.Add(lblLanguage);
+            kryptonPanel4.Controls.Add(cmbLanguage);
+            kryptonPanel4.Dock = DockStyle.Top;
+            kryptonPanel4.Location = new Point(0, 0);
+            kryptonPanel4.Name = "kryptonPanel4";
+            kryptonPanel4.Size = new Size(337, 88);
+            kryptonPanel4.TabIndex = 1;
+            // 
+            // kryptonLabel1
+            // 
+            kryptonLabel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            kryptonLabel1.Location = new Point(4, 67);
+            kryptonLabel1.Margin = new Padding(3, 2, 3, 2);
+            kryptonLabel1.Name = "kryptonLabel1";
+            kryptonLabel1.Size = new Size(50, 20);
+            kryptonLabel1.TabIndex = 17;
+            kryptonLabel1.Values.Text = "Theme:";
+            // 
+            // lblLanguage
+            // 
+            lblLanguage.Location = new Point(3, 8);
+            lblLanguage.Margin = new Padding(3, 2, 3, 2);
+            lblLanguage.Name = "lblLanguage";
+            lblLanguage.Size = new Size(67, 20);
+            lblLanguage.TabIndex = 15;
+            lblLanguage.Values.Text = "Language:";
+            // 
+            // cmbLanguage
+            // 
+            cmbLanguage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbLanguage.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbLanguage.DropDownWidth = 289;
+            cmbLanguage.Location = new Point(4, 30);
+            cmbLanguage.Margin = new Padding(3, 2, 3, 2);
+            cmbLanguage.Name = "cmbLanguage";
+            cmbLanguage.Size = new Size(330, 22);
+            cmbLanguage.TabIndex = 16;
+            cmbLanguage.SelectedIndexChanged += cmbLanguage_SelectedIndexChanged;
+            // 
             // claudeCodeSettingsControl
             // 
             claudeCodeSettingsControl.Location = new Point(0, 0);
@@ -686,6 +696,54 @@
             claudeSettingsControl.Size = new Size(550, 240);
             claudeSettingsControl.TabIndex = 8;
             // 
+            // tabPageServer
+            // 
+            tabPageServer.Controls.Add(kPanelAPI);
+            tabPageServer.Location = new Point(4, 24);
+            tabPageServer.Name = "tabPageServer";
+            tabPageServer.Size = new Size(337, 525);
+            tabPageServer.TabIndex = 4;
+            tabPageServer.Text = "API Server";
+            tabPageServer.UseVisualStyleBackColor = true;
+            // 
+            // kPanelAPI
+            // 
+            kPanelAPI.Controls.Add(nudServerPort);
+            kPanelAPI.Controls.Add(lblServerPort);
+            kPanelAPI.Controls.Add(chkEnableAPIServer);
+            kPanelAPI.Dock = DockStyle.Fill;
+            kPanelAPI.Location = new Point(0, 0);
+            kPanelAPI.Name = "kPanelAPI";
+            kPanelAPI.Size = new Size(337, 525);
+            kPanelAPI.TabIndex = 0;
+            // 
+            // chkEnableAPIServer
+            // 
+            chkEnableAPIServer.Location = new Point(22, 26);
+            chkEnableAPIServer.Name = "chkEnableAPIServer";
+            chkEnableAPIServer.Size = new Size(119, 20);
+            chkEnableAPIServer.TabIndex = 0;
+            chkEnableAPIServer.Values.Text = "Enable API Server";
+            // 
+            // lblServerPort
+            // 
+            lblServerPort.Location = new Point(22, 62);
+            lblServerPort.Name = "lblServerPort";
+            lblServerPort.Size = new Size(73, 20);
+            lblServerPort.TabIndex = 1;
+            lblServerPort.Values.Text = "Server Port:";
+            // 
+            // nudServerPort
+            // 
+            nudServerPort.Increment = new decimal(new int[] { 1, 0, 0, 0 });
+            nudServerPort.Location = new Point(98, 61);
+            nudServerPort.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
+            nudServerPort.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
+            nudServerPort.Name = "nudServerPort";
+            nudServerPort.Size = new Size(88, 22);
+            nudServerPort.TabIndex = 2;
+            nudServerPort.Value = new decimal(new int[] { 11550, 0, 0, 0 });
+            // 
             // SettingsPanel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -700,22 +758,26 @@
             ((System.ComponentModel.ISupportInitialize)kPanelChatSettingTop).EndInit();
             kPanelChatSettingTop.ResumeLayout(false);
             kPanelChatSettingTop.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)cmbAPIProvider).EndInit();
             ((System.ComponentModel.ISupportInitialize)cmbChatGGUFModel).EndInit();
+            ((System.ComponentModel.ISupportInitialize)cmbAPIProvider).EndInit();
             tabPageRAG.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)kPanelRAGTop).EndInit();
             kPanelRAGTop.ResumeLayout(false);
             kPanelRAGTop.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)cmbGGUFModel).EndInit();
-            tabPageTheme.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)kryptonPanel4).EndInit();
-            kryptonPanel4.ResumeLayout(false);
-            kryptonPanel4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)cmbLanguage).EndInit();
             tabPageMCP.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvMcpServers).EndInit();
             ((System.ComponentModel.ISupportInitialize)kPanelMCPBottom).EndInit();
             kPanelMCPBottom.ResumeLayout(false);
+            tabPageGeneral.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)kryptonPanel4).EndInit();
+            kryptonPanel4.ResumeLayout(false);
+            kryptonPanel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)cmbLanguage).EndInit();
+            tabPageServer.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)kPanelAPI).EndInit();
+            kPanelAPI.ResumeLayout(false);
+            kPanelAPI.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -763,7 +825,7 @@
         private Krypton.Toolkit.KryptonLabel lblEmbeddingMethod;
         private Krypton.Toolkit.KryptonButton btnTestEmbedding;
         private Krypton.Toolkit.KryptonButton btnSaveRAGSettings;
-        private TabPage tabPageTheme;
+        private TabPage tabPageGeneral;
         public Krypton.Toolkit.KryptonThemeListBox kryptonThemeListBox1;
         private Krypton.Toolkit.KryptonPanel kryptonPanel4;
         private Krypton.Toolkit.KryptonLabel kryptonLabel1;
@@ -776,5 +838,10 @@
         private Krypton.Toolkit.KryptonButton btnRemoveMcpServer;
         private Krypton.Toolkit.KryptonRichTextBox rtbMcpLog;
         private Krypton.Toolkit.KryptonDataGridView dgvMcpServers;
+        private TabPage tabPageServer;
+        private Krypton.Toolkit.KryptonPanel kPanelAPI;
+        private Krypton.Toolkit.KryptonCheckBox chkEnableAPIServer;
+        private Krypton.Toolkit.KryptonNumericUpDown nudServerPort;
+        private Krypton.Toolkit.KryptonLabel lblServerPort;
     }
 }

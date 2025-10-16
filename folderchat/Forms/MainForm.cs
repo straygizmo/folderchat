@@ -78,7 +78,6 @@ namespace folderchat.Forms
             InitializeContextMenu();
             InitializeTreeViewEvents();
             InitializeIndexingService();
-            _ = StartApiServer(); // Fire-and-forget to not block the UI thread
         }
 
         private void InitializeIndexingService()
@@ -326,6 +325,16 @@ namespace folderchat.Forms
 
                 // Auto-load enabled MCP servers
                 await LoadEnabledMcpServersAsync();
+            }
+
+            // Start API server if enabled
+            if (Properties.Settings.Default.EnableAPIServer)
+            {
+                _ = StartApiServer(); // Fire-and-forget to not block the UI thread
+            }
+            else
+            {
+                toolStripStatusLabelApiStatus.Text = "API Server: Disabled";
             }
         }
 
@@ -771,18 +780,18 @@ namespace folderchat.Forms
             }
         }
 
-        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            SaveTreeState();
-
-            if (_apiServer != null)
-            {
-                LogSystemMessage("Stopping internal API server...");
-                await _apiServer.StopAsync();
-                await _apiServer.DisposeAsync();
-            }
-        }
-
+                private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+                {
+                    SaveTreeState();
+        
+                    if (_apiServer != null)
+                    {
+                        LogSystemMessage("Stopping internal API server...");
+                        toolStripStatusLabelApiStatus.Text = "API Server: Stopping...";
+                        await _apiServer.StopAsync();
+                        await _apiServer.DisposeAsync();
+                    }
+                }
         private void RestoreTreeState()
         {
             try
@@ -1210,14 +1219,63 @@ namespace folderchat.Forms
             }
         }
 
+        public async Task ToggleApiServer(bool enable)
+        {
+            if (enable)
+            {
+                // Start the API server
+                _ = StartApiServer();
+            }
+            else
+            {
+                // Stop the API server
+                await StopApiServer();
+            }
+        }
+
+        private async Task StopApiServer()
+        {
+            try
+            {
+                if (_apiServer != null)
+                {
+                    LogSystemMessage("Stopping API server...");
+                    toolStripStatusLabelApiStatus.Text = "API Server: Stopping...";
+                    await _apiServer.StopAsync();
+                    await _apiServer.DisposeAsync();
+                    _apiServer = null;
+                    toolStripStatusLabelApiStatus.Text = "API Server: Stopped";
+                    LogSystemMessage("API server stopped successfully");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Error stopping API server: {ex.Message}");
+                toolStripStatusLabelApiStatus.Text = "API Server: Error stopping";
+            }
+        }
+
         private async Task StartApiServer()
         {
             try
             {
+                // Check if the API server is already running
+                if (_apiServer != null)
+                {
+                    LogSystemMessage("API server is already running");
+                    return;
+                }
+
+                var port = Properties.Settings.Default.APIServerPort;
+                var url = $"http://localhost:{port}";
+
+                LogSystemMessage($"Starting API server on {url}...");
+                toolStripStatusLabelApiStatus.Text = "API Server: Starting...";
+
                 var builder = WebApplication.CreateBuilder();
 
                 // Configure Kestrel to listen on the specified port
-                builder.WebHost.UseUrls("http://localhost:11550");
+                builder.WebHost.UseUrls(url);
 
                 // Add this form instance as a singleton
                 builder.Services.AddSingleton(this);
@@ -1281,12 +1339,32 @@ namespace folderchat.Forms
                 });
 
                 _apiServer = app;
-                LogSystemMessage("Internal API server starting on http://localhost:11550");
+                var statusMessage = $"API Server: Running on {url}";
+                LogSystemMessage(statusMessage);
+                if (InvokeRequired)
+                {
+                    Invoke(() => toolStripStatusLabelApiStatus.Text = statusMessage);
+                }
+                else
+                {
+                    toolStripStatusLabelApiStatus.Text = statusMessage;
+                }
+
                 await _apiServer.RunAsync(); // This will run until the application closes
             }
             catch (Exception ex)
             {
+                var errorMessage = "API Server: Error";
                 LogError($"Failed to start internal API server: {ex.Message}");
+                _apiServer = null;
+                if (InvokeRequired)
+                {
+                    Invoke(() => toolStripStatusLabelApiStatus.Text = errorMessage);
+                }
+                else
+                {
+                    toolStripStatusLabelApiStatus.Text = errorMessage;
+                }
             }
         }
     }

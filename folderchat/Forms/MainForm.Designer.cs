@@ -45,6 +45,7 @@
             toolTip1 = new ToolTip(components);
             kryptonStatusStrip1 = new Krypton.Toolkit.KryptonStatusStrip();
             toolStripStatusLabel1 = new ToolStripStatusLabel();
+            toolStripStatusLabelApiStatus = new ToolStripStatusLabel();
             splitContainerMain = new SplitContainer();
             kListViewBottomLog = new Krypton.Toolkit.KryptonListView();
             columnHeader1 = new ColumnHeader();
@@ -91,7 +92,7 @@
             tabPageDir.Margin = new Padding(3, 2, 3, 2);
             tabPageDir.Name = "tabPageDir";
             tabPageDir.Padding = new Padding(3, 2, 3, 2);
-            tabPageDir.Size = new Size(346, 555);
+            tabPageDir.Size = new Size(345, 567);
             tabPageDir.TabIndex = 0;
             tabPageDir.Text = "📁Dir to RAG";
             tabPageDir.UseVisualStyleBackColor = true;
@@ -105,7 +106,7 @@
             ktvFolderTree.Margin = new Padding(3, 2, 3, 2);
             ktvFolderTree.MultiSelect = true;
             ktvFolderTree.Name = "ktvFolderTree";
-            ktvFolderTree.Size = new Size(340, 549);
+            ktvFolderTree.Size = new Size(339, 561);
             ktvFolderTree.TabIndex = 0;
             ktvFolderTree.MouseDown += ktvFolderTree_MouseDown;
             // 
@@ -147,10 +148,10 @@
             // lblRagStatus
             // 
             lblRagStatus.Dock = DockStyle.Bottom;
-            lblRagStatus.Location = new Point(3, 551);
+            lblRagStatus.Location = new Point(3, 563);
             lblRagStatus.Margin = new Padding(3, 2, 3, 2);
             lblRagStatus.Name = "lblRagStatus";
-            lblRagStatus.Size = new Size(340, 2);
+            lblRagStatus.Size = new Size(339, 2);
             lblRagStatus.TabIndex = 2;
             lblRagStatus.Values.Text = "";
             // 
@@ -170,7 +171,7 @@
             // 
             kryptonStatusStrip1.Font = new Font("Segoe UI", 9F);
             kryptonStatusStrip1.ImageScalingSize = new Size(20, 20);
-            kryptonStatusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1 });
+            kryptonStatusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, toolStripStatusLabelApiStatus });
             kryptonStatusStrip1.Location = new Point(0, 733);
             kryptonStatusStrip1.Name = "kryptonStatusStrip1";
             kryptonStatusStrip1.ProgressBars = null;
@@ -185,6 +186,13 @@
             toolStripStatusLabel1.Size = new Size(41, 17);
             toolStripStatusLabel1.Text = "status:";
             toolStripStatusLabel1.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // toolStripStatusLabelApiStatus
+            // 
+            toolStripStatusLabelApiStatus.Name = "toolStripStatusLabelApiStatus";
+            toolStripStatusLabelApiStatus.Size = new Size(110, 17);
+            toolStripStatusLabelApiStatus.Text = "API Server: Stopped";
+            toolStripStatusLabelApiStatus.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // splitContainerMain
             // 
@@ -294,6 +302,7 @@
         private ToolTip toolTip1;
         private Krypton.Toolkit.KryptonStatusStrip kryptonStatusStrip1;
         private ToolStripStatusLabel toolStripStatusLabel1;
+        private ToolStripStatusLabel toolStripStatusLabelApiStatus;
         private SplitContainer splitContainerMain;
         private Krypton.Toolkit.KryptonListView kListViewBottomLog;
         private ColumnHeader columnHeader1;

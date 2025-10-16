@@ -20,8 +20,22 @@ namespace folderchat.Forms
 
         public void Initialize(MainForm mainForm)
         {
-            _mainForm = mainForm;
-            LoadSettings();
+_mainForm = mainForm;
+LoadSettings();
+
+// Wire up the API server checkbox change event
+chkEnableAPIServer.CheckedChanged += ChkEnableAPIServer_CheckedChanged;
+        }
+
+        private async void ChkEnableAPIServer_CheckedChanged(object? sender, EventArgs e)
+        {
+            if (_mainForm == null) return;
+
+            var isEnabled = chkEnableAPIServer.Checked;
+            Properties.Settings.Default.EnableAPIServer = isEnabled;
+            Properties.Settings.Default.Save();
+
+            await _mainForm.ToggleApiServer(isEnabled);
         }
 
         private void LoadSettings()
@@ -43,6 +57,10 @@ namespace folderchat.Forms
             openAIAPISettingsControl.LoadSettings();
             geminiSettingsControl.LoadSettings();
             claudeSettingsControl.LoadSettings();
+
+            // Load API Server settings
+            chkEnableAPIServer.Checked = Properties.Settings.Default.EnableAPIServer;
+            nudServerPort.Value = Properties.Settings.Default.APIServerPort == 0 ? 11550 : Properties.Settings.Default.APIServerPort;
 
             // Load embedding settings
             txtEmbeddingUrl.Text = Properties.Settings.Default.Embedding_Url;
@@ -157,6 +175,9 @@ namespace folderchat.Forms
             var newChatGGUFModel = cmbChatGGUFModel.SelectedItem?.ToString() ?? "";
             Properties.Settings.Default.ChatMethod = newChatMethod;
             Properties.Settings.Default.ChatGGUFModel = newChatGGUFModel;
+
+            // Save API Server settings
+            Properties.Settings.Default.APIServerPort = (int)nudServerPort.Value;
 
             // Save all settings to ensure they're persisted
             Properties.Settings.Default.Save();
@@ -443,7 +464,7 @@ namespace folderchat.Forms
             // Update tab names
             tabPageChat.Text = loc.GetString("TabChat");
             tabPageRAG.Text = loc.GetString("TabRAG");
-            tabPageTheme.Text = loc.GetString("TabTheme");
+            tabPageGeneral.Text = loc.GetString("TabTheme");
             tabPageMCP.Text = loc.GetString("TabMCP");
 
             // Update labels in Settings

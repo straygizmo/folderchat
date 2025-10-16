@@ -182,5 +182,11 @@
     <Setting Name="Claude_SupportsSystemRole" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="EnableAPIServer" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="APIServerPort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">11550</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

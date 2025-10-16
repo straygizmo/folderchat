@@ -682,7 +682,7 @@ namespace folderchat.Properties {
                 this["OpenAI_SupportsSystemRole"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("https://api.anthropic.com/v1")]
@@ -694,7 +694,7 @@ namespace folderchat.Properties {
                 this["Claude_ApiUrl"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
@@ -706,7 +706,7 @@ namespace folderchat.Properties {
                 this["Claude_ApiKey"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
@@ -718,7 +718,7 @@ namespace folderchat.Properties {
                 this["Claude_ModelList"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
@@ -730,7 +730,7 @@ namespace folderchat.Properties {
                 this["Claude_SelectedModel"] = value;
             }
         }
-
+        
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
@@ -740,6 +740,30 @@ namespace folderchat.Properties {
             }
             set {
                 this["Claude_SupportsSystemRole"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableAPIServer {
+            get {
+                return ((bool)(this["EnableAPIServer"]));
+            }
+            set {
+                this["EnableAPIServer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("11550")]
+        public int APIServerPort {
+            get {
+                return ((int)(this["APIServerPort"]));
+            }
+            set {
+                this["APIServerPort"] = value;
             }
         }
     }
