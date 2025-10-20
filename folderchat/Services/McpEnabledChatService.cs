@@ -1,7 +1,10 @@
-﻿using folderchat.Services.Mcp;
+using folderchat.Services.Mcp;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+using System.Collections;
 
 namespace folderchat.Services
 {
@@ -45,7 +48,7 @@ namespace folderchat.Services
 
             // Build enhanced system message with tool information
             var enhancedSystemMessage = BuildSystemMessageWithTools(tools, systemMessage);
-            System.Diagnostics.Debug.WriteLine($"[MCP] Enhanced system message created");
+            System.Diagnostics.Debug.WriteLine("[MCP] Enhanced system message created");
 
             // Initial LLM call
             string currentUserInput = userInput;
@@ -86,7 +89,7 @@ namespace folderchat.Services
                 // Call LLM with appropriate message format
                 var result = await _innerChatService.SendMessageAsync(
                     iteration == 1 ? actualUserMessageToSend : currentUserInput,
-                    iteration == 1 ? systemMessageToSend : null);
+                    systemMessageToSend);
                 lastResponse = result.AssistantResponse;
                 System.Diagnostics.Debug.WriteLine($"[MCP] LLM Response: {lastResponse.Substring(0, Math.Min(200, lastResponse.Length))}...");
 
@@ -156,7 +159,7 @@ namespace folderchat.Services
                 }
 
                 // Prepare next iteration with tool results
-                currentUserInput = $"Based on the tool execution results below, please provide your final answer to the original question: \"{userInput}\"\n{toolResults}";
+                currentUserInput = $"Based on the tool execution results below, if any tool returned an error or indicates missing or invalid parameters, you MUST retry by responding with a YAML tool call including ALL required parameters as specified in the AVAILABLE TOOLS above. Otherwise, provide your final answer to the original question: \"{userInput}\"\n{toolResults}";
             }
 
             if (iteration >= MaxToolIterations)
@@ -192,6 +195,7 @@ namespace folderchat.Services
             sb.AppendLine("2. Do NOT make up file contents - always use read_file tool");
             sb.AppendLine("3. Do NOT guess directory contents - always use list_directory tool");
             sb.AppendLine("4. First provide your reasoning, THEN use the tool");
+            sb.AppendLine("5. You MUST include all required parameters for the selected tool. If a parameter allows null, you may use null, but prefer real values.");
             sb.AppendLine();
             sb.AppendLine("## TOOL CALL FORMAT (YAML):");
             sb.AppendLine();
@@ -203,12 +207,12 @@ namespace folderchat.Services
             sb.AppendLine();
             sb.AppendLine("## EXAMPLE:");
             sb.AppendLine();
-            sb.AppendLine("User: \"List files in C:\\\\Users\\\\Documents\"");
+            sb.AppendLine("User: \"List files in C:\\Users\\Documents\"");
             sb.AppendLine("Assistant: \"I'll list the files in that directory for you.\"");
             sb.AppendLine("```yaml");
             sb.AppendLine("tool:");
             sb.AppendLine("  name: list_directory");
-            sb.AppendLine("  path: \"C:\\\\Users\\\\Documents\"");
+            sb.AppendLine("  path: \"C:\\Users\\Documents\"");
             sb.AppendLine("```");
             sb.AppendLine();
             sb.AppendLine("## AVAILABLE TOOLS:");
@@ -235,7 +239,7 @@ namespace folderchat.Services
                             var propsJson = JsonSerializer.Serialize(propertiesObj);
                             var props = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(propsJson);
 
-                            List<string> required = new List<string>();
+                            var required = new List<string>();
                             if (schemaDict.TryGetValue("required", out var requiredObj))
                             {
                                 var requiredJson = JsonSerializer.Serialize(requiredObj);
@@ -257,6 +261,60 @@ namespace folderchat.Services
                                         sb.AppendLine($"      type: {type}");
                                     }
                                     sb.AppendLine($"      required: {(required.Contains(prop.Key) ? "true" : "false")}");
+
+                                    // Nested example (for object type)
+                                    try
+                                    {
+                                        if (prop.Value.TryGetValue("type", out var typeObj) && typeObj != null)
+                                        {
+                                            var typeStr = JsonSerializer.Deserialize<string>(JsonSerializer.Serialize(typeObj));
+                                            var isObject = false;
+                                            if (!string.IsNullOrEmpty(typeStr))
+                                            {
+                                                isObject = string.Equals(typeStr, "object", StringComparison.OrdinalIgnoreCase);
+                                            }
+                                            else
+                                            {
+                                                var typeList = JsonSerializer.Deserialize<List<string>>(JsonSerializer.Serialize(typeObj));
+                                                if (typeList != null)
+                                                {
+                                                    isObject = typeList.Any(t => string.Equals(t, "object", StringComparison.OrdinalIgnoreCase));
+                                                }
+                                            }
+
+                                            if (isObject && prop.Value.TryGetValue("properties", out var childPropsObj))
+                                            {
+                                                var childPropsJson = JsonSerializer.Serialize(childPropsObj);
+                                                var childProps = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(childPropsJson);
+
+                                                var childReq = new List<string>();
+                                                if (prop.Value.TryGetValue("required", out var childReqObj) && childReqObj != null)
+                                                {
+                                                    var childReqJson = JsonSerializer.Serialize(childReqObj);
+                                                    childReq = JsonSerializer.Deserialize<List<string>>(childReqJson) ?? new List<string>();
+                                                }
+
+                                                if (childProps != null && childProps.Count > 0)
+                                                {
+                                                    sb.AppendLine($"      children:");
+                                                    foreach (var child in childProps)
+                                                    {
+                                                        sb.AppendLine($"        - name: {child.Key}");
+                                                        if (child.Value.TryGetValue("description", out var cdesc) && cdesc != null)
+                                                        {
+                                                            sb.AppendLine($"          description: \"{cdesc.ToString().Replace("\"", "\\\"")}\"");
+                                                        }
+                                                        if (child.Value.TryGetValue("type", out var ctype) && ctype != null)
+                                                        {
+                                                            sb.AppendLine($"          type: {ctype}");
+                                                        }
+                                                        sb.AppendLine($"          required: {(childReq.Contains(child.Key) ? "true" : "false")}");
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    catch { /* ignore nested parse errors */ }
                                 }
                             }
                         }
@@ -264,12 +322,214 @@ namespace folderchat.Services
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine($"[MCP] Error parsing tool schema for {tool.Name}: {ex.Message}");
-                        // Fallback to simpler output if schema parsing fails
                         sb.AppendLine("  parameters: (schema parsing failed)");
                     }
                 }
             }
             sb.AppendLine("```");
+            sb.AppendLine();
+            sb.AppendLine("## MINIMAL TOOL EXAMPLES (include all required parameters):");
+            foreach (var tool in tools)
+            {
+                try
+                {
+                    if (tool.InputSchema == null) continue;
+
+                    var schemaJson = JsonSerializer.Serialize(tool.InputSchema, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+                    var schemaDict = JsonSerializer.Deserialize<Dictionary<string, object>>(schemaJson);
+                    if (schemaDict == null) continue;
+
+                    var required = new List<string>();
+                    if (schemaDict.TryGetValue("required", out var requiredObj) && requiredObj != null)
+                    {
+                        var requiredJson = JsonSerializer.Serialize(requiredObj);
+                        required = JsonSerializer.Deserialize<List<string>>(requiredJson) ?? new List<string>();
+                    }
+                    if (required.Count == 0) continue;
+
+                    Dictionary<string, Dictionary<string, object>>? props = null;
+                    if (schemaDict.TryGetValue("properties", out var propertiesObj) && propertiesObj != null)
+                    {
+                        var propsJson = JsonSerializer.Serialize(propertiesObj);
+                        props = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(propsJson);
+                    }
+                    if (props == null || props.Count == 0) continue;
+
+                    sb.AppendLine("```yaml");
+                    sb.AppendLine("tool:");
+                    sb.AppendLine($"  name: {tool.Name}");
+
+                    foreach (var key in required)
+                    {
+                        if (props.TryGetValue(key, out var propSchema) && propSchema != null)
+                        {
+                            // Support for nested required in object type (e.g., req)
+                            try
+                            {
+                                string? primary = null;
+                                if (propSchema.TryGetValue("type", out var typeObj) && typeObj != null)
+                                {
+                                    var typeJson = JsonSerializer.Serialize(typeObj);
+                                    try
+                                    {
+                                        var types = JsonSerializer.Deserialize<List<string>>(typeJson);
+                                        primary = types?.FirstOrDefault(t => !string.Equals(t, "null", StringComparison.OrdinalIgnoreCase)) ?? types?.FirstOrDefault();
+                                    }
+                                    catch
+                                    {
+                                        primary = JsonSerializer.Deserialize<string>(typeJson);
+                                    }
+                                }
+                                primary = primary?.ToLowerInvariant();
+
+                                if (primary == "object" && propSchema.TryGetValue("properties", out var childPropsObj))
+                                {
+                                    var childPropsJson = JsonSerializer.Serialize(childPropsObj);
+                                    var childProps = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(childPropsJson);
+
+                                    var childReq = new List<string>();
+                                    if (propSchema.TryGetValue("required", out var childReqObj) && childReqObj != null)
+                                    {
+                                        var childReqJson = JsonSerializer.Serialize(childReqObj);
+                                        childReq = JsonSerializer.Deserialize<List<string>>(childReqJson) ?? new List<string>();
+                                    }
+
+                                    sb.AppendLine($"  {key}:");
+                                    if (childProps != null)
+                                    {
+                                        foreach (var ck in childReq)
+                                        {
+                                            if (childProps.TryGetValue(ck, out var cprop))
+                                            {
+                                                // Estimation of example value
+                                                string ex = "\"value\"";
+                                                try
+                                                {
+                                                    if (cprop.TryGetValue("type", out var ctypeObj) && ctypeObj != null)
+                                                    {
+                                                        var tj = JsonSerializer.Serialize(ctypeObj);
+                                                        string? cprim = null;
+                                                        try
+                                                        {
+                                                            var tl = JsonSerializer.Deserialize<List<string>>(tj);
+                                                            cprim = tl?.FirstOrDefault(t => !string.Equals(t, "null", StringComparison.OrdinalIgnoreCase)) ?? tl?.FirstOrDefault();
+                                                        }
+                                                        catch
+                                                        {
+                                                            cprim = JsonSerializer.Deserialize<string>(tj);
+                                                        }
+                                                        cprim = cprim?.ToLowerInvariant();
+
+                                                        if (cprim == "integer") ex = "10";
+                                                        else if (cprim == "number") ex = "1.0";
+                                                        else if (cprim == "boolean") ex = "true";
+                                                        else if (cprim == "array")
+                                                        {
+                                                            string itemsType = "string";
+                                                            if (cprop.TryGetValue("items", out var itemsObj) && itemsObj != null)
+                                                            {
+                                                                var ij = JsonSerializer.Serialize(itemsObj);
+                                                                var id = JsonSerializer.Deserialize<Dictionary<string, object>>(ij);
+                                                                if (id != null && id.TryGetValue("type", out var itTypeObj) && itTypeObj != null)
+                                                                {
+                                                                    try
+                                                                    {
+                                                                        itemsType = JsonSerializer.Deserialize<string>(JsonSerializer.Serialize(itTypeObj)) ?? "string";
+                                                                    }
+                                                                    catch
+                                                                    {
+                                                                        var itList = JsonSerializer.Deserialize<List<string>>(JsonSerializer.Serialize(itTypeObj));
+                                                                        if (itList != null && itList.Count > 0) itemsType = itList[0];
+                                                                    }
+                                                                }
+                                                            }
+                                                            if (string.Equals(itemsType, "integer", StringComparison.OrdinalIgnoreCase)) ex = "[ 1 ]";
+                                                            else if (string.Equals(itemsType, "number", StringComparison.OrdinalIgnoreCase)) ex = "[ 1.0 ]";
+                                                            else if (string.Equals(itemsType, "boolean", StringComparison.OrdinalIgnoreCase)) ex = "[ true ]";
+                                                            else ex = "[ \"value\" ]";
+                                                        }
+                                                        else if (cprim == "object") ex = "{}";
+                                                        else if (cprim == "null") ex = "null";
+                                                        else ex = "\"value\"";
+                                                    }
+                                                }
+                                                catch { }
+                                                sb.AppendLine($"    {ck}: {ex}");
+                                            }
+                                        }
+                                    }
+                                    continue;
+                                }
+                            }
+                            catch { }
+
+                            // Normal example for non-object
+                            string exampleValue = "\"value\"";
+                            try
+                            {
+                                if (propSchema.TryGetValue("type", out var typeObj) && typeObj != null)
+                                {
+                                    var typeJson = JsonSerializer.Serialize(typeObj);
+                                    List<string>? types = null;
+                                    string? primary = null;
+                                    try
+                                    {
+                                        types = JsonSerializer.Deserialize<List<string>>(typeJson);
+                                        primary = types?.FirstOrDefault(t => !string.Equals(t, "null", StringComparison.OrdinalIgnoreCase)) ?? types?.FirstOrDefault();
+                                    }
+                                    catch
+                                    {
+                                        primary = JsonSerializer.Deserialize<string>(typeJson);
+                                    }
+                                    primary = primary?.ToLowerInvariant();
+
+                                    if (primary == "integer") exampleValue = "10";
+                                    else if (primary == "number") exampleValue = "1.0";
+                                    else if (primary == "boolean") exampleValue = "true";
+                                    else if (primary == "array")
+                                    {
+                                        string itemsType = "string";
+                                        if (propSchema.TryGetValue("items", out var itemsObj) && itemsObj != null)
+                                        {
+                                            var itemsJson = JsonSerializer.Serialize(itemsObj);
+                                            var itemsDict = JsonSerializer.Deserialize<Dictionary<string, object>>(itemsJson);
+                                            if (itemsDict != null && itemsDict.TryGetValue("type", out var itTypeObj) && itTypeObj != null)
+                                            {
+                                                try
+                                                {
+                                                    itemsType = JsonSerializer.Deserialize<string>(JsonSerializer.Serialize(itTypeObj)) ?? "string";
+                                                }
+                                                catch
+                                                {
+                                                    var itList = JsonSerializer.Deserialize<List<string>>(JsonSerializer.Serialize(itTypeObj));
+                                                    if (itList != null && itList.Count > 0) itemsType = itList[0];
+                                                }
+                                            }
+                                        }
+                                        if (string.Equals(itemsType, "integer", StringComparison.OrdinalIgnoreCase)) exampleValue = "[ 1 ]";
+                                        else if (string.Equals(itemsType, "number", StringComparison.OrdinalIgnoreCase)) exampleValue = "[ 1.0 ]";
+                                        else if (string.Equals(itemsType, "boolean", StringComparison.OrdinalIgnoreCase)) exampleValue = "[ true ]";
+                                        else exampleValue = "[ \"value\" ]";
+                                    }
+                                    else if (primary == "object") exampleValue = "{}";
+                                    else if (primary == "null") exampleValue = "null";
+                                    else exampleValue = "\"value\"";
+                                }
+                            }
+                            catch { /* ignore example generation errors */ }
+                            sb.AppendLine($"  {key}: {exampleValue}");
+                        }
+                        else
+                        {
+                            sb.AppendLine($"  {key}: \"value\"");
+                        }
+                    }
+
+                    sb.AppendLine("```");
+                }
+                catch { /* ignore per-tool example errors */ }
+            }
+
             sb.AppendLine();
             sb.AppendLine("Remember: When you need to use a tool, use the ```yaml code block with YAML format shown above!");
 
@@ -283,72 +543,86 @@ namespace folderchat.Services
 
             var blockLines = new List<string>();
             bool inFencedBlock = false;
+            string? fenceLang = null;
             bool inUnfencedBlock = false;
 
-            Action<List<string>> parseAndClear = (block) => {
+            void parseAndClear(List<string> block)
+            {
                 if (!block.Any()) return;
+
+                var text = string.Join("\n", block);
+                Dictionary<string, object?>? root = null;
+                Dictionary<string, object?>? toolMap = null;
 
                 try
                 {
-                    string? toolName = null;
-                    var argsDict = new Dictionary<string, object>();
-                    bool inToolSection = false;
-
-                    foreach (var blockLine in block)
+                    if (string.Equals(fenceLang, "json", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (string.IsNullOrWhiteSpace(blockLine)) continue;
-
-                        if (blockLine.Trim() == "tool:")
-                        {
-                            inToolSection = true;
-                            continue;
-                        }
-
-                        if (inToolSection)
-                        {
-                            if (!blockLine.StartsWith("  ") && !blockLine.StartsWith("\t")) continue;
-
-                            var parts = blockLine.Trim().Split(new[] { ':' }, 2);
-                            if (parts.Length != 2) continue;
-
-                            var key = parts[0].Trim();
-                            var value = parts[1].Trim();
-
-                            if (key.Equals("name", StringComparison.OrdinalIgnoreCase))
-                            {
-                                toolName = value;
-                            }
-                            else
-                            {
-                                if (value.Length >= 2 && value.StartsWith("\"") && value.EndsWith("\""))
-                                {
-                                    argsDict[key] = value.Substring(1, value.Length - 2);
-                                }
-                                else
-                                {
-                                    argsDict[key] = value;
-                                }
-                            }
-                        }
+                        root = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object?>>(text);
                     }
-
-                    if (!string.IsNullOrEmpty(toolName))
+                    else
                     {
-                        toolCalls.Add(new ToolCall { ToolName = toolName, Arguments = argsDict });
+                        var deserializer = new DeserializerBuilder()
+                            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                            .Build();
+                        var obj = deserializer.Deserialize<object>(text);
+                        root = ToPlain(obj) as Dictionary<string, object?>;
                     }
                 }
-                catch { /* Ignore parsing errors */ }
+                catch
+                {
+                    // ignore parse errors
+                }
+
+                if (root != null)
+                {
+                    if (root.TryGetValue("tool", out var toolSection) && toolSection is object)
+                    {
+                        toolMap = ToPlain(toolSection) as Dictionary<string, object?>;
+                    }
+                    else if (root.ContainsKey("name") || root.ContainsKey("req"))
+                    {
+                        // treat whole root as tool map if it looks like a tool block without "tool:" wrapper
+                        toolMap = root;
+                    }
+                }
+
+                if (toolMap != null)
+                {
+                    try
+                    {
+                        string? toolName = null;
+                        if (toolMap.TryGetValue("name", out var nameVal) && nameVal != null)
+                        {
+                            toolName = nameVal.ToString();
+                        }
+
+                        if (!string.IsNullOrEmpty(toolName))
+                        {
+                            var argsDict = new Dictionary<string, object?>();
+                            foreach (var kv in toolMap)
+                            {
+                                if (string.Equals(kv.Key, "name", StringComparison.OrdinalIgnoreCase)) continue;
+                                argsDict[kv.Key] = kv.Value;
+                            }
+
+                            toolCalls.Add(new ToolCall { ToolName = toolName, Arguments = argsDict });
+                        }
+                    }
+                    catch { /* ignore */ }
+                }
 
                 block.Clear();
-            };
+                fenceLang = null;
+            }
 
             foreach (var line in lines)
             {
-                var trimmedLine = line.Trim();
+                var trimmed = line.Trim();
 
                 if (inFencedBlock)
                 {
-                    if (trimmedLine == "```")
+                    if (trimmed == "```")
                     {
                         parseAndClear(blockLines);
                         inFencedBlock = false;
@@ -370,18 +644,22 @@ namespace folderchat.Services
                     {
                         parseAndClear(blockLines);
                         inUnfencedBlock = false;
-                        // Fall through to check if the current line starts a new block
                     }
                 }
 
-                // This check happens if not in a block, or after an unfenced block ends
                 if (!inFencedBlock && !inUnfencedBlock)
                 {
-                    if (trimmedLine.StartsWith("```yaml"))
+                    if (trimmed.StartsWith("```yaml", StringComparison.OrdinalIgnoreCase))
                     {
                         inFencedBlock = true;
+                        fenceLang = "yaml";
                     }
-                    else if (trimmedLine == "tool:")
+                    else if (trimmed.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
+                    {
+                        inFencedBlock = true;
+                        fenceLang = "json";
+                    }
+                    else if (trimmed == "tool:")
                     {
                         inUnfencedBlock = true;
                         blockLines.Add(line);
@@ -389,13 +667,49 @@ namespace folderchat.Services
                 }
             }
 
-            // If the response ends while in a block
             if (blockLines.Any())
             {
                 parseAndClear(blockLines);
             }
 
             return toolCalls;
+
+            // Local helper to convert YamlDotNet nested dictionaries/lists to plain .NET types
+            object? ToPlain(object? obj)
+            {
+                if (obj == null) return null;
+
+                if (obj is Dictionary<object, object> d)
+                {
+                    var res = new Dictionary<string, object?>();
+                    foreach (var kv in d)
+                    {
+                        var key = kv.Key?.ToString() ?? "";
+                        res[key] = ToPlain(kv.Value);
+                    }
+                    return res;
+                }
+                if (obj is IDictionary id)
+                {
+                    var res = new Dictionary<string, object?>();
+                    foreach (DictionaryEntry de in id)
+                    {
+                        var key = de.Key?.ToString() ?? "";
+                        res[key] = ToPlain(de.Value);
+                    }
+                    return res;
+                }
+                if (obj is IEnumerable en && obj is not string)
+                {
+                    var list = new List<object?>();
+                    foreach (var item in en)
+                    {
+                        list.Add(ToPlain(item));
+                    }
+                    return list;
+                }
+                return obj;
+            }
         }
 
         public void ClearHistory()

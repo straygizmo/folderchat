@@ -1,6 +1,7 @@
 @using folderchat.Services.Mcp
 @using Microsoft.JSInterop
 @using System.Text.Json
+@using System.Linq
 @inject IJSRuntime JSRuntime
 
 @if (isVisible)
@@ -32,15 +33,114 @@
                                         {
                                             var schemaJson = JsonSerializer.Serialize(tool.InputSchema);
                                             var schemaDict = JsonSerializer.Deserialize<Dictionary<string, object>>(schemaJson);
-                                            if (schemaDict != null && schemaDict.ContainsKey("properties"))
+
+                                            if (schemaDict != null)
                                             {
-                                                var propsJson = JsonSerializer.Serialize(schemaDict["properties"]);
-                                                var props = JsonSerializer.Deserialize<Dictionary<string, object>>(propsJson);
-                                                if (props != null && props.Count > 0)
+                                                // required 配列の取得
+                                                var required = new List<string>();
+                                                if (schemaDict.TryGetValue("required", out var reqObj) && reqObj != null)
                                                 {
-                                                    <p class="mb-0 text-muted small">
-                                                        <strong>Parameters:</strong> @string.Join(", ", props.Keys)
-                                                    </p>
+                                                    try
+                                                    {
+                                                        var reqJson = JsonSerializer.Serialize(reqObj);
+                                                        required = JsonSerializer.Deserialize<List<string>>(reqJson) ?? new List<string>();
+                                                    }
+                                                    catch { }
+                                                }
+
+                                                // properties の取得
+                                                if (schemaDict.TryGetValue("properties", out var propsObj) && propsObj != null)
+                                                {
+                                                    var propsJson = JsonSerializer.Serialize(propsObj);
+                                                    var props = JsonSerializer.Deserialize<Dictionary<string, object>>(propsJson);
+
+                                                    if (props != null && props.Count > 0)
+                                                    {
+                                                        var lines = new List<string>();
+
+                                                        foreach (var kv in props)
+                                                        {
+                                                            var key = kv.Key;
+                                                            string typeDisplay = "any";
+
+                                                            try
+                                                            {
+                                                                var propSchemaJson = JsonSerializer.Serialize(kv.Value);
+                                                                var propSchema = JsonSerializer.Deserialize<Dictionary<string, object>>(propSchemaJson);
+
+                                                                if (propSchema != null && propSchema.TryGetValue("type", out var tObj) && tObj != null)
+                                                                {
+                                                                    var tJson = JsonSerializer.Serialize(tObj);
+                                                                    try
+                                                                    {
+                                                                        var tList = JsonSerializer.Deserialize<List<string>>(tJson);
+                                                                        if (tList != null && tList.Count > 0)
+                                                                        {
+                                                                            typeDisplay = string.Join("|", tList);
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            var tStr = JsonSerializer.Deserialize<string>(tJson);
+                                                                            if (!string.IsNullOrWhiteSpace(tStr)) typeDisplay = tStr;
+                                                                        }
+                                                                    }
+                                                                    catch
+                                                                    {
+                                                                        var tStr = JsonSerializer.Deserialize<string>(tJson);
+                                                                        if (!string.IsNullOrWhiteSpace(tStr)) typeDisplay = tStr;
+                                                                    }
+
+                                                                    // array の items.type を見て型を詳細化
+                                                                    if (string.Equals(typeDisplay, "array", StringComparison.OrdinalIgnoreCase))
+                                                                    {
+                                                                        try
+                                                                        {
+                                                                            if (propSchema.TryGetValue("items", out var itemsObj) && itemsObj != null)
+                                                                            {
+                                                                                var itemsJson = JsonSerializer.Serialize(itemsObj);
+                                                                                var itemsDict = JsonSerializer.Deserialize<Dictionary<string, object>>(itemsJson);
+                                                                                if (itemsDict != null && itemsDict.TryGetValue("type", out var itemsTypeObj) && itemsTypeObj != null)
+                                                                                {
+                                                                                    var itJson = JsonSerializer.Serialize(itemsTypeObj);
+                                                                                    string itDisplay = "any";
+                                                                                    try
+                                                                                    {
+                                                                                        var itList = JsonSerializer.Deserialize<List<string>>(itJson);
+                                                                                        if (itList != null && itList.Count > 0) itDisplay = string.Join("|", itList);
+                                                                                        else
+                                                                                        {
+                                                                                            var itStr = JsonSerializer.Deserialize<string>(itJson);
+                                                                                            if (!string.IsNullOrWhiteSpace(itStr)) itDisplay = itStr;
+                                                                                        }
+                                                                                    }
+                                                                                    catch
+                                                                                    {
+                                                                                        var itStr = JsonSerializer.Deserialize<string>(itJson);
+                                                                                        if (!string.IsNullOrWhiteSpace(itStr)) itDisplay = itStr;
+                                                                                    }
+                                                                                    typeDisplay = $"array<{itDisplay}>";
+                                                                                }
+                                                                            }
+                                                                        } catch { }
+                                                                    }
+                                                                }
+                                                            }
+                                                            catch { }
+
+                                                            var requiredMark = required.Contains(key) ? " (required)" : "";
+                                                            lines.Add($"{key}: {typeDisplay}{requiredMark}");
+                                                        }
+
+                                                        <div class="mb-0 text-muted small">
+                                                            <strong>Parameters:</strong>
+                                                            <ul class="mb-0">
+                                                                @foreach (var line in lines)
+                                                                {
+                                                                    <li>@line</li>
+                                                                }
+                                                            </ul>
+                                                        </div>
+                                                    }
                                                 }
                                             }
                                         }
@@ -70,7 +170,9 @@
     public async Task ShowAsync(string serverName, List<Tool> serverTools)
     {
         Title = $"{serverName} - Tools";
-        tools = serverTools ?? new List<Tool>();
+        tools = (serverTools ?? new List<Tool>())
+            .OrderBy(t => t?.Name ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+            .ToList();
         isVisible = true;
         StateHasChanged();
 

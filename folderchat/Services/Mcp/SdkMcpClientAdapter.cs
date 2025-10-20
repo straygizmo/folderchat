@@ -189,13 +189,43 @@ namespace folderchat.Services.Mcp
 
                 var sdkTools = await _client.ListToolsAsync();
 
-                // Convert SDK tool format to our Tool format
-                var tools = sdkTools.Select(sdkTool => new Tool
+                // Convert SDK tool format to our Tool format and preserve inputSchema if available
+                var tools = new List<Tool>();
+                foreach (var sdkTool in sdkTools)
                 {
-                    Name = sdkTool.Name,
-                    Description = sdkTool.Description,
-                    InputSchema = null // SDK tool structure may differ, set to null for now
-                }).ToList();
+                    object? schemaObj = null;
+                    try
+                    {
+                        var json = System.Text.Json.JsonSerializer.Serialize(sdkTool);
+                        using var doc = System.Text.Json.JsonDocument.Parse(json);
+
+                        // Try common casings or fallbacks
+                        if (doc.RootElement.TryGetProperty("inputSchema", out var schemaEl))
+                        {
+                            schemaObj = System.Text.Json.JsonSerializer.Deserialize<object>(schemaEl.GetRawText());
+                        }
+                        else if (doc.RootElement.TryGetProperty("InputSchema", out var schemaEl2))
+                        {
+                            schemaObj = System.Text.Json.JsonSerializer.Deserialize<object>(schemaEl2.GetRawText());
+                        }
+                        else if (doc.RootElement.TryGetProperty("parameters", out var paramsEl))
+                        {
+                            // Some servers may expose parameters instead of inputSchema
+                            schemaObj = System.Text.Json.JsonSerializer.Deserialize<object>(paramsEl.GetRawText());
+                        }
+                    }
+                    catch
+                    {
+                        // Ignore schema extraction errors
+                    }
+
+                    tools.Add(new Tool
+                    {
+                        Name = sdkTool.Name,
+                        Description = sdkTool.Description,
+                        InputSchema = schemaObj
+                    });
+                }
 
                 LogMessage?.Invoke(this, $"Found {tools.Count} tools");
                 return tools;
