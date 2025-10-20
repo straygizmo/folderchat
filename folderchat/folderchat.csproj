@@ -16,12 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Krypton.Navigator" Version="95.25.8.235" />
-    <PackageReference Include="Krypton.Toolkit" Version="95.25.8.235" />
+    <PackageReference Include="Krypton.Navigator" Version="95.25.10.293" />
+    <PackageReference Include="Krypton.Toolkit" Version="95.25.10.293" />
     <PackageReference Include="ModelContextProtocol.Core" Version="0.4.0-preview.2" />
-    <PackageReference Include="OpenAI" Version="2.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="9.0.110" />
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.9" />
+    <PackageReference Include="OpenAI" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="9.0.120" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.10" />
     <PackageReference Include="LLamaSharp" Version="0.25.0" />
     <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.25.0" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
