@@ -106,9 +106,9 @@ namespace folderchat.Forms.ProviderSettings
             lblModelList.Location = new Point(3, 157);
             lblModelList.Margin = new Padding(3, 2, 3, 2);
             lblModelList.Name = "lblModelList";
-            lblModelList.Size = new Size(87, 20);
+            lblModelList.Size = new Size(134, 20);
             lblModelList.TabIndex = 8;
-            lblModelList.Values.Text = "Model List (0):";
+            lblModelList.Values.Text = "Deployment Name (0):";
             // 
             // cmbModelList
             // 
@@ -136,18 +136,18 @@ namespace folderchat.Forms.ProviderSettings
             // 
             // btnFetch
             // 
-            btnFetch.Location = new Point(85, 176);
+            btnFetch.Location = new Point(294, 176);
             btnFetch.Margin = new Padding(3, 2, 3, 2);
             btnFetch.Name = "btnFetch";
             btnFetch.Size = new Size(75, 25);
             btnFetch.TabIndex = 11;
             btnFetch.Values.DropDownArrowColor = Color.Empty;
             btnFetch.Values.Text = "⚙ Fetch";
-            btnFetch.Click += BtnFetch_Click;
+            btnFetch.Visible = false;
             // 
             // btnReset
             // 
-            btnReset.Location = new Point(166, 176);
+            btnReset.Location = new Point(84, 176);
             btnReset.Margin = new Padding(3, 2, 3, 2);
             btnReset.Name = "btnReset";
             btnReset.Size = new Size(75, 25);

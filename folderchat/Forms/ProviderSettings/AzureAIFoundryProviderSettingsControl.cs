@@ -98,7 +98,7 @@ namespace folderchat.Forms.ProviderSettings
 
         private void UpdateModelListLabel()
         {
-            lblModelList.Text = $"Model List ({cmbModelList.Items.Count}):";
+            lblModelList.Text = $"Deployment Name ({cmbModelList.Items.Count}):";
         }
 
         private void BtnAdd_Click(object? sender, EventArgs e)
@@ -106,8 +106,8 @@ namespace folderchat.Forms.ProviderSettings
             // Show input dialog to add a new model
             using (var form = new KryptonForm())
             {
-                form.Text = "Add Model";
-                form.Size = new Size(400, 150);
+                form.Text = "Add Deployment";
+                form.Size = new Size(400, 160);
                 form.StartPosition = FormStartPosition.CenterParent;
                 form.FormBorderStyle = FormBorderStyle.FixedDialog;
                 form.MaximizeBox = false;
@@ -115,7 +115,7 @@ namespace folderchat.Forms.ProviderSettings
 
                 var label = new KryptonLabel
                 {
-                    Text = "Model Name:",
+                    Text = "Deployment Name:",
                     Location = new Point(10, 20),
                     AutoSize = true
                 };
@@ -162,74 +162,74 @@ namespace folderchat.Forms.ProviderSettings
             }
         }
 
-        private async void BtnFetch_Click(object? sender, EventArgs e)
-        {
-            if (!ValidateSettings())
-            {
-                KryptonMessageBox.Show(GetValidationError(), "Validation Error", (KryptonMessageBoxButtons)MessageBoxButtons.OK, (KryptonMessageBoxIcon)MessageBoxIcon.Warning);
-                return;
-            }
+        //private async void BtnFetch_Click(object? sender, EventArgs e)
+        //{
+        //    if (!ValidateSettings())
+        //    {
+        //        KryptonMessageBox.Show(GetValidationError(), "Validation Error", (KryptonMessageBoxButtons)MessageBoxButtons.OK, (KryptonMessageBoxIcon)MessageBoxIcon.Warning);
+        //        return;
+        //    }
 
-            try
-            {
-                btnFetch.Enabled = false;
-                btnFetch.Values.Text = "Fetching...";
+        //    try
+        //    {
+        //        btnFetch.Enabled = false;
+        //        btnFetch.Values.Text = "Fetching...";
 
-                using var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("api-key", txtApiKey.Text);
+        //        using var httpClient = new HttpClient();
+        //        httpClient.DefaultRequestHeaders.Add("api-key", txtApiKey.Text);
 
-                var apiUrl = txtApiUrl.Text.TrimEnd('/');
-                var apiVersion = txtApiVersion.Text;
-                var response = await httpClient.GetAsync($"{apiUrl}/openai/models?api-version={apiVersion}");
+        //        var apiUrl = txtApiUrl.Text.TrimEnd('/');
+        //        var apiVersion = txtApiVersion.Text;
+        //        var response = await httpClient.GetAsync($"{apiUrl}/openai/models?api-version={apiVersion}");
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    throw new Exception($"API Error: {response.StatusCode}\n{errorContent}");
-                }
+        //        if (!response.IsSuccessStatusCode)
+        //        {
+        //            var errorContent = await response.Content.ReadAsStringAsync();
+        //            throw new Exception($"API Error: {response.StatusCode}\n{errorContent}");
+        //        }
 
-                var json = await response.Content.ReadAsStringAsync();
-                var modelsResponse = System.Text.Json.JsonSerializer.Deserialize<OpenAIModelsResponse>(json);
+        //        var json = await response.Content.ReadAsStringAsync();
+        //        var modelsResponse = System.Text.Json.JsonSerializer.Deserialize<OpenAIModelsResponse>(json);
 
-                if (modelsResponse?.data != null && modelsResponse.data.Count > 0)
-                {
-                    // Clear existing items and add fetched models
-                    cmbModelList.Items.Clear();
-                    foreach (var model in modelsResponse.data.OrderBy(m => m.id))
-                    {
-                        cmbModelList.Items.Add(model.id);
-                    }
+        //        if (modelsResponse?.data != null && modelsResponse.data.Count > 0)
+        //        {
+        //            // Clear existing items and add fetched models
+        //            cmbModelList.Items.Clear();
+        //            foreach (var model in modelsResponse.data.OrderBy(m => m.id))
+        //            {
+        //                cmbModelList.Items.Add(model.id);
+        //            }
 
-                    UpdateModelListLabel();
+        //            UpdateModelListLabel();
 
-                    if (cmbModelList.Items.Count > 0)
-                    {
-                        cmbModelList.SelectedIndex = 0;
-                    }
+        //            if (cmbModelList.Items.Count > 0)
+        //            {
+        //                cmbModelList.SelectedIndex = 0;
+        //            }
 
-                    KryptonMessageBox.Show($"Successfully fetched {modelsResponse.data.Count} models.\n\n", "Success", (KryptonMessageBoxButtons)MessageBoxButtons.OK, (KryptonMessageBoxIcon)MessageBoxIcon.Information);
-                }
-                else
-                {
-                    KryptonMessageBox.Show("No models found.\n\n", "Information", (KryptonMessageBoxButtons)MessageBoxButtons.OK, (KryptonMessageBoxIcon)MessageBoxIcon.Information);
-                }
-            }
-            catch (Exception ex)
-            {
-                KryptonMessageBox.Show($"Error fetching models: {ex.Message}\n\n", "Error", (KryptonMessageBoxButtons)MessageBoxButtons.OK, (KryptonMessageBoxIcon)MessageBoxIcon.Error);
-            }
-            finally
-            {
-                btnFetch.Enabled = true;
-                btnFetch.Values.Text = "⚙ Fetch";
-            }
-        }
+        //            KryptonMessageBox.Show($"Successfully fetched {modelsResponse.data.Count} models.\n\n", "Success", (KryptonMessageBoxButtons)MessageBoxButtons.OK, (KryptonMessageBoxIcon)MessageBoxIcon.Information);
+        //        }
+        //        else
+        //        {
+        //            KryptonMessageBox.Show("No models found.\n\n", "Information", (KryptonMessageBoxButtons)MessageBoxButtons.OK, (KryptonMessageBoxIcon)MessageBoxIcon.Information);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        KryptonMessageBox.Show($"Error fetching models: {ex.Message}\n\n", "Error", (KryptonMessageBoxButtons)MessageBoxButtons.OK, (KryptonMessageBoxIcon)MessageBoxIcon.Error);
+        //    }
+        //    finally
+        //    {
+        //        btnFetch.Enabled = true;
+        //        btnFetch.Values.Text = "⚙ Fetch";
+        //    }
+        //}
 
         private void BtnReset_Click(object? sender, EventArgs e)
         {
             if (cmbModelList.SelectedItem == null)
             {
-                KryptonMessageBox.Show("Please select a model to remove.\n\n", "No Selection", (KryptonMessageBoxButtons)MessageBoxButtons.OK, (KryptonMessageBoxIcon)MessageBoxIcon.Warning);
+                KryptonMessageBox.Show("Please select a deployment to remove.\n\n", "No Selection", (KryptonMessageBoxButtons)MessageBoxButtons.OK, (KryptonMessageBoxIcon)MessageBoxIcon.Warning);
                 return;
             }
 

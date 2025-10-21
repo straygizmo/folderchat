@@ -1,63 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Azure.AI.OpenAI;
+using Azure.Identity;
 using OpenAI;
 using OpenAI.Chat;
-using System.ClientModel;
 
 namespace folderchat.Services
 {
+    // Azure.AI.OpenAI v2.1.0 + OpenAI 2.x 構成
+    // - 認証: DefaultAzureCredential（ユーザー提供サンプル方針）
+    // - クライアント: AzureOpenAIClient から ChatClient を取得
+    // - メッセージ型: OpenAI.Chat の SystemChatMessage / UserChatMessage / AssistantChatMessage
     internal class AzureOpenAIChatService : IChatService
     {
         private readonly ChatClient _chatClient;
-        private readonly List<ChatMessage> _conversationHistory;
+        private readonly List<ChatMessage> _conversationHistory = new();
 
         public AzureOpenAIChatService(string endpoint, string apiKey, string deploymentName, string apiVersion)
         {
-            // Validate required parameters
-            if (string.IsNullOrEmpty(endpoint))
+            if (string.IsNullOrWhiteSpace(endpoint))
                 throw new ArgumentException("Endpoint cannot be empty", nameof(endpoint));
-            if (string.IsNullOrEmpty(apiKey))
-                throw new ArgumentException("API Key cannot be empty", nameof(apiKey));
-            if (string.IsNullOrEmpty(deploymentName))
+            if (string.IsNullOrWhiteSpace(deploymentName))
                 throw new ArgumentException("Deployment Name cannot be empty", nameof(deploymentName));
-            if (string.IsNullOrEmpty(apiVersion))
-                throw new ArgumentException("API Version cannot be empty", nameof(apiVersion));
 
-            // Azure OpenAI full endpoint format:
-            // https://{resource-name}.openai.azure.com/openai/deployments/{deployment-name}/chat/completions?api-version={api-version}
+            if (!Uri.TryCreate(endpoint.Trim(), UriKind.Absolute, out var endpointUri))
+                throw new ArgumentException("Invalid Azure endpoint. Expected format like https://YOUR_RESOURCE_NAME.openai.azure.com/", nameof(endpoint));
 
-            var baseEndpoint = endpoint.TrimEnd('/');
+            // Entra ID（DefaultAzureCredential）で認証 + API キー / 環境変数フォールバック
+            var effectiveApiKey = !string.IsNullOrWhiteSpace(apiKey) ? apiKey
+                : Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY")
+                ?? Environment.GetEnvironmentVariable("AZURE_OPENAI_KEY")
+                ?? Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 
-            // Build the complete Azure endpoint with deployment and api-version
-            // The OpenAI SDK expects the base endpoint, and will append /chat/completions
-            var azureEndpoint = $"{baseEndpoint}/openai/deployments/{deploymentName}?api-version={apiVersion}";
+            AzureOpenAIClient azureClient = !string.IsNullOrWhiteSpace(effectiveApiKey)
+                ? new AzureOpenAIClient(endpointUri, new System.ClientModel.ApiKeyCredential(effectiveApiKey))
+                : new AzureOpenAIClient(endpointUri, new DefaultAzureCredential());
 
-            var azureClient = new OpenAIClient(
-                new ApiKeyCredential(apiKey),
-                new OpenAIClientOptions
-                {
-                    Endpoint = new Uri(azureEndpoint)
-                }
-            );
-
-            // For Azure, we still need to pass the deployment name to GetChatClient
-            // even though it's in the endpoint
+            // Azure 側はデプロイ名でモデル指定
             _chatClient = azureClient.GetChatClient(deploymentName);
-            _conversationHistory = new List<ChatMessage>();
+
+            // 互換目的で受け取るが未使用
+            _ = apiKey;
+            _ = apiVersion;
         }
 
         public async Task<SendMessageAsyncResult> SendMessageAsync(string userInput, string? systemMessage = null)
         {
-            if (string.IsNullOrEmpty(userInput))
+            if (string.IsNullOrWhiteSpace(userInput))
                 throw new ArgumentNullException(nameof(userInput), "Message is empty.");
 
-            // Create temporary conversation for this request if system message is provided
-            List<ChatMessage> messages;
+            // 送信用メッセージリストを組み立て
+            var messages = new List<ChatMessage>();
+
             if (!string.IsNullOrEmpty(systemMessage))
             {
-                // Use a temporary list with system message
-                messages = new List<ChatMessage>();
+                // 今回指定の System メッセージを先頭に据える（既存の System は省く）
                 messages.Add(new SystemChatMessage(systemMessage));
-
-                // Add existing conversation history (excluding any previous system messages)
                 foreach (var msg in _conversationHistory)
                 {
                     if (msg is not SystemChatMessage)
@@ -65,42 +65,52 @@ namespace folderchat.Services
                         messages.Add(msg);
                     }
                 }
-
-                // Add the new user message
-                messages.Add(new UserChatMessage(userInput));
             }
             else
             {
-                // Add user message to history
-                _conversationHistory.Add(new UserChatMessage(userInput));
-                messages = _conversationHistory;
+                // 既存履歴をそのまま使用
+                messages.AddRange(_conversationHistory);
             }
 
-            // Chat completion request
+            // 今回のユーザ入力
+            messages.Add(new UserChatMessage(userInput));
+
+            // ChatCompletion（非ストリーミング）
             ChatCompletion completion = await _chatClient.CompleteChatAsync(messages);
 
-            // Update the conversation history
+            // 履歴更新
             if (!string.IsNullOrEmpty(systemMessage))
             {
-                // Store system message in history if it was provided
                 _conversationHistory.Clear();
                 _conversationHistory.Add(new SystemChatMessage(systemMessage));
-
-                // Re-add all messages except the initial system message
+                // messages: [System] + (旧履歴の非System) + [User]
                 foreach (var msg in messages.Skip(1))
                 {
                     _conversationHistory.Add(msg);
                 }
             }
+            else
+            {
+                // 履歴は既存＋今回追加の User の状態
+                // messages の最後が User なので、重複を避けるために履歴へ個別追加
+                _conversationHistory.Add(new UserChatMessage(userInput));
+            }
 
-            // Add assistant response to history
-            _conversationHistory.Add(new AssistantChatMessage(completion));
+            // アシスタント応答を履歴に追加
+            var assistantMessage = new AssistantChatMessage(completion);
+            _conversationHistory.Add(assistantMessage);
 
-            // Return response
+            // 応答テキスト抽出（テキスト以外のパートは無視）
+            string assistantText = string.Join("",
+                completion.Content?
+                    .Where(p => p.Text is not null)
+                    .Select(p => p.Text) ?? Array.Empty<string>()
+            );
+
             return new SendMessageAsyncResult
             {
                 ActualUserMessage = userInput,
-                AssistantResponse = completion.Content[0].Text
+                AssistantResponse = assistantText
             };
         }
 

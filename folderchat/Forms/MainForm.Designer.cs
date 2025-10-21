@@ -265,6 +265,7 @@
             Controls.Add(kListViewBottomLog);
             Controls.Add(kryptonStatusStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Location = new Point(0, 0);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "folderchat";
