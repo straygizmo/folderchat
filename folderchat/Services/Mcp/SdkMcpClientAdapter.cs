@@ -33,13 +33,41 @@ namespace folderchat.Services.Mcp
             {
                 LogMessage?.Invoke(this, $"Connecting to MCP server: {_executablePath} {_arguments}");
 
-                // Parse arguments string into array
+                // Parse arguments string into array (supports newline-delimited and quoted tokens)
                 var argsList = new List<string>();
                 if (!string.IsNullOrWhiteSpace(_arguments))
                 {
-                    // Simple argument parsing - split by spaces but respect quotes
-                    var parts = _arguments.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                    argsList.AddRange(parts);
+                    var input = _arguments.Replace("\r\n", "\n").Replace("\r", "\n");
+
+                    if (input.Contains('\n'))
+                    {
+                        // Newline-delimited: treat each non-empty trimmed line as one argument
+                        var lines = input.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var line in lines)
+                        {
+                            var token = line.Trim();
+                            if (token.Length == 0) continue;
+
+                            // Strip balanced surrounding quotes
+                            if ((token.StartsWith("\"") && token.EndsWith("\"")) || (token.StartsWith("'") && token.EndsWith("'")))
+                            {
+                                token = token.Substring(1, token.Length - 2);
+                            }
+
+                            argsList.Add(token);
+                        }
+                    }
+                    else
+                    {
+                        // Single-line: split by whitespace but respect quoted segments
+                        var matches = System.Text.RegularExpressions.Regex.Matches(input, "\"([^\"]*)\"|'([^']*)'|[^\\s]+");
+                        foreach (System.Text.RegularExpressions.Match m in matches)
+                        {
+                            if (m.Groups[1].Success) argsList.Add(m.Groups[1].Value);
+                            else if (m.Groups[2].Success) argsList.Add(m.Groups[2].Value);
+                            else argsList.Add(m.Value);
+                        }
+                    }
                 }
 
                 // Extract working directory from environment variables if present

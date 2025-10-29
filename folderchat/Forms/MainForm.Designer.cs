@@ -268,6 +268,7 @@
             Location = new Point(0, 0);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
+            StateCommon.Border.Rounding = 8F;
             Text = "folderchat";
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;

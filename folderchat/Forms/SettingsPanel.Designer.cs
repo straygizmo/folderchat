@@ -80,6 +80,7 @@
             nudServerPort = new Krypton.Toolkit.KryptonNumericUpDown();
             lblServerPort = new Krypton.Toolkit.KryptonLabel();
             chkEnableAPIServer = new Krypton.Toolkit.KryptonCheckBox();
+            btnSaveAPIServerSettings = new Krypton.Toolkit.KryptonButton();
             claudeCodeSettingsControl = new folderchat.Forms.ProviderSettings.ClaudeCodeProviderSettingsControl();
             openAISettingsControl = new folderchat.Forms.ProviderSettings.OpenAIProviderSettingsControl();
             azureAIFoundrySettingsControl = new folderchat.Forms.ProviderSettings.AzureAIFoundryProviderSettingsControl();
@@ -88,7 +89,6 @@
             openAIAPISettingsControl = new folderchat.Forms.ProviderSettings.OpenAIAPIProviderSettingsControl();
             geminiSettingsControl = new folderchat.Forms.ProviderSettings.GeminiProviderSettingsControl();
             claudeSettingsControl = new folderchat.Forms.ProviderSettings.ClaudeProviderSettingsControl();
-            btnSaveAPIServerSettings = new Krypton.Toolkit.KryptonButton();
             tabSettings.SuspendLayout();
             tabPageChat.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)kPanelGGUFProviderSettings).BeginInit();
@@ -182,6 +182,7 @@
             cmbChatGGUFModel.Margin = new Padding(3, 2, 3, 2);
             cmbChatGGUFModel.Name = "cmbChatGGUFModel";
             cmbChatGGUFModel.Size = new Size(320, 22);
+            cmbChatGGUFModel.StateCommon.ComboBox.Border.Rounding = 3F;
             cmbChatGGUFModel.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbChatGGUFModel.TabIndex = 18;
             // 
@@ -298,6 +299,7 @@
             cmbGGUFModel.Margin = new Padding(3, 2, 3, 2);
             cmbGGUFModel.Name = "cmbGGUFModel";
             cmbGGUFModel.Size = new Size(304, 22);
+            cmbGGUFModel.StateCommon.ComboBox.Border.Rounding = 3F;
             cmbGGUFModel.TabIndex = 9;
             cmbGGUFModel.Visible = false;
             // 
@@ -310,7 +312,8 @@
             nudMaxContextLength.Maximum = new decimal(new int[] { 100000, 0, 0, 0 });
             nudMaxContextLength.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
             nudMaxContextLength.Name = "nudMaxContextLength";
-            nudMaxContextLength.Size = new Size(87, 22);
+            nudMaxContextLength.Size = new Size(87, 24);
+            nudMaxContextLength.StateCommon.Border.Rounding = 3F;
             nudMaxContextLength.TabIndex = 21;
             nudMaxContextLength.Value = new decimal(new int[] { 8000, 0, 0, 0 });
             // 
@@ -332,7 +335,8 @@
             nudTopKChunks.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
             nudTopKChunks.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudTopKChunks.Name = "nudTopKChunks";
-            nudTopKChunks.Size = new Size(87, 22);
+            nudTopKChunks.Size = new Size(87, 24);
+            nudTopKChunks.StateCommon.Border.Rounding = 3F;
             nudTopKChunks.TabIndex = 19;
             nudTopKChunks.Value = new decimal(new int[] { 5, 0, 0, 0 });
             // 
@@ -354,7 +358,8 @@
             nudChunkOverlap.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             nudChunkOverlap.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
             nudChunkOverlap.Name = "nudChunkOverlap";
-            nudChunkOverlap.Size = new Size(87, 22);
+            nudChunkOverlap.Size = new Size(87, 24);
+            nudChunkOverlap.StateCommon.Border.Rounding = 3F;
             nudChunkOverlap.TabIndex = 19;
             nudChunkOverlap.Value = new decimal(new int[] { 100, 0, 0, 0 });
             // 
@@ -367,7 +372,8 @@
             nudChunkSize.Maximum = new decimal(new int[] { 4096, 0, 0, 0 });
             nudChunkSize.Minimum = new decimal(new int[] { 100, 0, 0, 0 });
             nudChunkSize.Name = "nudChunkSize";
-            nudChunkSize.Size = new Size(87, 22);
+            nudChunkSize.Size = new Size(87, 24);
+            nudChunkSize.StateCommon.Border.Rounding = 3F;
             nudChunkSize.TabIndex = 17;
             nudChunkSize.Value = new decimal(new int[] { 500, 0, 0, 0 });
             // 
@@ -380,7 +386,8 @@
             nudModelContextLength.Maximum = new decimal(new int[] { 32768, 0, 0, 0 });
             nudModelContextLength.Minimum = new decimal(new int[] { 512, 0, 0, 0 });
             nudModelContextLength.Name = "nudModelContextLength";
-            nudModelContextLength.Size = new Size(87, 22);
+            nudModelContextLength.Size = new Size(87, 24);
+            nudModelContextLength.StateCommon.Border.Rounding = 3F;
             nudModelContextLength.TabIndex = 15;
             nudModelContextLength.Value = new decimal(new int[] { 2048, 0, 0, 0 });
             // 
@@ -390,7 +397,8 @@
             txtEmbeddingModel.Location = new Point(6, 106);
             txtEmbeddingModel.Margin = new Padding(3, 2, 3, 2);
             txtEmbeddingModel.Name = "txtEmbeddingModel";
-            txtEmbeddingModel.Size = new Size(304, 23);
+            txtEmbeddingModel.Size = new Size(304, 25);
+            txtEmbeddingModel.StateCommon.Border.Rounding = 3F;
             txtEmbeddingModel.TabIndex = 13;
             txtEmbeddingModel.Text = "text-embedding-embeddinggemma-300m";
             // 
@@ -467,6 +475,7 @@
             btnTestEmbedding.Margin = new Padding(3, 2, 3, 2);
             btnTestEmbedding.Name = "btnTestEmbedding";
             btnTestEmbedding.Size = new Size(247, 30);
+            btnTestEmbedding.StateNormal.Border.Rounding = 3F;
             btnTestEmbedding.TabIndex = 22;
             btnTestEmbedding.Values.DropDownArrowColor = Color.Empty;
             btnTestEmbedding.Values.Text = "Test Embedding";
@@ -543,6 +552,7 @@
             btnAddMcpServer.Location = new Point(13, 6);
             btnAddMcpServer.Name = "btnAddMcpServer";
             btnAddMcpServer.Size = new Size(50, 25);
+            btnAddMcpServer.StateCommon.Border.Rounding = 3F;
             btnAddMcpServer.TabIndex = 1;
             btnAddMcpServer.Values.DropDownArrowColor = Color.Empty;
             btnAddMcpServer.Values.Text = "Add";
@@ -553,6 +563,7 @@
             btnEditMcpServer.Location = new Point(69, 6);
             btnEditMcpServer.Name = "btnEditMcpServer";
             btnEditMcpServer.Size = new Size(50, 25);
+            btnEditMcpServer.StateCommon.Border.Rounding = 3F;
             btnEditMcpServer.TabIndex = 2;
             btnEditMcpServer.Values.DropDownArrowColor = Color.Empty;
             btnEditMcpServer.Values.Text = "Edit";
@@ -563,6 +574,7 @@
             btnRemoveMcpServer.Location = new Point(125, 6);
             btnRemoveMcpServer.Name = "btnRemoveMcpServer";
             btnRemoveMcpServer.Size = new Size(60, 25);
+            btnRemoveMcpServer.StateCommon.Border.Rounding = 3F;
             btnRemoveMcpServer.TabIndex = 3;
             btnRemoveMcpServer.Values.DropDownArrowColor = Color.Empty;
             btnRemoveMcpServer.Values.Text = "Remove";
@@ -638,6 +650,7 @@
             cmbLanguage.Margin = new Padding(3, 2, 3, 2);
             cmbLanguage.Name = "cmbLanguage";
             cmbLanguage.Size = new Size(330, 22);
+            cmbLanguage.StateCommon.ComboBox.Border.Rounding = 3F;
             cmbLanguage.TabIndex = 16;
             cmbLanguage.SelectedIndexChanged += cmbLanguage_SelectedIndexChanged;
             // 
@@ -670,7 +683,8 @@
             nudServerPort.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
             nudServerPort.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
             nudServerPort.Name = "nudServerPort";
-            nudServerPort.Size = new Size(88, 22);
+            nudServerPort.Size = new Size(88, 24);
+            nudServerPort.StateCommon.Border.Rounding = 3F;
             nudServerPort.TabIndex = 2;
             nudServerPort.Value = new decimal(new int[] { 11550, 0, 0, 0 });
             // 
@@ -689,6 +703,18 @@
             chkEnableAPIServer.Size = new Size(119, 20);
             chkEnableAPIServer.TabIndex = 0;
             chkEnableAPIServer.Values.Text = "Enable API Server";
+            // 
+            // btnSaveAPIServerSettings
+            // 
+            btnSaveAPIServerSettings.Dock = DockStyle.Bottom;
+            btnSaveAPIServerSettings.Location = new Point(0, 495);
+            btnSaveAPIServerSettings.Margin = new Padding(3, 2, 3, 2);
+            btnSaveAPIServerSettings.Name = "btnSaveAPIServerSettings";
+            btnSaveAPIServerSettings.Size = new Size(337, 30);
+            btnSaveAPIServerSettings.TabIndex = 3;
+            btnSaveAPIServerSettings.Values.DropDownArrowColor = Color.Empty;
+            btnSaveAPIServerSettings.Values.Text = "Save";
+            btnSaveAPIServerSettings.Click += btnSave_Click;
             // 
             // claudeCodeSettingsControl
             // 
@@ -745,18 +771,6 @@
             claudeSettingsControl.Name = "claudeSettingsControl";
             claudeSettingsControl.Size = new Size(550, 240);
             claudeSettingsControl.TabIndex = 8;
-            // 
-            // btnSaveAPIServerSettings
-            // 
-            btnSaveAPIServerSettings.Dock = DockStyle.Bottom;
-            btnSaveAPIServerSettings.Location = new Point(0, 495);
-            btnSaveAPIServerSettings.Margin = new Padding(3, 2, 3, 2);
-            btnSaveAPIServerSettings.Name = "btnSaveAPIServerSettings";
-            btnSaveAPIServerSettings.Size = new Size(337, 30);
-            btnSaveAPIServerSettings.TabIndex = 3;
-            btnSaveAPIServerSettings.Values.DropDownArrowColor = Color.Empty;
-            btnSaveAPIServerSettings.Values.Text = "Save";
-            btnSaveAPIServerSettings.Click += btnSave_Click;
             // 
             // SettingsPanel
             // 

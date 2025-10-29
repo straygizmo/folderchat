@@ -47,7 +47,8 @@ namespace folderchat.Forms.ProviderSettings
             txtBaseUrl.Location = new Point(3, 31);
             txtBaseUrl.Margin = new Padding(3, 2, 3, 2);
             txtBaseUrl.Name = "txtBaseUrl";
-            txtBaseUrl.Size = new Size(290, 23);
+            txtBaseUrl.Size = new Size(290, 25);
+            txtBaseUrl.StateCommon.Border.Rounding = 2F;
             txtBaseUrl.TabIndex = 1;
             txtBaseUrl.Text = "http://localhost:1234";
             // 
@@ -58,7 +59,8 @@ namespace folderchat.Forms.ProviderSettings
             txtApiKey.Margin = new Padding(3, 2, 3, 2);
             txtApiKey.Name = "txtApiKey";
             txtApiKey.PasswordChar = '●';
-            txtApiKey.Size = new Size(290, 23);
+            txtApiKey.Size = new Size(290, 25);
+            txtApiKey.StateCommon.Border.Rounding = 2F;
             txtApiKey.TabIndex = 3;
             txtApiKey.UseSystemPasswordChar = true;
             // 
@@ -109,6 +111,7 @@ namespace folderchat.Forms.ProviderSettings
             btnAdd.Margin = new Padding(3, 2, 3, 2);
             btnAdd.Name = "btnAdd";
             btnAdd.Size = new Size(75, 25);
+            btnAdd.StateCommon.Border.Rounding = 2F;
             btnAdd.TabIndex = 6;
             btnAdd.Values.DropDownArrowColor = Color.Empty;
             btnAdd.Values.Text = "⊕ Add";
@@ -120,6 +123,7 @@ namespace folderchat.Forms.ProviderSettings
             btnReset.Margin = new Padding(3, 2, 3, 2);
             btnReset.Name = "btnReset";
             btnReset.Size = new Size(75, 25);
+            btnReset.StateCommon.Border.Rounding = 2F;
             btnReset.TabIndex = 8;
             btnReset.Values.DropDownArrowColor = Color.Empty;
             btnReset.Values.Text = "↻ Reset";
@@ -131,6 +135,7 @@ namespace folderchat.Forms.ProviderSettings
             btnFetch.Margin = new Padding(3, 2, 3, 2);
             btnFetch.Name = "btnFetch";
             btnFetch.Size = new Size(75, 25);
+            btnFetch.StateCommon.Border.Rounding = 2F;
             btnFetch.TabIndex = 7;
             btnFetch.Values.DropDownArrowColor = Color.Empty;
             btnFetch.Values.Text = "⚙ Fetch";

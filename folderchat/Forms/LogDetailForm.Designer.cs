@@ -49,15 +49,16 @@ namespace folderchat.Forms
             kryptonPanel1.Dock = DockStyle.Fill;
             kryptonPanel1.Location = new Point(0, 0);
             kryptonPanel1.Name = "kryptonPanel1";
-            kryptonPanel1.Size = new Size(626, 303);
+            kryptonPanel1.Size = new Size(634, 279);
             kryptonPanel1.TabIndex = 0;
             // 
             // btnClose
             // 
             btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnClose.Location = new Point(491, 276);
+            btnClose.Location = new Point(499, 252);
             btnClose.Name = "btnClose";
             btnClose.Size = new Size(90, 25);
+            btnClose.StateCommon.Border.Rounding = 3F;
             btnClose.TabIndex = 4;
             btnClose.Values.DropDownArrowColor = Color.Empty;
             btnClose.Values.Text = "Close";
@@ -70,7 +71,8 @@ namespace folderchat.Forms
             txtMessage.Multiline = true;
             txtMessage.Name = "txtMessage";
             txtMessage.ScrollBars = ScrollBars.Vertical;
-            txtMessage.Size = new Size(600, 174);
+            txtMessage.Size = new Size(608, 150);
+            txtMessage.StateCommon.Border.Rounding = 3F;
             txtMessage.TabIndex = 3;
             // 
             // lblMessageHeader
@@ -101,14 +103,16 @@ namespace folderchat.Forms
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(626, 303);
+            ClientSize = new Size(634, 279);
             Controls.Add(kryptonPanel1);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Location = new Point(0, 0);
             MaximizeBox = false;
             MinimizeBox = false;
             MinimumSize = new Size(300, 200);
             Name = "LogDetailForm";
             StartPosition = FormStartPosition.CenterScreen;
+            StateCommon.Border.Rounding = 8F;
             Text = "Log Details";
             ((System.ComponentModel.ISupportInitialize)kryptonPanel1).EndInit();
             kryptonPanel1.ResumeLayout(false);

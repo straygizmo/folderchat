@@ -58,7 +58,8 @@ namespace folderchat.Forms.ProviderSettings
             txtApiUrl.Location = new Point(3, 31);
             txtApiUrl.Margin = new Padding(3, 2, 3, 2);
             txtApiUrl.Name = "txtApiUrl";
-            txtApiUrl.Size = new Size(544, 23);
+            txtApiUrl.Size = new Size(544, 25);
+            txtApiUrl.StateCommon.Border.Rounding = 2F;
             txtApiUrl.TabIndex = 3;
             txtApiUrl.Text = "https://YOUR_RESOURCE_NAME.openai.azure.com";
             // 
@@ -77,7 +78,8 @@ namespace folderchat.Forms.ProviderSettings
             txtApiVersion.Location = new Point(3, 80);
             txtApiVersion.Margin = new Padding(3, 2, 3, 2);
             txtApiVersion.Name = "txtApiVersion";
-            txtApiVersion.Size = new Size(544, 23);
+            txtApiVersion.Size = new Size(544, 25);
+            txtApiVersion.StateCommon.Border.Rounding = 2F;
             txtApiVersion.TabIndex = 5;
             txtApiVersion.Text = "2025-01-01-preview";
             // 
@@ -97,7 +99,8 @@ namespace folderchat.Forms.ProviderSettings
             txtApiKey.Margin = new Padding(3, 2, 3, 2);
             txtApiKey.Name = "txtApiKey";
             txtApiKey.PasswordChar = '●';
-            txtApiKey.Size = new Size(544, 23);
+            txtApiKey.Size = new Size(544, 25);
+            txtApiKey.StateCommon.Border.Rounding = 2F;
             txtApiKey.TabIndex = 7;
             txtApiKey.UseSystemPasswordChar = true;
             // 
@@ -120,7 +123,9 @@ namespace folderchat.Forms.ProviderSettings
             cmbModelList.Margin = new Padding(3, 2, 3, 2);
             cmbModelList.Name = "cmbModelList";
             cmbModelList.Size = new Size(544, 22);
+            cmbModelList.StateCommon.ComboBox.Border.Rounding = 2F;
             cmbModelList.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
+            cmbModelList.StateCommon.Item.Border.Rounding = 2F;
             cmbModelList.TabIndex = 9;
             // 
             // btnAdd
@@ -129,6 +134,7 @@ namespace folderchat.Forms.ProviderSettings
             btnAdd.Margin = new Padding(3, 2, 3, 2);
             btnAdd.Name = "btnAdd";
             btnAdd.Size = new Size(75, 25);
+            btnAdd.StateCommon.Border.Rounding = 2F;
             btnAdd.TabIndex = 10;
             btnAdd.Values.DropDownArrowColor = Color.Empty;
             btnAdd.Values.Text = "⊕ Add";
@@ -140,6 +146,7 @@ namespace folderchat.Forms.ProviderSettings
             btnFetch.Margin = new Padding(3, 2, 3, 2);
             btnFetch.Name = "btnFetch";
             btnFetch.Size = new Size(75, 25);
+            btnFetch.StateCommon.Border.Rounding = 2F;
             btnFetch.TabIndex = 11;
             btnFetch.Values.DropDownArrowColor = Color.Empty;
             btnFetch.Values.Text = "⚙ Fetch";
@@ -151,6 +158,7 @@ namespace folderchat.Forms.ProviderSettings
             btnReset.Margin = new Padding(3, 2, 3, 2);
             btnReset.Name = "btnReset";
             btnReset.Size = new Size(75, 25);
+            btnReset.StateCommon.Border.Rounding = 2F;
             btnReset.TabIndex = 12;
             btnReset.Values.DropDownArrowColor = Color.Empty;
             btnReset.Values.Text = "⊖ Remove";
