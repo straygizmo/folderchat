@@ -74,8 +74,8 @@
             txtName.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtName.Location = new Point(120, 12);
             txtName.Name = "txtName";
-            txtName.Size = new Size(479, 25);
-            txtName.StateCommon.Border.Rounding = 3F;
+            txtName.Size = new Size(491, 25);
+            txtName.StateCommon.Border.Rounding = 4F;
             txtName.TabIndex = 1;
             // 
             // lblCommand
@@ -91,7 +91,7 @@
             txtCommand.Location = new Point(120, 41);
             txtCommand.Name = "txtCommand";
             txtCommand.Size = new Size(439, 25);
-            txtCommand.StateCommon.Border.Rounding = 3F;
+            txtCommand.StateCommon.Border.Rounding = 4F;
             txtCommand.TabIndex = 3;
             // 
             // btnBrowseCommand
@@ -99,6 +99,7 @@
             btnBrowseCommand.Location = new Point(565, 41);
             btnBrowseCommand.Name = "btnBrowseCommand";
             btnBrowseCommand.Size = new Size(30, 23);
+            btnBrowseCommand.StateCommon.Border.Rounding = 3F;
             btnBrowseCommand.StateNormal.Border.Rounding = 3F;
             btnBrowseCommand.TabIndex = 4;
             btnBrowseCommand.Values.DropDownArrowColor = Color.Empty;
@@ -120,8 +121,8 @@
             txtArguments.Multiline = true;
             txtArguments.Name = "txtArguments";
             txtArguments.ScrollBars = ScrollBars.Both;
-            txtArguments.Size = new Size(479, 100);
-            txtArguments.StateCommon.Border.Rounding = 3F;
+            txtArguments.Size = new Size(491, 100);
+            txtArguments.StateCommon.Border.Rounding = 4F;
             txtArguments.TabIndex = 6;
             // 
             // lblWorkingDirectory
@@ -137,7 +138,7 @@
             txtWorkingDirectory.Location = new Point(120, 176);
             txtWorkingDirectory.Name = "txtWorkingDirectory";
             txtWorkingDirectory.Size = new Size(439, 25);
-            txtWorkingDirectory.StateCommon.Border.Rounding = 3F;
+            txtWorkingDirectory.StateCommon.Border.Rounding = 4F;
             txtWorkingDirectory.TabIndex = 8;
             // 
             // btnBrowseWorkingDirectory
@@ -145,6 +146,7 @@
             btnBrowseWorkingDirectory.Location = new Point(565, 176);
             btnBrowseWorkingDirectory.Name = "btnBrowseWorkingDirectory";
             btnBrowseWorkingDirectory.Size = new Size(30, 23);
+            btnBrowseWorkingDirectory.StateCommon.Border.Rounding = 3F;
             btnBrowseWorkingDirectory.StateNormal.Border.Rounding = 3F;
             btnBrowseWorkingDirectory.TabIndex = 9;
             btnBrowseWorkingDirectory.Values.DropDownArrowColor = Color.Empty;
@@ -167,7 +169,7 @@
             cmbTransportType.Location = new Point(120, 205);
             cmbTransportType.Name = "cmbTransportType";
             cmbTransportType.Size = new Size(121, 24);
-            cmbTransportType.StateCommon.ComboBox.Border.Rounding = 3F;
+            cmbTransportType.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbTransportType.TabIndex = 11;
             cmbTransportType.Text = "Stdio";
             // 
@@ -185,8 +187,8 @@
             txtDescription.Location = new Point(120, 234);
             txtDescription.Multiline = true;
             txtDescription.Name = "txtDescription";
-            txtDescription.Size = new Size(479, 50);
-            txtDescription.StateCommon.Border.Rounding = 3F;
+            txtDescription.Size = new Size(491, 50);
+            txtDescription.StateCommon.Border.Rounding = 4F;
             txtDescription.TabIndex = 13;
             // 
             // chkEnabled
@@ -215,20 +217,21 @@
             dgvEnvironmentVariables.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1, dataGridViewTextBoxColumn2 });
             dgvEnvironmentVariables.Location = new Point(120, 342);
             dgvEnvironmentVariables.Name = "dgvEnvironmentVariables";
-            dgvEnvironmentVariables.Size = new Size(479, 120);
+            dgvEnvironmentVariables.RowHeadersWidth = 26;
+            dgvEnvironmentVariables.Size = new Size(491, 120);
             dgvEnvironmentVariables.TabIndex = 16;
             // 
             // dataGridViewTextBoxColumn1
             // 
             dataGridViewTextBoxColumn1.HeaderText = "Key";
             dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            dataGridViewTextBoxColumn1.Width = 170;
+            dataGridViewTextBoxColumn1.Width = 190;
             // 
             // dataGridViewTextBoxColumn2
             // 
             dataGridViewTextBoxColumn2.HeaderText = "Value";
             dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            dataGridViewTextBoxColumn2.Width = 240;
+            dataGridViewTextBoxColumn2.Width = 250;
             // 
             // btnOK
             // 
@@ -236,6 +239,7 @@
             btnOK.Location = new Point(397, 477);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(77, 25);
+            btnOK.StateCommon.Border.Rounding = 3F;
             btnOK.StateNormal.Border.Rounding = 3F;
             btnOK.TabIndex = 18;
             btnOK.Values.DropDownArrowColor = Color.Empty;
@@ -248,6 +252,7 @@
             btnCancel.Location = new Point(478, 477);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(77, 25);
+            btnCancel.StateCommon.Border.Rounding = 3F;
             btnCancel.StateNormal.Border.Rounding = 3F;
             btnCancel.TabIndex = 19;
             btnCancel.Values.DropDownArrowColor = Color.Empty;
@@ -259,6 +264,7 @@
             btnTest.Location = new Point(120, 477);
             btnTest.Name = "btnTest";
             btnTest.Size = new Size(75, 25);
+            btnTest.StateCommon.Border.Rounding = 3F;
             btnTest.StateNormal.Border.Rounding = 3F;
             btnTest.TabIndex = 17;
             btnTest.Values.DropDownArrowColor = Color.Empty;
@@ -271,7 +277,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(617, 518);
+            ClientSize = new Size(629, 518);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(btnTest);

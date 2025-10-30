@@ -775,16 +775,17 @@ chkEnableAPIServer.CheckedChanged += ChkEnableAPIServer_CheckedChanged;
             {
                 Name = "Enabled",
                 HeaderText = "Enabled",
-                Width = 60,
+                Width = 50,
                 ReadOnly = false
             };
             dgvMcpServers.Columns.Add(enabledColumn);
 
-            dgvMcpServers.Columns[0].Width = 100;
+            dgvMcpServers.RowHeadersWidth = 25;
+            dgvMcpServers.Columns[0].Width = 115;   // Name column
             dgvMcpServers.Columns[0].ReadOnly = true;
-            dgvMcpServers.Columns[1].Width = 70;
+            dgvMcpServers.Columns[1].Width = 85;    // Status column
             dgvMcpServers.Columns[1].ReadOnly = true;
-            dgvMcpServers.Columns[2].Width = 50;
+            dgvMcpServers.Columns[2].Width = 40;    // Type column
             dgvMcpServers.Columns[2].ReadOnly = true;
 
             // Handle checkbox cell click

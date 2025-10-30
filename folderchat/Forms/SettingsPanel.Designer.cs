@@ -181,8 +181,8 @@
             cmbChatGGUFModel.Location = new Point(8, 53);
             cmbChatGGUFModel.Margin = new Padding(3, 2, 3, 2);
             cmbChatGGUFModel.Name = "cmbChatGGUFModel";
-            cmbChatGGUFModel.Size = new Size(320, 22);
-            cmbChatGGUFModel.StateCommon.ComboBox.Border.Rounding = 3F;
+            cmbChatGGUFModel.Size = new Size(320, 24);
+            cmbChatGGUFModel.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbChatGGUFModel.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbChatGGUFModel.TabIndex = 18;
             // 
@@ -194,7 +194,8 @@
             cmbAPIProvider.Items.AddRange(new object[] { "Azure AI Foundry", "Claude", "Claude Code", "Gemini", "Ollama", "OpenAI", "OpenAI Compatible", "OpenRouter" });
             cmbAPIProvider.Location = new Point(8, 53);
             cmbAPIProvider.Name = "cmbAPIProvider";
-            cmbAPIProvider.Size = new Size(320, 22);
+            cmbAPIProvider.Size = new Size(320, 24);
+            cmbAPIProvider.StateCommon.ComboBox.Border.Rounding = 3F;
             cmbAPIProvider.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbAPIProvider.TabIndex = 1;
             cmbAPIProvider.SelectedIndexChanged += cmbAPIProvider_SelectedIndexChanged;
@@ -298,8 +299,8 @@
             cmbGGUFModel.Location = new Point(6, 55);
             cmbGGUFModel.Margin = new Padding(3, 2, 3, 2);
             cmbGGUFModel.Name = "cmbGGUFModel";
-            cmbGGUFModel.Size = new Size(304, 22);
-            cmbGGUFModel.StateCommon.ComboBox.Border.Rounding = 3F;
+            cmbGGUFModel.Size = new Size(304, 24);
+            cmbGGUFModel.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbGGUFModel.TabIndex = 9;
             cmbGGUFModel.Visible = false;
             // 
@@ -313,7 +314,7 @@
             nudMaxContextLength.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
             nudMaxContextLength.Name = "nudMaxContextLength";
             nudMaxContextLength.Size = new Size(87, 24);
-            nudMaxContextLength.StateCommon.Border.Rounding = 3F;
+            nudMaxContextLength.StateCommon.Border.Rounding = 4F;
             nudMaxContextLength.TabIndex = 21;
             nudMaxContextLength.Value = new decimal(new int[] { 8000, 0, 0, 0 });
             // 
@@ -336,7 +337,7 @@
             nudTopKChunks.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudTopKChunks.Name = "nudTopKChunks";
             nudTopKChunks.Size = new Size(87, 24);
-            nudTopKChunks.StateCommon.Border.Rounding = 3F;
+            nudTopKChunks.StateCommon.Border.Rounding = 4F;
             nudTopKChunks.TabIndex = 19;
             nudTopKChunks.Value = new decimal(new int[] { 5, 0, 0, 0 });
             // 
@@ -359,7 +360,7 @@
             nudChunkOverlap.Minimum = new decimal(new int[] { 0, 0, 0, 0 });
             nudChunkOverlap.Name = "nudChunkOverlap";
             nudChunkOverlap.Size = new Size(87, 24);
-            nudChunkOverlap.StateCommon.Border.Rounding = 3F;
+            nudChunkOverlap.StateCommon.Border.Rounding = 4F;
             nudChunkOverlap.TabIndex = 19;
             nudChunkOverlap.Value = new decimal(new int[] { 100, 0, 0, 0 });
             // 
@@ -373,7 +374,7 @@
             nudChunkSize.Minimum = new decimal(new int[] { 100, 0, 0, 0 });
             nudChunkSize.Name = "nudChunkSize";
             nudChunkSize.Size = new Size(87, 24);
-            nudChunkSize.StateCommon.Border.Rounding = 3F;
+            nudChunkSize.StateCommon.Border.Rounding = 4F;
             nudChunkSize.TabIndex = 17;
             nudChunkSize.Value = new decimal(new int[] { 500, 0, 0, 0 });
             // 
@@ -387,7 +388,7 @@
             nudModelContextLength.Minimum = new decimal(new int[] { 512, 0, 0, 0 });
             nudModelContextLength.Name = "nudModelContextLength";
             nudModelContextLength.Size = new Size(87, 24);
-            nudModelContextLength.StateCommon.Border.Rounding = 3F;
+            nudModelContextLength.StateCommon.Border.Rounding = 4F;
             nudModelContextLength.TabIndex = 15;
             nudModelContextLength.Value = new decimal(new int[] { 2048, 0, 0, 0 });
             // 
@@ -398,7 +399,7 @@
             txtEmbeddingModel.Margin = new Padding(3, 2, 3, 2);
             txtEmbeddingModel.Name = "txtEmbeddingModel";
             txtEmbeddingModel.Size = new Size(304, 25);
-            txtEmbeddingModel.StateCommon.Border.Rounding = 3F;
+            txtEmbeddingModel.StateCommon.Border.Rounding = 4F;
             txtEmbeddingModel.TabIndex = 13;
             txtEmbeddingModel.Text = "text-embedding-embeddinggemma-300m";
             // 
@@ -409,6 +410,7 @@
             txtEmbeddingUrl.Margin = new Padding(3, 2, 3, 2);
             txtEmbeddingUrl.Name = "txtEmbeddingUrl";
             txtEmbeddingUrl.Size = new Size(304, 23);
+            txtEmbeddingUrl.StateCommon.Border.Rounding = 4F;
             txtEmbeddingUrl.TabIndex = 11;
             txtEmbeddingUrl.Text = "http://localhost:/1234";
             // 
@@ -475,6 +477,7 @@
             btnTestEmbedding.Margin = new Padding(3, 2, 3, 2);
             btnTestEmbedding.Name = "btnTestEmbedding";
             btnTestEmbedding.Size = new Size(247, 30);
+            btnTestEmbedding.StateCommon.Border.Rounding = 4F;
             btnTestEmbedding.StateNormal.Border.Rounding = 3F;
             btnTestEmbedding.TabIndex = 22;
             btnTestEmbedding.Values.DropDownArrowColor = Color.Empty;
@@ -552,7 +555,7 @@
             btnAddMcpServer.Location = new Point(13, 6);
             btnAddMcpServer.Name = "btnAddMcpServer";
             btnAddMcpServer.Size = new Size(50, 25);
-            btnAddMcpServer.StateCommon.Border.Rounding = 3F;
+            btnAddMcpServer.StateCommon.Border.Rounding = 5F;
             btnAddMcpServer.TabIndex = 1;
             btnAddMcpServer.Values.DropDownArrowColor = Color.Empty;
             btnAddMcpServer.Values.Text = "Add";
@@ -563,7 +566,7 @@
             btnEditMcpServer.Location = new Point(69, 6);
             btnEditMcpServer.Name = "btnEditMcpServer";
             btnEditMcpServer.Size = new Size(50, 25);
-            btnEditMcpServer.StateCommon.Border.Rounding = 3F;
+            btnEditMcpServer.StateCommon.Border.Rounding = 5F;
             btnEditMcpServer.TabIndex = 2;
             btnEditMcpServer.Values.DropDownArrowColor = Color.Empty;
             btnEditMcpServer.Values.Text = "Edit";
@@ -574,7 +577,7 @@
             btnRemoveMcpServer.Location = new Point(125, 6);
             btnRemoveMcpServer.Name = "btnRemoveMcpServer";
             btnRemoveMcpServer.Size = new Size(60, 25);
-            btnRemoveMcpServer.StateCommon.Border.Rounding = 3F;
+            btnRemoveMcpServer.StateCommon.Border.Rounding = 5F;
             btnRemoveMcpServer.TabIndex = 3;
             btnRemoveMcpServer.Values.DropDownArrowColor = Color.Empty;
             btnRemoveMcpServer.Values.Text = "Remove";
@@ -649,8 +652,8 @@
             cmbLanguage.Location = new Point(4, 30);
             cmbLanguage.Margin = new Padding(3, 2, 3, 2);
             cmbLanguage.Name = "cmbLanguage";
-            cmbLanguage.Size = new Size(330, 22);
-            cmbLanguage.StateCommon.ComboBox.Border.Rounding = 3F;
+            cmbLanguage.Size = new Size(330, 24);
+            cmbLanguage.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbLanguage.TabIndex = 16;
             cmbLanguage.SelectedIndexChanged += cmbLanguage_SelectedIndexChanged;
             // 
@@ -684,13 +687,13 @@
             nudServerPort.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
             nudServerPort.Name = "nudServerPort";
             nudServerPort.Size = new Size(88, 24);
-            nudServerPort.StateCommon.Border.Rounding = 3F;
+            nudServerPort.StateCommon.Border.Rounding = 4F;
             nudServerPort.TabIndex = 2;
             nudServerPort.Value = new decimal(new int[] { 11550, 0, 0, 0 });
             // 
             // lblServerPort
             // 
-            lblServerPort.Location = new Point(22, 62);
+            lblServerPort.Location = new Point(22, 64);
             lblServerPort.Name = "lblServerPort";
             lblServerPort.Size = new Size(73, 20);
             lblServerPort.TabIndex = 1;

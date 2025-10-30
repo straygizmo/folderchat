@@ -57,7 +57,7 @@ namespace folderchat.Forms.ProviderSettings
             txtApiUrl.Margin = new Padding(3, 2, 3, 2);
             txtApiUrl.Name = "txtApiUrl";
             txtApiUrl.Size = new Size(544, 25);
-            txtApiUrl.StateCommon.Border.Rounding = 2F;
+            txtApiUrl.StateCommon.Border.Rounding = 4F;
             txtApiUrl.TabIndex = 1;
             txtApiUrl.Text = "https://api.openai.com/v1";
             // 
@@ -78,7 +78,7 @@ namespace folderchat.Forms.ProviderSettings
             txtApiKey.Name = "txtApiKey";
             txtApiKey.PasswordChar = '●';
             txtApiKey.Size = new Size(544, 25);
-            txtApiKey.StateCommon.Border.Rounding = 2F;
+            txtApiKey.StateCommon.Border.Rounding = 4F;
             txtApiKey.TabIndex = 3;
             txtApiKey.UseSystemPasswordChar = true;
             // 
@@ -100,8 +100,8 @@ namespace folderchat.Forms.ProviderSettings
             cmbModelList.Location = new Point(3, 156);
             cmbModelList.Margin = new Padding(3, 2, 3, 2);
             cmbModelList.Name = "cmbModelList";
-            cmbModelList.Size = new Size(544, 22);
-            cmbModelList.StateCommon.ComboBox.Border.Rounding = 2F;
+            cmbModelList.Size = new Size(544, 24);
+            cmbModelList.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbModelList.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbModelList.TabIndex = 5;
             // 
@@ -111,7 +111,7 @@ namespace folderchat.Forms.ProviderSettings
             btnAdd.Margin = new Padding(3, 2, 3, 2);
             btnAdd.Name = "btnAdd";
             btnAdd.Size = new Size(75, 25);
-            btnAdd.StateCommon.Border.Rounding = 2F;
+            btnAdd.StateCommon.Border.Rounding = 4F;
             btnAdd.TabIndex = 6;
             btnAdd.Values.DropDownArrowColor = Color.Empty;
             btnAdd.Values.Text = "⊕ Add";
@@ -123,7 +123,7 @@ namespace folderchat.Forms.ProviderSettings
             btnReset.Margin = new Padding(3, 2, 3, 2);
             btnReset.Name = "btnReset";
             btnReset.Size = new Size(75, 25);
-            btnReset.StateCommon.Border.Rounding = 2F;
+            btnReset.StateCommon.Border.Rounding = 4F;
             btnReset.TabIndex = 8;
             btnReset.Values.DropDownArrowColor = Color.Empty;
             btnReset.Values.Text = "⊖ Remove";
@@ -135,7 +135,7 @@ namespace folderchat.Forms.ProviderSettings
             btnFetch.Margin = new Padding(3, 2, 3, 2);
             btnFetch.Name = "btnFetch";
             btnFetch.Size = new Size(75, 25);
-            btnFetch.StateCommon.Border.Rounding = 2F;
+            btnFetch.StateCommon.Border.Rounding = 4F;
             btnFetch.TabIndex = 7;
             btnFetch.Values.DropDownArrowColor = Color.Empty;
             btnFetch.Values.Text = "⚙ Fetch";

@@ -42,7 +42,8 @@ namespace folderchat.Forms.ProviderSettings
             txtClaudeCodePath.Location = new Point(3, 31);
             txtClaudeCodePath.Margin = new Padding(3, 2, 3, 2);
             txtClaudeCodePath.Name = "txtClaudeCodePath";
-            txtClaudeCodePath.Size = new Size(290, 23);
+            txtClaudeCodePath.Size = new Size(290, 25);
+            txtClaudeCodePath.StateCommon.Border.Rounding = 4F;
             txtClaudeCodePath.TabIndex = 1;
             txtClaudeCodePath.Text = "claude";
             // 
@@ -55,6 +56,7 @@ namespace folderchat.Forms.ProviderSettings
             cmbClaudeModel.Location = new Point(3, 80);
             cmbClaudeModel.Name = "cmbClaudeModel";
             cmbClaudeModel.Size = new Size(290, 22);
+            cmbClaudeModel.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbClaudeModel.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbClaudeModel.TabIndex = 3;
             // 
@@ -81,7 +83,7 @@ namespace folderchat.Forms.ProviderSettings
             chkSupportSystemMessage.Enabled = false;
             chkSupportSystemMessage.Location = new Point(3, 117);
             chkSupportSystemMessage.Name = "chkSupportSystemMessage";
-            chkSupportSystemMessage.Size = new Size(161, 20);
+            chkSupportSystemMessage.Size = new Size(143, 20);
             chkSupportSystemMessage.TabIndex = 14;
             chkSupportSystemMessage.Values.Text = "Supports System Role";
             // 

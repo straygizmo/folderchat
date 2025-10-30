@@ -54,7 +54,8 @@ namespace folderchat.Forms.ProviderSettings
             txtApiUrl.Location = new Point(3, 31);
             txtApiUrl.Margin = new Padding(3, 2, 3, 2);
             txtApiUrl.Name = "txtApiUrl";
-            txtApiUrl.Size = new Size(544, 23);
+            txtApiUrl.Size = new Size(544, 25);
+            txtApiUrl.StateCommon.Border.Rounding = 4F;
             txtApiUrl.TabIndex = 1;
             txtApiUrl.Text = "http://localhost:11434";
             // 
@@ -77,6 +78,7 @@ namespace folderchat.Forms.ProviderSettings
             cmbModelList.Margin = new Padding(3, 2, 3, 2);
             cmbModelList.Name = "cmbModelList";
             cmbModelList.Size = new Size(544, 22);
+            cmbModelList.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbModelList.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbModelList.TabIndex = 3;
             // 
@@ -86,6 +88,7 @@ namespace folderchat.Forms.ProviderSettings
             btnAdd.Margin = new Padding(3, 2, 3, 2);
             btnAdd.Name = "btnAdd";
             btnAdd.Size = new Size(75, 25);
+            btnAdd.StateCommon.Border.Rounding = 4F;
             btnAdd.TabIndex = 4;
             btnAdd.Values.DropDownArrowColor = Color.Empty;
             btnAdd.Values.Text = "⊕ Add";
@@ -97,6 +100,7 @@ namespace folderchat.Forms.ProviderSettings
             btnFetch.Margin = new Padding(3, 2, 3, 2);
             btnFetch.Name = "btnFetch";
             btnFetch.Size = new Size(75, 25);
+            btnFetch.StateCommon.Border.Rounding = 4F;
             btnFetch.TabIndex = 5;
             btnFetch.Values.DropDownArrowColor = Color.Empty;
             btnFetch.Values.Text = "⚙ Fetch";
@@ -108,6 +112,7 @@ namespace folderchat.Forms.ProviderSettings
             btnReset.Margin = new Padding(3, 2, 3, 2);
             btnReset.Name = "btnReset";
             btnReset.Size = new Size(75, 25);
+            btnReset.StateCommon.Border.Rounding = 4F;
             btnReset.TabIndex = 6;
             btnReset.Values.DropDownArrowColor = Color.Empty;
             btnReset.Values.Text = "⊖ Remove";
