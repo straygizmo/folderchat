@@ -141,7 +141,7 @@
             tabPageChat.Padding = new Padding(3, 2, 3, 2);
             tabPageChat.Size = new Size(337, 525);
             tabPageChat.TabIndex = 0;
-            tabPageChat.Text = "Chat Settings";
+            tabPageChat.Text = "Chat";
             tabPageChat.UseVisualStyleBackColor = true;
             // 
             // kPanelGGUFProviderSettings
@@ -260,7 +260,7 @@
             tabPageRAG.Padding = new Padding(3, 2, 3, 2);
             tabPageRAG.Size = new Size(337, 525);
             tabPageRAG.TabIndex = 1;
-            tabPageRAG.Text = "RAG Settings";
+            tabPageRAG.Text = "RAG";
             tabPageRAG.UseVisualStyleBackColor = true;
             // 
             // kPanelRAGTop
@@ -409,7 +409,7 @@
             txtEmbeddingUrl.Location = new Point(6, 55);
             txtEmbeddingUrl.Margin = new Padding(3, 2, 3, 2);
             txtEmbeddingUrl.Name = "txtEmbeddingUrl";
-            txtEmbeddingUrl.Size = new Size(304, 23);
+            txtEmbeddingUrl.Size = new Size(304, 25);
             txtEmbeddingUrl.StateCommon.Border.Rounding = 4F;
             txtEmbeddingUrl.TabIndex = 11;
             txtEmbeddingUrl.Text = "http://localhost:/1234";

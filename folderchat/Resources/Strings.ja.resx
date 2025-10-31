@@ -145,8 +145,8 @@
   <data name="TabRAG" xml:space="preserve">
     <value>RAG</value>
   </data>
-  <data name="TabTheme" xml:space="preserve">
-    <value>テーマ</value>
+  <data name="TabGeneral" xml:space="preserve">
+    <value>一般</value>
   </data>
   <data name="TabMCP" xml:space="preserve">
     <value>MCP</value>

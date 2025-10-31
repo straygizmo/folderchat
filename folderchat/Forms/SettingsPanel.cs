@@ -464,7 +464,7 @@ chkEnableAPIServer.CheckedChanged += ChkEnableAPIServer_CheckedChanged;
             // Update tab names
             tabPageChat.Text = loc.GetString("TabChat");
             tabPageRAG.Text = loc.GetString("TabRAG");
-            tabPageGeneral.Text = loc.GetString("TabTheme");
+            tabPageGeneral.Text = loc.GetString("TabGeneral");
             tabPageMCP.Text = loc.GetString("TabMCP");
 
             // Update labels in Settings
