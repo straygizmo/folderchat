@@ -43,12 +43,6 @@ namespace folderchat.Forms
             tabPageRAG = new TabPage();
             btnSaveRAGSettings = new Krypton.Toolkit.KryptonButton();
             tabPageMCP = new TabPage();
-            dgvMcpServers = new Krypton.Toolkit.KryptonDataGridView();
-            kPanelMCPBottom = new Krypton.Toolkit.KryptonPanel();
-            btnAddMcpServer = new Krypton.Toolkit.KryptonButton();
-            btnEditMcpServer = new Krypton.Toolkit.KryptonButton();
-            btnRemoveMcpServer = new Krypton.Toolkit.KryptonButton();
-            rtbMcpLog = new Krypton.Toolkit.KryptonRichTextBox();
             tabPageGeneral = new TabPage();
             kryptonThemeListBox1 = new Krypton.Toolkit.KryptonThemeListBox();
             kryptonPanel4 = new Krypton.Toolkit.KryptonPanel();
@@ -71,23 +65,20 @@ namespace folderchat.Forms
             claudeSettingsControl = new folderchat.Forms.ProviderSettings.ClaudeProviderSettingsControl();
             tabSettings.SuspendLayout();
             tabPageChat.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(kPanelGGUFProviderSettings)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(kPanelAPIProviderSettings)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(kPanelChatSettingTop)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)kPanelGGUFProviderSettings).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)kPanelAPIProviderSettings).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)kPanelChatSettingTop).BeginInit();
             kPanelChatSettingTop.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(cmbChatGGUFModel)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(cmbAPIProvider)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)cmbChatGGUFModel).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)cmbAPIProvider).BeginInit();
             tabPageRAG.SuspendLayout();
             tabPageMCP.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(dgvMcpServers)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(kPanelMCPBottom)).BeginInit();
-            kPanelMCPBottom.SuspendLayout();
             tabPageGeneral.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(kryptonPanel4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)kryptonPanel4).BeginInit();
             kryptonPanel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(cmbLanguage)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)cmbLanguage).BeginInit();
             tabPageServer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(kPanelAPI)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)kPanelAPI).BeginInit();
             kPanelAPI.SuspendLayout();
             SuspendLayout();
             // 
@@ -155,7 +146,7 @@ namespace folderchat.Forms
             cmbChatGGUFModel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cmbChatGGUFModel.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbChatGGUFModel.DropDownWidth = 304;
-            cmbChatGGUFModel.Location = new Point(8, 53);
+            cmbChatGGUFModel.Location = new Point(7, 53);
             cmbChatGGUFModel.Margin = new Padding(3, 2, 3, 2);
             cmbChatGGUFModel.Name = "cmbChatGGUFModel";
             cmbChatGGUFModel.Size = new Size(320, 24);
@@ -179,7 +170,7 @@ namespace folderchat.Forms
             // 
             // lblAPIProvider
             // 
-            lblAPIProvider.Location = new Point(8, 34);
+            lblAPIProvider.Location = new Point(7, 34);
             lblAPIProvider.Margin = new Padding(3, 2, 3, 2);
             lblAPIProvider.Name = "lblAPIProvider";
             lblAPIProvider.Size = new Size(80, 20);
@@ -253,82 +244,12 @@ namespace folderchat.Forms
             // 
             // tabPageMCP
             // 
-            tabPageMCP.Controls.Add(dgvMcpServers);
-            tabPageMCP.Controls.Add(kPanelMCPBottom);
-            tabPageMCP.Controls.Add(rtbMcpLog);
             tabPageMCP.Location = new Point(4, 24);
             tabPageMCP.Name = "tabPageMCP";
             tabPageMCP.Size = new Size(337, 525);
             tabPageMCP.TabIndex = 3;
             tabPageMCP.Text = "MCP";
             tabPageMCP.UseVisualStyleBackColor = true;
-            // 
-            // dgvMcpServers
-            // 
-            dgvMcpServers.BorderStyle = BorderStyle.None;
-            dgvMcpServers.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvMcpServers.Dock = DockStyle.Fill;
-            dgvMcpServers.Location = new Point(0, 41);
-            dgvMcpServers.Name = "dgvMcpServers";
-            dgvMcpServers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMcpServers.Size = new Size(337, 296);
-            dgvMcpServers.TabIndex = 0;
-            dgvMcpServers.CellDoubleClick += DgvMcpServers_CellDoubleClick;
-            dgvMcpServers.KeyDown += DgvMcpServers_KeyDown;
-            // 
-            // kPanelMCPBottom
-            // 
-            kPanelMCPBottom.Controls.Add(btnAddMcpServer);
-            kPanelMCPBottom.Controls.Add(btnEditMcpServer);
-            kPanelMCPBottom.Controls.Add(btnRemoveMcpServer);
-            kPanelMCPBottom.Dock = DockStyle.Top;
-            kPanelMCPBottom.Location = new Point(0, 0);
-            kPanelMCPBottom.Name = "kPanelMCPBottom";
-            kPanelMCPBottom.Size = new Size(337, 41);
-            kPanelMCPBottom.TabIndex = 0;
-            // 
-            // btnAddMcpServer
-            // 
-            btnAddMcpServer.Location = new Point(13, 6);
-            btnAddMcpServer.Name = "btnAddMcpServer";
-            btnAddMcpServer.Size = new Size(50, 25);
-            btnAddMcpServer.StateCommon.Border.Rounding = 5F;
-            btnAddMcpServer.TabIndex = 1;
-            btnAddMcpServer.Values.DropDownArrowColor = Color.Empty;
-            btnAddMcpServer.Values.Text = "Add";
-            btnAddMcpServer.Click += BtnAddMcpServer_Click;
-            // 
-            // btnEditMcpServer
-            // 
-            btnEditMcpServer.Location = new Point(69, 6);
-            btnEditMcpServer.Name = "btnEditMcpServer";
-            btnEditMcpServer.Size = new Size(50, 25);
-            btnEditMcpServer.StateCommon.Border.Rounding = 5F;
-            btnEditMcpServer.TabIndex = 2;
-            btnEditMcpServer.Values.DropDownArrowColor = Color.Empty;
-            btnEditMcpServer.Values.Text = "Edit";
-            btnEditMcpServer.Click += BtnEditMcpServer_Click;
-            // 
-            // btnRemoveMcpServer
-            // 
-            btnRemoveMcpServer.Location = new Point(125, 6);
-            btnRemoveMcpServer.Name = "btnRemoveMcpServer";
-            btnRemoveMcpServer.Size = new Size(60, 25);
-            btnRemoveMcpServer.StateCommon.Border.Rounding = 5F;
-            btnRemoveMcpServer.TabIndex = 3;
-            btnRemoveMcpServer.Values.DropDownArrowColor = Color.Empty;
-            btnRemoveMcpServer.Values.Text = "Remove";
-            btnRemoveMcpServer.Click += BtnRemoveMcpServer_Click;
-            // 
-            // rtbMcpLog
-            // 
-            rtbMcpLog.Dock = DockStyle.Bottom;
-            rtbMcpLog.Location = new Point(0, 337);
-            rtbMcpLog.Name = "rtbMcpLog";
-            rtbMcpLog.ReadOnly = true;
-            rtbMcpLog.Size = new Size(337, 188);
-            rtbMcpLog.TabIndex = 6;
-            rtbMcpLog.Text = "";
             // 
             // tabPageGeneral
             // 
@@ -521,25 +442,22 @@ namespace folderchat.Forms
             Size = new Size(345, 553);
             tabSettings.ResumeLayout(false);
             tabPageChat.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(kPanelGGUFProviderSettings)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(kPanelAPIProviderSettings)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(kPanelChatSettingTop)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)kPanelGGUFProviderSettings).EndInit();
+            ((System.ComponentModel.ISupportInitialize)kPanelAPIProviderSettings).EndInit();
+            ((System.ComponentModel.ISupportInitialize)kPanelChatSettingTop).EndInit();
             kPanelChatSettingTop.ResumeLayout(false);
             kPanelChatSettingTop.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(cmbChatGGUFModel)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(cmbAPIProvider)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)cmbChatGGUFModel).EndInit();
+            ((System.ComponentModel.ISupportInitialize)cmbAPIProvider).EndInit();
             tabPageRAG.ResumeLayout(false);
             tabPageMCP.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(dgvMcpServers)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(kPanelMCPBottom)).EndInit();
-            kPanelMCPBottom.ResumeLayout(false);
             tabPageGeneral.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(kryptonPanel4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)kryptonPanel4).EndInit();
             kryptonPanel4.ResumeLayout(false);
             kryptonPanel4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(cmbLanguage)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)cmbLanguage).EndInit();
             tabPageServer.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(kPanelAPI)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)kPanelAPI).EndInit();
             kPanelAPI.ResumeLayout(false);
             kPanelAPI.PerformLayout();
             ResumeLayout(false);
@@ -576,12 +494,6 @@ namespace folderchat.Forms
         private Krypton.Toolkit.KryptonLabel lblLanguage;
         private Krypton.Toolkit.KryptonComboBox cmbLanguage;
         private TabPage tabPageMCP;
-        private Krypton.Toolkit.KryptonPanel kPanelMCPBottom;
-        private Krypton.Toolkit.KryptonButton btnAddMcpServer;
-        private Krypton.Toolkit.KryptonButton btnEditMcpServer;
-        private Krypton.Toolkit.KryptonButton btnRemoveMcpServer;
-        private Krypton.Toolkit.KryptonRichTextBox rtbMcpLog;
-        private Krypton.Toolkit.KryptonDataGridView dgvMcpServers;
         private TabPage tabPageServer;
         private Krypton.Toolkit.KryptonPanel kPanelAPI;
         private Krypton.Toolkit.KryptonCheckBox chkEnableAPIServer;

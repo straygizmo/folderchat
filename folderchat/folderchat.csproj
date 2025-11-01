@@ -82,4 +82,16 @@
     <Message Text="Copied wwwroot to output directory" Importance="high" />
   </Target>
 
+  <ItemGroup>
+    <Compile Update="Forms\McpSettingsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Forms\McpSettingsControl.Designer.cs">
+      <DependentUpon>McpSettingsControl.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Forms\McpSettingsControl.resx">
+      <DependentUpon>McpSettingsControl.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>
