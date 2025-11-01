@@ -54,7 +54,7 @@ namespace folderchat.Forms.ProviderSettings
             txtApiUrl.Location = new Point(3, 31);
             txtApiUrl.Margin = new Padding(3, 2, 3, 2);
             txtApiUrl.Name = "txtApiUrl";
-            txtApiUrl.Size = new Size(544, 25);
+            txtApiUrl.Size = new Size(442, 25);
             txtApiUrl.StateCommon.Border.Rounding = 4F;
             txtApiUrl.TabIndex = 1;
             txtApiUrl.Text = "http://localhost:11434";
@@ -77,7 +77,7 @@ namespace folderchat.Forms.ProviderSettings
             cmbModelList.Location = new Point(3, 109);
             cmbModelList.Margin = new Padding(3, 2, 3, 2);
             cmbModelList.Name = "cmbModelList";
-            cmbModelList.Size = new Size(544, 22);
+            cmbModelList.Size = new Size(442, 24);
             cmbModelList.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbModelList.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbModelList.TabIndex = 3;
@@ -122,7 +122,7 @@ namespace folderchat.Forms.ProviderSettings
             // 
             chkSupportSystemMessage.Checked = true;
             chkSupportSystemMessage.CheckState = CheckState.Checked;
-            chkSupportSystemMessage.Location = new Point(3, 145);
+            chkSupportSystemMessage.Location = new Point(5, 145);
             chkSupportSystemMessage.Name = "chkSupportSystemMessage";
             chkSupportSystemMessage.Size = new Size(143, 20);
             chkSupportSystemMessage.TabIndex = 14;
@@ -141,7 +141,7 @@ namespace folderchat.Forms.ProviderSettings
             Controls.Add(txtApiUrl);
             Controls.Add(lblApiUrl);
             Name = "OllamaProviderSettingsControl";
-            Size = new Size(550, 205);
+            Size = new Size(448, 205);
             ((System.ComponentModel.ISupportInitialize)cmbModelList).EndInit();
             ResumeLayout(false);
             PerformLayout();

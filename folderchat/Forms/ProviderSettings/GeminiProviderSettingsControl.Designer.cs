@@ -56,7 +56,7 @@ namespace folderchat.Forms.ProviderSettings
             txtApiUrl.Location = new Point(3, 31);
             txtApiUrl.Margin = new Padding(3, 2, 3, 2);
             txtApiUrl.Name = "txtApiUrl";
-            txtApiUrl.Size = new Size(544, 25);
+            txtApiUrl.Size = new Size(435, 25);
             txtApiUrl.StateCommon.Border.Rounding = 4F;
             txtApiUrl.TabIndex = 1;
             txtApiUrl.Text = "https://generativelanguage.googleapis.com/v1beta";
@@ -77,7 +77,7 @@ namespace folderchat.Forms.ProviderSettings
             txtApiKey.Margin = new Padding(3, 2, 3, 2);
             txtApiKey.Name = "txtApiKey";
             txtApiKey.PasswordChar = '●';
-            txtApiKey.Size = new Size(544, 25);
+            txtApiKey.Size = new Size(435, 25);
             txtApiKey.StateCommon.Border.Rounding = 4F;
             txtApiKey.TabIndex = 3;
             txtApiKey.UseSystemPasswordChar = true;
@@ -100,7 +100,7 @@ namespace folderchat.Forms.ProviderSettings
             cmbModelList.Location = new Point(3, 158);
             cmbModelList.Margin = new Padding(3, 2, 3, 2);
             cmbModelList.Name = "cmbModelList";
-            cmbModelList.Size = new Size(544, 22);
+            cmbModelList.Size = new Size(435, 24);
             cmbModelList.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbModelList.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbModelList.TabIndex = 5;
@@ -145,7 +145,7 @@ namespace folderchat.Forms.ProviderSettings
             // 
             chkSupportSystemMessage.Checked = true;
             chkSupportSystemMessage.CheckState = CheckState.Checked;
-            chkSupportSystemMessage.Location = new Point(3, 197);
+            chkSupportSystemMessage.Location = new Point(5, 197);
             chkSupportSystemMessage.Name = "chkSupportSystemMessage";
             chkSupportSystemMessage.Size = new Size(143, 20);
             chkSupportSystemMessage.TabIndex = 14;
@@ -166,7 +166,7 @@ namespace folderchat.Forms.ProviderSettings
             Controls.Add(txtApiUrl);
             Controls.Add(lblApiUrl);
             Name = "GeminiProviderSettingsControl";
-            Size = new Size(550, 241);
+            Size = new Size(441, 241);
             ((System.ComponentModel.ISupportInitialize)cmbModelList).EndInit();
             ResumeLayout(false);
             PerformLayout();

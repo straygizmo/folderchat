@@ -100,7 +100,7 @@ namespace folderchat.Forms.ProviderSettings
             cmbModelList.Location = new Point(4, 156);
             cmbModelList.Margin = new Padding(3, 2, 3, 2);
             cmbModelList.Name = "cmbModelList";
-            cmbModelList.Size = new Size(544, 22);
+            cmbModelList.Size = new Size(544, 24);
             cmbModelList.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbModelList.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbModelList.TabIndex = 5;
@@ -145,7 +145,7 @@ namespace folderchat.Forms.ProviderSettings
             // 
             chkSupportSystemMessage.Checked = true;
             chkSupportSystemMessage.CheckState = CheckState.Checked;
-            chkSupportSystemMessage.Location = new Point(4, 192);
+            chkSupportSystemMessage.Location = new Point(5, 192);
             chkSupportSystemMessage.Name = "chkSupportSystemMessage";
             chkSupportSystemMessage.Size = new Size(143, 20);
             chkSupportSystemMessage.TabIndex = 14;

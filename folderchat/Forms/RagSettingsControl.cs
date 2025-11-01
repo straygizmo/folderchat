@@ -82,7 +82,7 @@ namespace folderchat.Forms
                 txtEmbeddingUrl.Visible = true;
                 lblEmbeddingUrl.Visible = true;
                 txtEmbeddingModel.Visible = true;
-                lblEmbeddingModel.Location = new Point(3, 120);
+                lblEmbeddingModel.Location = new Point(3, txtEmbeddingModel.Top - 27);
 
                 // Hide GGUF controls
                 cmbGGUFModel.Visible = false;
@@ -93,7 +93,7 @@ namespace folderchat.Forms
                 txtEmbeddingUrl.Visible = false;
                 lblEmbeddingUrl.Visible = false;
                 txtEmbeddingModel.Visible = false;
-                lblEmbeddingModel.Location = new Point(3, 49);
+                lblEmbeddingModel.Location = new Point(3, cmbGGUFModel.Top - 27);
 
                 // Show GGUF controls
                 cmbGGUFModel.Visible = true;

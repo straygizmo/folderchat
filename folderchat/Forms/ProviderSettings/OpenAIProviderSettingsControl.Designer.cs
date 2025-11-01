@@ -47,7 +47,7 @@ namespace folderchat.Forms.ProviderSettings
             txtBaseUrl.Location = new Point(3, 31);
             txtBaseUrl.Margin = new Padding(3, 2, 3, 2);
             txtBaseUrl.Name = "txtBaseUrl";
-            txtBaseUrl.Size = new Size(290, 25);
+            txtBaseUrl.Size = new Size(389, 25);
             txtBaseUrl.StateCommon.Border.Rounding = 4F;
             txtBaseUrl.TabIndex = 1;
             txtBaseUrl.Text = "http://localhost:1234";
@@ -59,7 +59,7 @@ namespace folderchat.Forms.ProviderSettings
             txtApiKey.Margin = new Padding(3, 2, 3, 2);
             txtApiKey.Name = "txtApiKey";
             txtApiKey.PasswordChar = '●';
-            txtApiKey.Size = new Size(290, 25);
+            txtApiKey.Size = new Size(389, 25);
             txtApiKey.StateCommon.Border.Rounding = 4F;
             txtApiKey.TabIndex = 3;
             txtApiKey.UseSystemPasswordChar = true;
@@ -100,7 +100,7 @@ namespace folderchat.Forms.ProviderSettings
             cmbModelList.Location = new Point(3, 158);
             cmbModelList.Margin = new Padding(3, 2, 3, 2);
             cmbModelList.Name = "cmbModelList";
-            cmbModelList.Size = new Size(290, 22);
+            cmbModelList.Size = new Size(389, 24);
             cmbModelList.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbModelList.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbModelList.TabIndex = 5;
@@ -146,7 +146,7 @@ namespace folderchat.Forms.ProviderSettings
             // 
             chkSupportSystemMessage.Checked = true;
             chkSupportSystemMessage.CheckState = CheckState.Checked;
-            chkSupportSystemMessage.Location = new Point(3, 193);
+            chkSupportSystemMessage.Location = new Point(5, 193);
             chkSupportSystemMessage.Name = "chkSupportSystemMessage";
             chkSupportSystemMessage.Size = new Size(143, 20);
             chkSupportSystemMessage.TabIndex = 14;
@@ -167,7 +167,7 @@ namespace folderchat.Forms.ProviderSettings
             Controls.Add(txtBaseUrl);
             Controls.Add(lblBaseUrl);
             Name = "OpenAIProviderSettingsControl";
-            Size = new Size(296, 240);
+            Size = new Size(395, 240);
             ((System.ComponentModel.ISupportInitialize)cmbModelList).EndInit();
             ResumeLayout(false);
             PerformLayout();

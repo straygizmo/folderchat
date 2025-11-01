@@ -55,7 +55,7 @@ namespace folderchat.Forms.ProviderSettings
             cmbClaudeModel.Items.AddRange(new object[] { "sonnet", "opus", "haiku" });
             cmbClaudeModel.Location = new Point(3, 80);
             cmbClaudeModel.Name = "cmbClaudeModel";
-            cmbClaudeModel.Size = new Size(290, 22);
+            cmbClaudeModel.Size = new Size(290, 24);
             cmbClaudeModel.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbClaudeModel.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbClaudeModel.TabIndex = 3;
@@ -81,7 +81,7 @@ namespace folderchat.Forms.ProviderSettings
             // chkSupportSystemMessage
             // 
             chkSupportSystemMessage.Enabled = false;
-            chkSupportSystemMessage.Location = new Point(3, 117);
+            chkSupportSystemMessage.Location = new Point(5, 117);
             chkSupportSystemMessage.Name = "chkSupportSystemMessage";
             chkSupportSystemMessage.Size = new Size(143, 20);
             chkSupportSystemMessage.TabIndex = 14;

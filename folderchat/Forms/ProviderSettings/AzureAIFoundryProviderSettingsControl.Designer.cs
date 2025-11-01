@@ -58,7 +58,7 @@ namespace folderchat.Forms.ProviderSettings
             txtApiUrl.Location = new Point(3, 31);
             txtApiUrl.Margin = new Padding(3, 2, 3, 2);
             txtApiUrl.Name = "txtApiUrl";
-            txtApiUrl.Size = new Size(544, 25);
+            txtApiUrl.Size = new Size(429, 25);
             txtApiUrl.StateCommon.Border.Rounding = 4F;
             txtApiUrl.TabIndex = 3;
             txtApiUrl.Text = "https://YOUR_RESOURCE_NAME.openai.azure.com";
@@ -78,7 +78,7 @@ namespace folderchat.Forms.ProviderSettings
             txtApiVersion.Location = new Point(3, 80);
             txtApiVersion.Margin = new Padding(3, 2, 3, 2);
             txtApiVersion.Name = "txtApiVersion";
-            txtApiVersion.Size = new Size(544, 25);
+            txtApiVersion.Size = new Size(429, 25);
             txtApiVersion.StateCommon.Border.Rounding = 4F;
             txtApiVersion.TabIndex = 5;
             txtApiVersion.Text = "2025-01-01-preview";
@@ -99,7 +99,7 @@ namespace folderchat.Forms.ProviderSettings
             txtApiKey.Margin = new Padding(3, 2, 3, 2);
             txtApiKey.Name = "txtApiKey";
             txtApiKey.PasswordChar = '●';
-            txtApiKey.Size = new Size(544, 25);
+            txtApiKey.Size = new Size(429, 25);
             txtApiKey.StateCommon.Border.Rounding = 4F;
             txtApiKey.TabIndex = 7;
             txtApiKey.UseSystemPasswordChar = true;
@@ -122,7 +122,7 @@ namespace folderchat.Forms.ProviderSettings
             cmbModelList.Location = new Point(3, 205);
             cmbModelList.Margin = new Padding(3, 2, 3, 2);
             cmbModelList.Name = "cmbModelList";
-            cmbModelList.Size = new Size(544, 24);
+            cmbModelList.Size = new Size(429, 24);
             cmbModelList.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbModelList.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbModelList.StateCommon.Item.Border.Rounding = 2F;
@@ -168,7 +168,7 @@ namespace folderchat.Forms.ProviderSettings
             // 
             chkSupportSystemMessage.Checked = true;
             chkSupportSystemMessage.CheckState = CheckState.Checked;
-            chkSupportSystemMessage.Location = new Point(3, 244);
+            chkSupportSystemMessage.Location = new Point(5, 244);
             chkSupportSystemMessage.Name = "chkSupportSystemMessage";
             chkSupportSystemMessage.Size = new Size(143, 20);
             chkSupportSystemMessage.TabIndex = 13;
@@ -191,7 +191,7 @@ namespace folderchat.Forms.ProviderSettings
             Controls.Add(txtApiUrl);
             Controls.Add(lblApiUrl);
             Name = "AzureAIFoundryProviderSettingsControl";
-            Size = new Size(550, 283);
+            Size = new Size(435, 283);
             ((System.ComponentModel.ISupportInitialize)cmbModelList).EndInit();
             ResumeLayout(false);
             PerformLayout();
