@@ -28,6 +28,11 @@ namespace folderchat.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            kryptonPanel1 = new Krypton.Toolkit.KryptonPanel();
+            lblMaxToolIterations = new Krypton.Toolkit.KryptonLabel();
+            numMaxToolIterations = new Krypton.Toolkit.KryptonNumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)kryptonPanel1).BeginInit();
+            kryptonPanel1.SuspendLayout();
             kryptonPanelMCPAll = new Krypton.Toolkit.KryptonPanel();
             kryptonSplitContainer1 = new Krypton.Toolkit.KryptonSplitContainer();
             kryptonGroupBox1 = new Krypton.Toolkit.KryptonGroupBox();
@@ -55,6 +60,34 @@ namespace folderchat.Forms
             ((System.ComponentModel.ISupportInitialize)kryptonGroupBox2.Panel).BeginInit();
             kryptonGroupBox2.Panel.SuspendLayout();
             SuspendLayout();
+            // 
+            // kryptonPanel1
+            // 
+            kryptonPanel1.Controls.Add(lblMaxToolIterations);
+            kryptonPanel1.Controls.Add(numMaxToolIterations);
+            kryptonPanel1.Dock = DockStyle.Top;
+            kryptonPanel1.Location = new Point(0, 0);
+            kryptonPanel1.Name = "kryptonPanel1";
+            kryptonPanel1.Size = new Size(338, 33);
+            kryptonPanel1.TabIndex = 2;
+            // 
+            // lblMaxToolIterations
+            // 
+            lblMaxToolIterations.Location = new Point(4, 6);
+            lblMaxToolIterations.Name = "lblMaxToolIterations";
+            lblMaxToolIterations.Size = new Size(112, 20);
+            lblMaxToolIterations.TabIndex = 0;
+            lblMaxToolIterations.Values.Text = "Max Tool Iterations";
+            // 
+            // numMaxToolIterations
+            // 
+            numMaxToolIterations.Location = new Point(122, 4);
+            numMaxToolIterations.Maximum = new decimal(new int[] { 20, 0, 0, 0 });
+            numMaxToolIterations.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numMaxToolIterations.Name = "numMaxToolIterations";
+            numMaxToolIterations.Size = new Size(53, 22);
+            numMaxToolIterations.TabIndex = 1;
+            numMaxToolIterations.Value = new decimal(new int[] { 5, 0, 0, 0 });
             // 
             // kryptonPanelMCPAll
             // 
@@ -95,6 +128,7 @@ namespace folderchat.Forms
             // 
             kryptonGroupBox1.Panel.Controls.Add(dgvMcpServers);
             kryptonGroupBox1.Panel.Controls.Add(kryptonPanel2);
+            kryptonGroupBox1.Panel.Controls.Add(kryptonPanel1);
             kryptonGroupBox1.Size = new Size(342, 400);
             kryptonGroupBox1.TabIndex = 0;
             kryptonGroupBox1.Values.Heading = "MCP Servers";
@@ -211,6 +245,9 @@ namespace folderchat.Forms
             ((System.ComponentModel.ISupportInitialize)kryptonGroupBox2.Panel).EndInit();
             kryptonGroupBox2.Panel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)kryptonGroupBox2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)kryptonPanel1).EndInit();
+            kryptonPanel1.ResumeLayout(false);
+            kryptonPanel1.PerformLayout();
             ResumeLayout(false);
 
         }
@@ -227,5 +264,8 @@ namespace folderchat.Forms
         private Krypton.Toolkit.KryptonButton btnAddMcpServer;
         private Krypton.Toolkit.KryptonGroupBox kryptonGroupBox2;
         private Krypton.Toolkit.KryptonRichTextBox rtbMcpLog;
+        private Krypton.Toolkit.KryptonPanel kryptonPanel1;
+        private Krypton.Toolkit.KryptonLabel lblMaxToolIterations;
+        private Krypton.Toolkit.KryptonNumericUpDown numMaxToolIterations;
     }
 }

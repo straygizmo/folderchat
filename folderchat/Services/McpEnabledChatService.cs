@@ -12,15 +12,16 @@ namespace folderchat.Services
     {
         private readonly IChatService _innerChatService;
         private readonly IMcpService? _mcpService;
-        private const int MaxToolIterations = 5; // Prevent infinite loops
+        private readonly int _maxToolIterations; // Prevent infinite loops
         private static Forms.MainForm? _mainForm;
         private readonly bool _supportsSystemMessage;
 
-        public McpEnabledChatService(IChatService innerChatService, IMcpService? mcpService, bool supportsSystemMessage)
+        public McpEnabledChatService(IChatService innerChatService, IMcpService? mcpService, bool supportsSystemMessage, int maxToolIterations)
         {
             _innerChatService = innerChatService;
             _mcpService = mcpService;
             _supportsSystemMessage = supportsSystemMessage;
+            _maxToolIterations = maxToolIterations;
         }
 
         public static void SetMainForm(Forms.MainForm mainForm)
@@ -80,10 +81,10 @@ namespace folderchat.Services
             var debugInfo = new StringBuilder();
             bool addDebugInfo = false; // Set to true to see debug info in chat
 
-            while (iteration < MaxToolIterations)
+            while (iteration < _maxToolIterations)
             {
                 iteration++;
-                System.Diagnostics.Debug.WriteLine($"[MCP] Iteration {iteration}/{MaxToolIterations}");
+                System.Diagnostics.Debug.WriteLine($"[MCP] Iteration {iteration}/{_maxToolIterations}");
                 if (addDebugInfo) debugInfo.AppendLine($"[Debug] Iteration {iteration}");
 
                 // Call LLM with appropriate message format
@@ -160,12 +161,11 @@ namespace folderchat.Services
 
                 // Prepare next iteration with tool results
                 currentUserInput = $"Based on the tool execution results below, if any tool returned an error or indicates missing or invalid parameters, you MUST retry by responding with a YAML tool call including ALL required parameters as specified in the AVAILABLE TOOLS above. Otherwise, provide your final answer to the original question: \"{userInput}\"\n{toolResults}";
-            }
-
-            if (iteration >= MaxToolIterations)
-            {
-                System.Diagnostics.Debug.WriteLine("[MCP] Max iterations reached");
-                lastResponse += "\n\n[Note: Maximum tool execution iterations reached]";
+                        }
+            
+                        if (iteration >= _maxToolIterations)
+                        {
+                            System.Diagnostics.Debug.WriteLine("[MCP] Max iterations reached");                lastResponse += "\n\n[Note: Maximum tool execution iterations reached]";
             }
 
             return new SendMessageAsyncResult

@@ -562,7 +562,8 @@ namespace folderchat.Forms
                 {
                     // Wrap with MCP capabilities (only when RAG is OFF)
                     var mcpService = mainForm.GetMcpService();
-                    finalService = new McpEnabledChatService(innerService, mcpService, supportsSystemMessage);
+                    var maxToolIterations = Properties.Settings.Default.MCP_MaxToolIterations;
+                    finalService = new McpEnabledChatService(innerService, mcpService, supportsSystemMessage, maxToolIterations);
 
                     // Set MainForm for logging
                     McpEnabledChatService.SetMainForm(mainForm);

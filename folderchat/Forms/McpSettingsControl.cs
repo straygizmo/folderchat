@@ -12,6 +12,8 @@ namespace folderchat.Forms
         private McpServerCollection _mcpServerCollection = new();
         private MainForm? _mainForm;
 
+        public int MaxToolIterations => (int)numMaxToolIterations.Value;
+
         public McpSettingsControl()
         {
             InitializeComponent();
@@ -26,11 +28,13 @@ namespace folderchat.Forms
         public void LoadSettings()
         {
             LoadMcpServers();
+            numMaxToolIterations.Value = Math.Max(numMaxToolIterations.Minimum, Math.Min(numMaxToolIterations.Maximum, Properties.Settings.Default.MCP_MaxToolIterations));
         }
 
         public void SaveSettings()
         {
             SaveMcpServers();
+            Properties.Settings.Default.MCP_MaxToolIterations = (int)numMaxToolIterations.Value;
         }
 
         public void UpdateUILabels()
@@ -42,6 +46,7 @@ namespace folderchat.Forms
             btnAddMcpServer.Values.Text = loc.GetString("Add");
             btnEditMcpServer.Values.Text = loc.GetString("Edit");
             btnRemoveMcpServer.Values.Text = loc.GetString("Remove");
+            lblMaxToolIterations.Text = loc.GetString("MaxToolIterations");
         }
 
         #region MCP Server Management
