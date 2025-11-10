@@ -131,9 +131,9 @@ namespace folderchat.Services
 
                 var outputTask = Task.Run(async () =>
                 {
-                    while (!process.StandardOutput.EndOfStream)
+                    string line;
+                    while ((line = await process.StandardOutput.ReadLineAsync()) != null)
                     {
-                        var line = await process.StandardOutput.ReadLineAsync();
                         if (!string.IsNullOrEmpty(line))
                         {
                             outputLines.Add(line);
@@ -144,9 +144,9 @@ namespace folderchat.Services
 
                 var errorTask = Task.Run(async () =>
                 {
-                    while (!process.StandardError.EndOfStream)
+                    string line;
+                    while ((line = await process.StandardError.ReadLineAsync()) != null)
                     {
-                        var line = await process.StandardError.ReadLineAsync();
                         if (!string.IsNullOrEmpty(line))
                         {
                             errorLines.Add(line);
