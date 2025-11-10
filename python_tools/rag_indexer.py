@@ -22,7 +22,6 @@ class SimpleConfigManager:
         pass
 
 async def main():
-    print("[DEBUG] rag_indexer.py main() started", flush=True)
     if len(sys.argv) < 2:
         print("Usage: rag_indexer.py <config_file_path>", file=sys.stderr)
         sys.exit(1)
