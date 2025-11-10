@@ -109,6 +109,11 @@ namespace folderchat.Services
                 {
                     throw new Exception($"RAG indexer script not found at: {_ragIndexerScript}");
                 }
+
+                if (!Directory.Exists(PythonPathHelper.PythonToolsDirectory))
+                {
+                    throw new Exception($"Working directory for Python script not found at: {PythonPathHelper.PythonToolsDirectory}");
+                }
                 
                 var processStartInfo = new ProcessStartInfo
                 {
