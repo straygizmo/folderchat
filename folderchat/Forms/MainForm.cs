@@ -281,7 +281,7 @@ namespace folderchat.Forms
                     kListViewBottomLog.Items.RemoveAt(0);
                 }
 
-                                var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
                 // Replace newlines with spaces for single-line display in the list view
                 var displayMessage = message.Replace('\n', ' ').Replace('\r', ' ');

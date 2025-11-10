@@ -145,7 +145,7 @@ class DocumentIndexer:
                 files_to_process.append(file_abs_path)
             else:
                 files_to_keep.append(file_rel_path)
-
+                print(f"Skipping embedding for {file_rel_path}, already up to date.", flush=True)
         deleted_files = files_in_metadata - files_on_disk
 
         if not files_to_process and not deleted_files and os.path.exists(vector_file):
