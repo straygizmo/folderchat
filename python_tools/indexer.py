@@ -9,9 +9,13 @@ from document_parser import DocumentParser
 from converter import DocumentConverter
 
 class DocumentIndexer:
-    def __init__(self, config_manager=None):
+    def __init__(self, config_manager=None, use_native_embedding: bool = False, gguf_model: str = None):
         self.config_manager = config_manager
-        self.embeddings_client = EmbeddingsClient(config_manager=config_manager)
+        self.embeddings_client = EmbeddingsClient(
+            config_manager=config_manager,
+            use_native_embedding=use_native_embedding,
+            gguf_model=gguf_model
+        )
         self.document_parser = DocumentParser()
         self.converter = DocumentConverter()  # Add MarkItDown converter
         self.supported_extensions = {
@@ -101,161 +105,133 @@ class DocumentIndexer:
 
     async def index_folder(self, folder_path: str, force_reindex: bool = False, task_id: str = None) -> Dict[str, Any]:
         vector_file = os.path.join(folder_path, "embeddings.jsonl")
+        metadata_file = os.path.join(folder_path, ".index_metadata.json")
+        
+        metadata = {}
+        if os.path.exists(metadata_file) and not force_reindex:
+            try:
+                with open(metadata_file, 'r', encoding='utf-8') as f:
+                    metadata = json.load(f)
+            except (json.JSONDecodeError, FileNotFoundError):
+                metadata = {}
 
-        if os.path.exists(vector_file) and not force_reindex:
-            return {
-                "status": "exists",
-                "message": "Vector index already exists. Use force_reindex=True to recreate.",
-                "vector_file": vector_file
-            }
-
-        files_to_index = self.get_files_to_index(folder_path)
-
-        if not files_to_index:
+        all_files = self.get_files_to_index(folder_path)
+        
+        if not all_files and not metadata:
             return {
                 "status": "no_files",
-                "message": "No supported files found in the specified folder.",
+                "message": "No supported files found and no existing index.",
                 "supported_extensions": list(self.supported_extensions)
             }
 
-        # Update progress
-        if task_id and task_id in self.active_tasks:
-            self.active_tasks[task_id]["progress"] = {
-                "stage": "converting_to_markdown",
-                "files_processed": 0,
-                "total_files": len(files_to_index),
-                "chunks_created": 0
+        files_on_disk = {os.path.relpath(f, folder_path) for f in all_files}
+        files_in_metadata = set(metadata.keys())
+
+        files_to_process = []
+        files_to_keep = []
+
+        # Identify new and modified files
+        for file_rel_path in files_on_disk:
+            file_abs_path = os.path.join(folder_path, file_rel_path)
+            entry = metadata.get(file_rel_path)
+            
+            md_path = Path(file_abs_path).with_suffix('.md')
+            
+            if not entry or \
+               entry.get('chunk_size') != self.chunk_size or \
+               entry.get('chunk_overlap') != self.chunk_overlap or \
+               entry.get('original_mtime') != os.path.getmtime(file_abs_path) or \
+               (md_path.exists() and entry.get('md_mtime') != os.path.getmtime(md_path)):
+                files_to_process.append(file_abs_path)
+            else:
+                files_to_keep.append(file_rel_path)
+                print(f"Skipping embedding for {file_rel_path}, already up to date.", flush=True)
+
+        deleted_files = files_in_metadata - files_on_disk
+
+        if not files_to_process and not deleted_files and os.path.exists(vector_file):
+            return {
+                "status": "success",
+                "message": "All files are up to date.",
+                "files_indexed": len(files_on_disk),
+                "chunks_created": sum(m.get('num_chunks', 0) for m in metadata.values()),
+                "vector_file": vector_file
             }
 
-        # Step 1: Convert all files to markdown
-        print(f"Starting indexing for {folder_path} with {len(files_to_index)} files")
-        print(f"Chunk size: {self.chunk_size}, Chunk overlap: {self.chunk_overlap}")
-        markdown_files = []
-        seen_base_names = set()  # Track base filenames to avoid duplicates
+        # Keep existing vectors for unchanged files
+        kept_vectors = []
+        if os.path.exists(vector_file):
+            with open(vector_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    try:
+                        vector = json.loads(line)
+                        if vector.get('file') in files_to_keep:
+                            kept_vectors.append(vector)
+                    except json.JSONDecodeError:
+                        continue
+        
+        # Process new and modified files
+        new_vectors = []
+        new_metadata = {}
 
-        for idx, file_path in enumerate(files_to_index):
-            # Check if cancelled
-            if task_id and task_id in self.active_tasks:
-                if self.active_tasks[task_id].get("cancelled"):
-                    return {
-                        "status": "cancelled",
-                        "message": "Indexing was cancelled during conversion",
-                        "files_processed": idx,
-                        "total_files": len(files_to_index)
+        if files_to_process:
+            markdown_files = []
+            for file_path in files_to_process:
+                md_path = self.read_file(file_path)
+                if md_path:
+                    markdown_files.append((file_path, md_path))
+
+            all_chunks = []
+            for original_path, md_path in markdown_files:
+                try:
+                    with open(md_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                    relative_path = os.path.relpath(original_path, folder_path)
+                    chunks = self.chunk_text(content, relative_path)
+                    all_chunks.extend(chunks)
+                    
+                    new_metadata[relative_path] = {
+                        "original_mtime": os.path.getmtime(original_path),
+                        "md_mtime": os.path.getmtime(md_path),
+                        "chunk_size": self.chunk_size,
+                        "chunk_overlap": self.chunk_overlap,
+                        "num_chunks": len(chunks)
                     }
-                # Update progress
-                self.active_tasks[task_id]["progress"]["files_processed"] = idx + 1
+                except Exception as e:
+                    print(f"Error processing file {original_path}: {e}")
 
-            # Skip if we've already processed this base file (avoid PDF/MD duplicates)
-            file_base = Path(file_path).stem
-            if file_base in seen_base_names:
-                print(f"Skipping duplicate file (already processed)", flush=True)
-                continue
+            batch_size = 10
+            for i in range(0, len(all_chunks), batch_size):
+                batch = all_chunks[i:i + batch_size]
+                texts = [chunk["text"] for chunk in batch]
+                try:
+                    embeddings = await self.embeddings_client.get_embeddings(texts)
+                    for chunk, embedding in zip(batch, embeddings):
+                        new_vectors.append({
+                            "text": chunk["text"],
+                            "file": chunk["file"],
+                            "chunk_index": chunk["chunk_index"],
+                            "embedding": embedding
+                        })
+                except Exception as e:
+                    print(f"Error generating embeddings for batch: {e}")
 
-            md_path = self.read_file(file_path)  # Now returns markdown path
-            if md_path:
-                markdown_files.append((file_path, md_path))
-                seen_base_names.add(file_base)
-
-        # Step 2: Process markdown files and create chunks
-        if task_id and task_id in self.active_tasks:
-            self.active_tasks[task_id]["progress"]["stage"] = "chunking_documents"
-
-        all_chunks = []
-        for original_path, md_path in markdown_files:
-            try:
-                with open(md_path, 'r', encoding='utf-8') as f:
-                    content = f.read()
-                    print(f"Read {len(content)} chars from markdown file", flush=True)
-
-                relative_path = os.path.relpath(original_path, folder_path)
-                chunks = self.chunk_text(content, relative_path)
-                print(f"Created {len(chunks)} chunks", flush=True)
-                all_chunks.extend(chunks)
-            except Exception as e:
-                print(f"Error reading markdown file {md_path}: {e}")
-
-        vectors = []
-        batch_size = 10
-        total_batches = (len(all_chunks) + batch_size - 1) // batch_size
-
-        # Update progress for embedding generation
-        if task_id and task_id in self.active_tasks:
-            self.active_tasks[task_id]["progress"] = {
-                "stage": "generating_embeddings",
-                "batches_processed": 0,
-                "total_batches": total_batches,
-                "chunks_created": 0,
-                "total_chunks": len(all_chunks)
-            }
-
-        for i in range(0, len(all_chunks), batch_size):
-            # Check if cancelled
-            if task_id and task_id in self.active_tasks:
-                if self.active_tasks[task_id].get("cancelled"):
-                    return {
-                        "status": "cancelled",
-                        "message": "Indexing was cancelled during embedding generation",
-                        "chunks_processed": len(vectors),
-                        "total_chunks": len(all_chunks)
-                    }
-                # Update progress
-                self.active_tasks[task_id]["progress"]["batches_processed"] = i // batch_size + 1
-                self.active_tasks[task_id]["progress"]["chunks_created"] = len(vectors)
-
-            batch = all_chunks[i:i + batch_size]
-            texts = [chunk["text"] for chunk in batch]
-
-            try:
-                print(f"Processing batch {i//batch_size + 1}/{total_batches}: {len(texts)} texts")
-                embeddings = await self.embeddings_client.get_embeddings(texts)
-                print(f"Generated {len(embeddings)} embeddings")
-
-                for chunk, embedding in zip(batch, embeddings):
-                    vectors.append({
-                        "text": chunk["text"],
-                        "file": chunk["file"],
-                        "chunk_index": chunk["chunk_index"],
-                        "embedding": embedding
-                    })
-            except Exception as e:
-                print(f"Error generating embeddings for batch {i//batch_size}: {e}")
-                import traceback
-                traceback.print_exc()
-
-        print(f"Writing {len(vectors)} vectors to {vector_file}")
+        # Combine vectors and write to file
+        final_vectors = kept_vectors + new_vectors
         with open(vector_file, 'w', encoding='utf-8') as f:
-            for vector in vectors:
+            for vector in final_vectors:
                 f.write(json.dumps(vector, ensure_ascii=False) + '\n')
-        print(f"Successfully wrote vectors to {vector_file}")
 
-        # Update config with indexed folder information
-        if self.config_manager:
-            # Count unique files that were actually processed
-            unique_files = set()
-            for vector in vectors:
-                if "file" in vector:
-                    unique_files.add(vector["file"])
-
-            metadata = {
-                "files_indexed": len(unique_files),
-                "chunks_created": len(vectors),
-                "file_count": len(unique_files),  # New format
-                "chunk_count": len(vectors),     # New format
-                "document_count": len(vectors),  # Keep for backward compatibility
-                "chunk_size": self.chunk_size,
-                "chunk_overlap": self.chunk_overlap
-            }
-            self.config_manager.add_indexed_folder(folder_path, metadata)
-
-        # Clean up task
-        if task_id and task_id in self.active_tasks:
-            del self.active_tasks[task_id]
+        # Update metadata
+        final_metadata = {k: v for k, v in metadata.items() if k in files_to_keep}
+        final_metadata.update(new_metadata)
+        with open(metadata_file, 'w', encoding='utf-8') as f:
+            json.dump(final_metadata, f, indent=2)
 
         return {
             "status": "success",
-            "message": "Indexing completed successfully",
-            "files_indexed": len(files_to_index),
-            "chunks_created": len(vectors),
+            "message": "Indexing completed successfully.",
+            "files_indexed": len(final_metadata),
+            "chunks_created": len(final_vectors),
             "vector_file": vector_file
         }

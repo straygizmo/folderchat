@@ -33,13 +33,15 @@ async def main():
             user_config = json.load(f)
         
         folders = user_config['folders']
-        embedding_url = user_config['embedding_url']
-        embedding_model = user_config['embedding_model']
+        embedding_url = user_config.get('embedding_url')
+        embedding_model = user_config.get('embedding_model')
         context_length = user_config['context_length']
         chunk_size = user_config['chunk_size']
         chunk_overlap = user_config['chunk_overlap']
-        api_key = user_config['api_key']
-        
+        api_key = user_config.get('api_key')
+        use_native_embedding = user_config.get('use_native_embedding', False)
+        gguf_model = user_config.get('gguf_model')
+
         chunk_size = min(chunk_size, context_length)
         chunk_overlap = min(chunk_overlap, chunk_size)
         
@@ -58,14 +60,18 @@ async def main():
         }
         
         config_manager = SimpleConfigManager(config)
-        indexer = DocumentIndexer(config_manager=config_manager)
+        indexer = DocumentIndexer(
+            config_manager=config_manager,
+            use_native_embedding=use_native_embedding,
+            gguf_model=gguf_model
+        )
         
         print(f"Starting RAG indexing with chunk_size={chunk_size}, chunk_overlap={chunk_overlap}")
         
         for folder in folders:
             print(f"Processing folder: {folder}")
             
-            result = await indexer.index_folder(folder, force_reindex=True)
+            result = await indexer.index_folder(folder, force_reindex=False)
             
             if result["status"] == "success":
                 print(f"Success: {result['message']}")

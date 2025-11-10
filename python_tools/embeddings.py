@@ -4,12 +4,19 @@ from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
 import asyncio
 import numpy as np
+import sys
+import json
+import subprocess
+import tempfile
+from pathlib import Path
 
 load_dotenv()
 
 class EmbeddingsClient:
-    def __init__(self, config_manager=None):
+    def __init__(self, config_manager=None, use_native_embedding: bool = False, gguf_model: str = None):
         self.config_manager = config_manager
+        self.use_native_embedding = use_native_embedding
+        self.gguf_model = gguf_model
 
         # Load from config manager if available, otherwise use env/defaults
         if config_manager:
@@ -29,7 +36,55 @@ class EmbeddingsClient:
         if embedding_base_url:
             self.embedding_base_url = embedding_base_url
 
+    async def _get_embeddings_native(self, texts: List[str]) -> List[List[float]]:
+        python_executable = sys.executable
+        script_path = Path(__file__).parent / "native_embedding_server.py"
+        
+        model_path = None
+        if self.gguf_model:
+            model_path = Path(__file__).parent / "models" / "embedding" / self.gguf_model
+
+        config = {
+            "texts": texts,
+            "model_path": str(model_path) if model_path else None
+        }
+
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False, suffix='.json', encoding='utf-8') as tmp:
+            json.dump(config, tmp)
+            tmp_path = tmp.name
+
+        try:
+            process = await asyncio.create_subprocess_exec(
+                python_executable, str(script_path), tmp_path,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+            stdout, stderr = await process.communicate()
+
+            if process.returncode != 0:
+                raise Exception(f"Native embedding script failed: {stderr.decode()}")
+
+            output = stdout.decode().strip().split('\n')[-1]
+            result = json.loads(output)
+
+            if not result.get("success"):
+                raise Exception(f"Native embedding failed: {result.get('error')}")
+
+            embeddings = []
+            for res in result.get("results", []):
+                if res.get("success"):
+                    embeddings.append(res["embedding"])
+                else:
+                    embeddings.append([]) # Add empty list for failed embeddings
+            return embeddings
+
+        finally:
+            os.unlink(tmp_path)
+
     async def get_embeddings(self, texts: List[str]) -> List[List[float]]:
+        if self.use_native_embedding:
+            return await self._get_embeddings_native(texts)
+
         print(f"Getting embeddings for {len(texts)} texts")
         print(f"Embedding API URL: {self.embedding_base_url}")
         print(f"Embedding model: {self.embedding_model}")
