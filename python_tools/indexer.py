@@ -131,21 +131,31 @@ class DocumentIndexer:
         files_to_keep = []
 
         # Identify new and modified files
+        print("[DEBUG] indexer.py: Identifying files to process/keep", flush=True)
         for file_rel_path in files_on_disk:
             file_abs_path = os.path.join(folder_path, file_rel_path)
             entry = metadata.get(file_rel_path)
             
             md_path = Path(file_abs_path).with_suffix('.md')
             
+            if entry:
+                print(f"[DEBUG] indexer.py: Checking file {file_rel_path}", flush=True)
+                print(f"[DEBUG] indexer.py: entry.chunk_size = {entry.get('chunk_size')}, self.chunk_size = {self.chunk_size}", flush=True)
+                print(f"[DEBUG] indexer.py: entry.chunk_overlap = {entry.get('chunk_overlap')}, self.chunk_overlap = {self.chunk_overlap}", flush=True)
+                print(f"[DEBUG] indexer.py: entry.original_mtime = {entry.get('original_mtime')}, file_mtime = {os.path.getmtime(file_abs_path)}", flush=True)
+                if md_path.exists():
+                    print(f"[DEBUG] indexer.py: entry.md_mtime = {entry.get('md_mtime')}, md_file_mtime = {os.path.getmtime(md_path)}", flush=True)
+
             if not entry or \
                entry.get('chunk_size') != self.chunk_size or \
                entry.get('chunk_overlap') != self.chunk_overlap or \
                entry.get('original_mtime') != os.path.getmtime(file_abs_path) or \
                (md_path.exists() and entry.get('md_mtime') != os.path.getmtime(md_path)):
+                print(f"[DEBUG] indexer.py: Processing {file_rel_path}", flush=True)
                 files_to_process.append(file_abs_path)
             else:
                 files_to_keep.append(file_rel_path)
-                print(f"Skipping embedding for {file_rel_path}, already up to date.", flush=True)
+                print(f"[INFO] Skipping embedding for {file_rel_path}, already up to date.", flush=True)
 
         deleted_files = files_in_metadata - files_on_disk
 
