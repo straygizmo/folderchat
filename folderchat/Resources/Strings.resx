@@ -66,9 +66,6 @@
   <data name="Model" xml:space="preserve">
     <value>Model</value>
   </data>
-  <data name="SelectedDirectories" xml:space="preserve">
-    <value>Selected Directories</value>
-  </data>
   <data name="Context" xml:space="preserve">
     <value>Context</value>
   </data>
@@ -271,5 +268,22 @@
   </data>
   <data name="NoDirectoriesSelectedShort" xml:space="preserve">
     <value>No directories</value>
+  </data>
+
+  <!-- RAG Settings (additional keys) -->
+  <data name="EmbeddingMethod" xml:space="preserve">
+    <value>Embedding Method</value>
+  </data>
+  <data name="API" xml:space="preserve">
+    <value>API</value>
+  </data>
+  <data name="GGUF" xml:space="preserve">
+    <value>GGUF</value>
+  </data>
+  <data name="TestEmbedding" xml:space="preserve">
+    <value>Test Embedding</value>
+  </data>
+  <data name="Testing" xml:space="preserve">
+    <value>Testing...</value>
   </data>
 </root>

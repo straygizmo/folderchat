@@ -66,9 +66,6 @@
   <data name="Model" xml:space="preserve">
     <value>モデル</value>
   </data>
-  <data name="SelectedDirectories" xml:space="preserve">
-    <value>選択されたディレクトリ</value>
-  </data>
   <data name="Context" xml:space="preserve">
     <value>コンテキスト</value>
   </data>
@@ -271,5 +268,22 @@
   </data>
   <data name="NoDirectoriesSelectedShort" xml:space="preserve">
     <value>ディレクトリなし</value>
+  </data>
+
+  <!-- RAG Settings (additional keys) -->
+  <data name="EmbeddingMethod" xml:space="preserve">
+    <value>埋め込み方法</value>
+  </data>
+  <data name="API" xml:space="preserve">
+    <value>API</value>
+  </data>
+  <data name="GGUF" xml:space="preserve">
+    <value>GGUF</value>
+  </data>
+  <data name="TestEmbedding" xml:space="preserve">
+    <value>埋め込みをテスト</value>
+  </data>
+  <data name="Testing" xml:space="preserve">
+    <value>テスト中...</value>
   </data>
 </root>
