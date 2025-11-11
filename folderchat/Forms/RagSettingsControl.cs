@@ -7,6 +7,7 @@ namespace folderchat.Forms
     public partial class RagSettingsControl : UserControl
     {
         private MainForm? _mainForm;
+        private bool _locSubscribed = false;
 
         public RagSettingsControl()
         {
@@ -16,6 +17,41 @@ namespace folderchat.Forms
         public void Initialize(MainForm mainForm)
         {
             _mainForm = mainForm;
+
+            // Apply localization to UI elements
+            ApplyLocalization();
+
+            // Subscribe to culture change to update labels dynamically
+            if (Program.LocalizationService != null && !_locSubscribed)
+            {
+                Program.LocalizationService.CultureChanged += (_, __) => ApplyLocalization();
+                _locSubscribed = true;
+            }
+        }
+
+        private void ApplyLocalization()
+        {
+            var loc = Program.LocalizationService;
+            if (loc == null) return;
+
+            lblEmbeddingMethod.Values.Text = $"{loc.GetString("EmbeddingMethod")}:";
+            lblEmbeddingUrl.Values.Text = $"{loc.GetString("EmbeddingURL")}:";
+            lblEmbeddingModel.Values.Text = $"{loc.GetString("EmbeddingModel")}:";
+            lblModelContextLength.Values.Text = $"{loc.GetString("ModelContextLength")}:";
+            lblChunkSize.Values.Text = $"{loc.GetString("ChunkSize")}:";
+            lblChunkOverlap.Values.Text = $"{loc.GetString("ChunkOverlap")}:";
+            lblTopKChunks.Values.Text = $"{loc.GetString("TopKChunks")}:";
+            lblTotalMaxContextLength.Values.Text = $"{loc.GetString("TotalMaxContextLength")}:";
+            rbEmbeddingAPI.Values.Text = loc.GetString("API");
+            rbEmbeddingGGUF.Values.Text = loc.GetString("GGUF");
+
+            // Prefer dedicated label if available, otherwise fallback to generic "Test"
+            var testText = loc.GetString("TestEmbedding");
+            if (testText == "TestEmbedding")
+            {
+                testText = loc.GetString("Test");
+            }
+            btnTestEmbedding.Values.Text = testText;
         }
 
         public void LoadSettings()
@@ -82,7 +118,7 @@ namespace folderchat.Forms
                 txtEmbeddingUrl.Visible = true;
                 lblEmbeddingUrl.Visible = true;
                 txtEmbeddingModel.Visible = true;
-                lblEmbeddingModel.Location = new Point(3, txtEmbeddingModel.Top - 27);
+                lblEmbeddingModel.Location = new Point(3, txtEmbeddingModel.Top - 21);
 
                 // Hide GGUF controls
                 cmbGGUFModel.Visible = false;
@@ -93,7 +129,7 @@ namespace folderchat.Forms
                 txtEmbeddingUrl.Visible = false;
                 lblEmbeddingUrl.Visible = false;
                 txtEmbeddingModel.Visible = false;
-                lblEmbeddingModel.Location = new Point(3, cmbGGUFModel.Top - 27);
+                lblEmbeddingModel.Location = new Point(3, cmbGGUFModel.Top - 21);
 
                 // Show GGUF controls
                 cmbGGUFModel.Visible = true;
@@ -227,7 +263,7 @@ namespace folderchat.Forms
                 if (sender is Krypton.Toolkit.KryptonButton btn)
                 {
                     btn.Enabled = false;
-                    btn.Values.Text = "Testing...";
+                    btn.Values.Text = Program.LocalizationService?.GetString("Testing") ?? "Testing...";
                 }
 
                 string message;
@@ -368,7 +404,15 @@ namespace folderchat.Forms
                 if (sender is Krypton.Toolkit.KryptonButton btn)
                 {
                     btn.Enabled = true;
-                    btn.Values.Text = "Test Embedding";
+                    {
+                        var loc = Program.LocalizationService;
+                        var text = loc?.GetString("TestEmbedding") ?? "Test Embedding";
+                        if (text == "TestEmbedding")
+                        {
+                            text = loc?.GetString("Test") ?? "Test";
+                        }
+                        btn.Values.Text = text;
+                    }
                 }
             }
         }
