@@ -449,128 +449,156 @@ namespace folderchat.Forms
 
             services.AddScoped<IChatService>(serviceProvider =>
             {
-                IChatService innerService;
-
-                if (chatMethod == "GGUF")
+                try
                 {
-                    // Use GGUF local model
-                    var chatGGUFModel = Properties.Settings.Default.ChatGGUFModel;
+                    IChatService innerService;
 
-                    if (string.IsNullOrEmpty(chatGGUFModel))
+                    if (chatMethod == "GGUF")
                     {
-                        throw new InvalidOperationException("Chat GGUF model is not configured. Please select a GGUF model in Settings.");
+                        // Use GGUF local model
+                        var chatGGUFModel = Properties.Settings.Default.ChatGGUFModel;
+
+                        if (string.IsNullOrEmpty(chatGGUFModel))
+                        {
+                            throw new InvalidOperationException("Chat GGUF model is not configured. Please select a GGUF model in Settings.");
+                        }
+
+                        // Build full path to model file
+                        // chatGGUFModel is in format: "provider_name/model.gguf"
+                        var modelPath = Path.Combine(
+                            PythonPathHelper.PythonToolsDirectory,
+                            "models",
+                            "chat",
+                            chatGGUFModel.Replace("/", Path.DirectorySeparatorChar.ToString())
+                        );
+
+                        if (!File.Exists(modelPath))
+                        {
+                            throw new FileNotFoundException($"GGUF model file not found at: {modelPath}");
+                        }
+
+                        innerService = new GGUFChatService(modelPath);
+                    }
+                    else if (apiProvider == "Claude Code")
+                    {
+                        var cliPath = Properties.Settings.Default.ClaudeCode_CLIPath;
+                        var model = Properties.Settings.Default.ClaudeCode_Model;
+                        if (string.IsNullOrEmpty(cliPath) || string.IsNullOrEmpty(model))
+                            throw new InvalidOperationException("Claude Code CLI path or model is not configured.");
+                        innerService = new ClaudeCodeChatService(cliPath, model);
+                    }
+                    else if (apiProvider == "Azure AI Foundry")
+                    {
+                        var azureApiUrl = Properties.Settings.Default.AzureAI_ApiUrl;
+                        var azureApiKey = Properties.Settings.Default.AzureAI_ApiKey;
+                        var azureModel = Properties.Settings.Default.AzureAI_SelectedModel;
+                        var azureApiVersion = Properties.Settings.Default.AzureAI_ApiVersion;
+                        if (string.IsNullOrEmpty(azureApiUrl) || string.IsNullOrEmpty(azureApiKey) || string.IsNullOrEmpty(azureModel) || azureApiUrl == "https://YOUR_RESOURCE_NAME.openai.azure.com")
+                            throw new InvalidOperationException("Azure AI Foundry settings are not fully configured.");
+                        innerService = new AzureOpenAIChatService(azureApiUrl, azureApiKey, azureModel, azureApiVersion);
+                    }
+                    else if (apiProvider == "OpenRouter")
+                    {
+                        var openRouterApiUrl = Properties.Settings.Default.OpenRouter_ApiUrl;
+                        var openRouterApiKey = Properties.Settings.Default.OpenRouter_ApiKey;
+                        var openRouterModel = Properties.Settings.Default.OpenRouter_SelectedModel;
+                        if (string.IsNullOrEmpty(openRouterApiKey) || string.IsNullOrEmpty(openRouterModel))
+                            throw new InvalidOperationException("OpenRouter settings are not fully configured.");
+                        innerService = new OpenRouterChatService(openRouterApiUrl, openRouterApiKey, openRouterModel);
+                    }
+                    else if (apiProvider == "Ollama")
+                    {
+                        var ollamaApiUrl = Properties.Settings.Default.Ollama_ApiUrl;
+                        var ollamaModel = Properties.Settings.Default.Ollama_SelectedModel;
+                        if (string.IsNullOrEmpty(ollamaApiUrl) || string.IsNullOrEmpty(ollamaModel))
+                            throw new InvalidOperationException("Ollama settings are not fully configured.");
+                        innerService = new OpenAIChatService(ollamaApiUrl, "", ollamaModel);
+                    }
+                    else if (apiProvider == "OpenAI")
+                    {
+                        var openAIApiUrl = Properties.Settings.Default.OpenAIAPI_ApiUrl;
+                        var openAIApiKey = Properties.Settings.Default.OpenAIAPI_ApiKey;
+                        var openAIModel = Properties.Settings.Default.OpenAIAPI_SelectedModel;
+                        if (string.IsNullOrEmpty(openAIApiKey) || string.IsNullOrEmpty(openAIModel))
+                            throw new InvalidOperationException("OpenAI settings are not fully configured.");
+                        innerService = new OpenAIChatService(openAIApiUrl, openAIApiKey, openAIModel);
+                    }
+                    else if (apiProvider == "Gemini")
+                    {
+                        var geminiApiUrl = Properties.Settings.Default.Gemini_ApiUrl;
+                        var geminiApiKey = Properties.Settings.Default.Gemini_ApiKey;
+                        var geminiModel = Properties.Settings.Default.Gemini_SelectedModel;
+                        if (string.IsNullOrEmpty(geminiApiKey) || string.IsNullOrEmpty(geminiModel))
+                            throw new InvalidOperationException("Gemini settings are not fully configured.");
+                        innerService = new OpenAIChatService(geminiApiUrl, geminiApiKey, geminiModel);
+                    }
+                    else if (apiProvider == "Claude")
+                    {
+                        var claudeApiUrl = Properties.Settings.Default.Claude_ApiUrl;
+                        var claudeApiKey = Properties.Settings.Default.Claude_ApiKey;
+                        var claudeModel = Properties.Settings.Default.Claude_SelectedModel;
+                        if (string.IsNullOrEmpty(claudeApiKey) || string.IsNullOrEmpty(claudeModel))
+                            throw new InvalidOperationException("Claude settings are not fully configured.");
+                        innerService = new OpenAIChatService(claudeApiUrl, claudeApiKey, claudeModel);
+                    }
+                    else // OpenAI Compatible
+                    {
+                        var baseUrl = Properties.Settings.Default.OpenAI_BaseUrl;
+                        var apiKey = Properties.Settings.Default.OpenAI_ApiKey;
+                        var model = Properties.Settings.Default.OpenAI_SelectedModel;
+                        if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(model))
+                            throw new InvalidOperationException("OpenAI Compatible settings are not fully configured.");
+                        innerService = new OpenAIChatService(baseUrl, apiKey, model);
                     }
 
-                    // Build full path to model file
-                    // chatGGUFModel is in format: "provider_name/model.gguf"
-                    var modelPath = Path.Combine(
-                        PythonPathHelper.PythonToolsDirectory,
-                        "models",
-                        "chat",
-                        chatGGUFModel.Replace("/", Path.DirectorySeparatorChar.ToString())
-                    );
+                    var mainForm = serviceProvider.GetRequiredService<MainForm>();
+                    var useRag = Properties.Settings.Default.UseRAG;
 
-                    if (!File.Exists(modelPath))
+                    // Get the SupportsSystemRole flag for the current provider
+                    bool supportsSystemMessage = apiProvider switch
                     {
-                        throw new FileNotFoundException($"GGUF model file not found at: {modelPath}");
+                        "Claude Code" => Properties.Settings.Default.ClaudeCode_SupportsSystemRole,
+                        "Azure AI Foundry" => Properties.Settings.Default.AzureAI_SupportsSystemRole,
+                        "OpenRouter" => Properties.Settings.Default.OpenRouter_SupportsSystemRole,
+                        "Ollama" => Properties.Settings.Default.Ollama_SupportsSystemRole,
+                        "OpenAI" => Properties.Settings.Default.OpenAIAPI_SupportsSystemRole,
+                        "Gemini" => Properties.Settings.Default.Gemini_SupportsSystemRole,
+                        "Claude" => Properties.Settings.Default.Claude_SupportsSystemRole,
+                        _ => Properties.Settings.Default.OpenAI_SupportsSystemRole // OpenAI Compatible
+                    };
+
+                    IChatService finalService = innerService;
+
+                    if (useRag)
+                    {
+                        // Wrap the inner service with RAG capabilities
+                        var ragService = serviceProvider.GetRequiredService<IRagService>();
+
+                        // Use supportsSystemMessage flag to determine whether to use context in system message
+                        finalService = new RagEnabledChatService(innerService, ragService, mainForm, supportsSystemMessage);
+                    }
+                    else
+                    {
+                        // Wrap with MCP capabilities (only when RAG is OFF)
+                        var mcpService = mainForm.GetMcpService();
+                        var maxToolIterations = Properties.Settings.Default.MCP_MaxToolIterations;
+                        finalService = new McpEnabledChatService(innerService, mcpService, supportsSystemMessage, maxToolIterations);
+
+                        // Set MainForm for logging
+                        McpEnabledChatService.SetMainForm(mainForm);
                     }
 
-                    innerService = new GGUFChatService(modelPath);
+                    return finalService;
                 }
-                else if (apiProvider == "Claude Code")
+                catch (Exception ex)
                 {
-                    var cliPath = Properties.Settings.Default.ClaudeCode_CLIPath;
-                    var model = Properties.Settings.Default.ClaudeCode_Model;
-                    innerService = new ClaudeCodeChatService(cliPath, model);
+                    var mainForm = serviceProvider.GetRequiredService<MainForm>();
+                    mainForm.LogError($"Failed to initialize chat service: {ex.Message}");
+                    
+                    var localizationService = serviceProvider.GetRequiredService<ILocalizationService>();
+                    var errorMessage = localizationService.GetString("ChatServiceInitializationError");
+                    return new DummyChatService(errorMessage);
                 }
-                else if (apiProvider == "Azure AI Foundry")
-                {
-                    var azureApiUrl = Properties.Settings.Default.AzureAI_ApiUrl;
-                    var azureApiKey = Properties.Settings.Default.AzureAI_ApiKey;
-                    var azureModel = Properties.Settings.Default.AzureAI_SelectedModel;
-                    var azureApiVersion = Properties.Settings.Default.AzureAI_ApiVersion;
-                    innerService = new AzureOpenAIChatService(azureApiUrl, azureApiKey, azureModel, azureApiVersion);
-                }
-                else if (apiProvider == "OpenRouter")
-                {
-                    var openRouterApiUrl = Properties.Settings.Default.OpenRouter_ApiUrl;
-                    var openRouterApiKey = Properties.Settings.Default.OpenRouter_ApiKey;
-                    var openRouterModel = Properties.Settings.Default.OpenRouter_SelectedModel;
-                    innerService = new OpenRouterChatService(openRouterApiUrl, openRouterApiKey, openRouterModel);
-                }
-                else if (apiProvider == "Ollama")
-                {
-                    var ollamaApiUrl = Properties.Settings.Default.Ollama_ApiUrl;
-                    var ollamaModel = Properties.Settings.Default.Ollama_SelectedModel;
-                    innerService = new OpenAIChatService(ollamaApiUrl, "", ollamaModel);
-                }
-                else if (apiProvider == "OpenAI")
-                {
-                    var openAIApiUrl = Properties.Settings.Default.OpenAIAPI_ApiUrl;
-                    var openAIApiKey = Properties.Settings.Default.OpenAIAPI_ApiKey;
-                    var openAIModel = Properties.Settings.Default.OpenAIAPI_SelectedModel;
-                    innerService = new OpenAIChatService(openAIApiUrl, openAIApiKey, openAIModel);
-                }
-                else if (apiProvider == "Gemini")
-                {
-                    var geminiApiUrl = Properties.Settings.Default.Gemini_ApiUrl;
-                    var geminiApiKey = Properties.Settings.Default.Gemini_ApiKey;
-                    var geminiModel = Properties.Settings.Default.Gemini_SelectedModel;
-                    innerService = new OpenAIChatService(geminiApiUrl, geminiApiKey, geminiModel);
-                }
-                else if (apiProvider == "Claude")
-                {
-                    var claudeApiUrl = Properties.Settings.Default.Claude_ApiUrl;
-                    var claudeApiKey = Properties.Settings.Default.Claude_ApiKey;
-                    var claudeModel = Properties.Settings.Default.Claude_SelectedModel;
-                    innerService = new OpenAIChatService(claudeApiUrl, claudeApiKey, claudeModel);
-                }
-                else // OpenAI Compatible
-                {
-                    var baseUrl = Properties.Settings.Default.OpenAI_BaseUrl;
-                    var apiKey = Properties.Settings.Default.OpenAI_ApiKey;
-                    var model = Properties.Settings.Default.OpenAI_SelectedModel;
-                    innerService = new OpenAIChatService(baseUrl, apiKey, model);
-                }
-
-                var mainForm = serviceProvider.GetRequiredService<MainForm>();
-                var useRag = Properties.Settings.Default.UseRAG;
-
-                // Get the SupportsSystemRole flag for the current provider
-                bool supportsSystemMessage = apiProvider switch
-                {
-                    "Claude Code" => Properties.Settings.Default.ClaudeCode_SupportsSystemRole,
-                    "Azure AI Foundry" => Properties.Settings.Default.AzureAI_SupportsSystemRole,
-                    "OpenRouter" => Properties.Settings.Default.OpenRouter_SupportsSystemRole,
-                    "Ollama" => Properties.Settings.Default.Ollama_SupportsSystemRole,
-                    "OpenAI" => Properties.Settings.Default.OpenAIAPI_SupportsSystemRole,
-                    "Gemini" => Properties.Settings.Default.Gemini_SupportsSystemRole,
-                    "Claude" => Properties.Settings.Default.Claude_SupportsSystemRole,
-                    _ => Properties.Settings.Default.OpenAI_SupportsSystemRole // OpenAI Compatible
-                };
-
-                IChatService finalService = innerService;
-
-                if (useRag)
-                {
-                    // Wrap the inner service with RAG capabilities
-                    var ragService = serviceProvider.GetRequiredService<IRagService>();
-
-                    // Use supportsSystemMessage flag to determine whether to use context in system message
-                    finalService = new RagEnabledChatService(innerService, ragService, mainForm, supportsSystemMessage);
-                }
-                else
-                {
-                    // Wrap with MCP capabilities (only when RAG is OFF)
-                    var mcpService = mainForm.GetMcpService();
-                    var maxToolIterations = Properties.Settings.Default.MCP_MaxToolIterations;
-                    finalService = new McpEnabledChatService(innerService, mcpService, supportsSystemMessage, maxToolIterations);
-
-                    // Set MainForm for logging
-                    McpEnabledChatService.SetMainForm(mainForm);
-                }
-
-                return finalService;
             });
 
             // Build and set the service provider

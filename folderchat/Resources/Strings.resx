@@ -286,4 +286,7 @@
   <data name="Testing" xml:space="preserve">
     <value>Testing...</value>
   </data>
+  <data name="ChatServiceInitializationError" xml:space="preserve">
+    <value>The chat service could not be initialized. Please check your configuration in the Settings tab.</value>
+  </data>
 </root>
