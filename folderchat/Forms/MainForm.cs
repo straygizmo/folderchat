@@ -1,15 +1,10 @@
 using Microsoft.AspNetCore.Components.WebView.WindowsForms;
-using Microsoft.Extensions.DependencyInjection;
 using folderchat.Pages;
 using folderchat.Services;
 using folderchat.Services.Mcp;
 using folderchat.Models;
 using Krypton.Toolkit;
 using System.Text.Json;
-using System.Reflection;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Hosting;
 using System.Text.Json.Serialization;
 
 namespace folderchat.Forms
@@ -20,7 +15,7 @@ namespace folderchat.Forms
         private Pages.Chat? _chatComponent;
         private TreeNode? _rightClickedNode;
         private IndexingService? _indexingService;
-        private WebApplication? _apiServer;
+        private ApiServerService? _apiServerService;
 
         // Event to notify Blazor about theme changes
         public event EventHandler<string>? ThemeChanged;
@@ -78,6 +73,7 @@ namespace folderchat.Forms
             InitializeContextMenu();
             InitializeTreeViewEvents();
             InitializeIndexingService();
+            _apiServerService = new ApiServerService(this);
         }
 
         private void InitializeIndexingService()
@@ -304,8 +300,14 @@ namespace folderchat.Forms
         {
             LogSystemMessage("Application started");
 
+            RestoreWindowPlacement();
+
             //LoadSettings();
             LoadFolderTree();
+
+            // Always initialize Blazor WebView so the chat UI renders even before configuration
+            LogSystemMessage("Initializing Blazor WebView");
+            InitializeBlazorWebView();
 
             if (!IsConfigured())
             {
@@ -319,10 +321,6 @@ namespace folderchat.Forms
             }
             else
             {
-                // Only initialize Blazor if configured
-                LogSystemMessage("Initializing Blazor WebView");
-                InitializeBlazorWebView();
-
                 // Auto-load enabled MCP servers
                 await LoadEnabledMcpServersAsync();
             }
@@ -330,7 +328,10 @@ namespace folderchat.Forms
             // Start API server if enabled
             if (Properties.Settings.Default.EnableAPIServer)
             {
-                _ = StartApiServer(); // Fire-and-forget to not block the UI thread
+                if (_apiServerService != null)
+                {
+                    _ = _apiServerService.StartApiServer(); // Fire-and-forget to not block the UI thread
+                }
             }
             else
             {
@@ -414,7 +415,7 @@ namespace folderchat.Forms
             // Set HostPage first, before any other operations
             if (string.IsNullOrEmpty(blazorWebView1.HostPage))
             {
-                blazorWebView1.HostPage = "index.html";
+                blazorWebView1.HostPage = "wwwroot/index.html";
             }
 
             var services = new ServiceCollection();
@@ -783,14 +784,12 @@ namespace folderchat.Forms
 
                 private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
                 {
+                    SaveWindowPlacement();
                     SaveTreeState();
         
-                    if (_apiServer != null)
+                    if (_apiServerService != null && _apiServerService.IsRunning)
                     {
-                        LogSystemMessage("Stopping internal API server...");
-                        toolStripStatusLabelApiStatus.Text = "API Server: Stopping...";
-                        await _apiServer.StopAsync();
-                        await _apiServer.DisposeAsync();
+                        await _apiServerService.StopApiServer();
                     }
                 }
         private void RestoreTreeState()
@@ -838,6 +837,93 @@ namespace folderchat.Forms
         {
             public bool IsChecked { get; set; }
             public bool IsExpanded { get; set; }
+        }
+
+        // --- Window placement persistence ---
+        private void SaveWindowPlacement()
+        {
+            try
+            {
+                Properties.Settings.Default.MainWindow_State = this.WindowState == FormWindowState.Maximized ? "Maximized" : "Normal";
+
+                var bounds = this.WindowState == FormWindowState.Normal ? this.Bounds : this.RestoreBounds;
+
+                Properties.Settings.Default.MainWindow_Left = bounds.Left;
+                Properties.Settings.Default.MainWindow_Top = bounds.Top;
+                Properties.Settings.Default.MainWindow_Width = bounds.Width;
+                Properties.Settings.Default.MainWindow_Height = bounds.Height;
+
+                Properties.Settings.Default.Save();
+            }
+            catch
+            {
+            }
+        }
+
+        private void RestoreWindowPlacement()
+        {
+            try
+            {
+                var state = Properties.Settings.Default.MainWindow_State;
+                int left = Properties.Settings.Default.MainWindow_Left;
+                int top = Properties.Settings.Default.MainWindow_Top;
+                int width = Properties.Settings.Default.MainWindow_Width;
+                int height = Properties.Settings.Default.MainWindow_Height;
+
+                if (width <= 0 || height <= 0)
+                {
+                    var screen = System.Windows.Forms.Screen.PrimaryScreen?.WorkingArea ?? new System.Drawing.Rectangle(0, 0, 1024, 768);
+                    width = Math.Min(1200, Math.Max(800, screen.Width * 2 / 3));
+                    height = Math.Min(800, Math.Max(600, screen.Height * 2 / 3));
+                }
+
+                var target = new System.Drawing.Rectangle(
+                    left > 0 ? left : this.Left,
+                    top > 0 ? top : this.Top,
+                    width,
+                    height
+                );
+
+                var visible = EnsureVisibleOnAnyScreen(target);
+
+                this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+                this.Bounds = visible;
+
+                if (string.Equals(state, "Maximized", StringComparison.OrdinalIgnoreCase))
+                {
+                    this.WindowState = FormWindowState.Maximized;
+                }
+                else
+                {
+                    this.WindowState = FormWindowState.Normal;
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private System.Drawing.Rectangle EnsureVisibleOnAnyScreen(System.Drawing.Rectangle bounds)
+        {
+            foreach (var screen in System.Windows.Forms.Screen.AllScreens)
+            {
+                var wa = screen.WorkingArea;
+                if (wa.IntersectsWith(bounds))
+                {
+                    var x = Math.Max(wa.Left, Math.Min(bounds.Left, wa.Right - Math.Max(100, bounds.Width)));
+                    var y = Math.Max(wa.Top, Math.Min(bounds.Top, wa.Bottom - Math.Max(100, bounds.Height)));
+                    var w = Math.Min(bounds.Width, wa.Width);
+                    var h = Math.Min(bounds.Height, wa.Height);
+                    return new System.Drawing.Rectangle(x, y, w, h);
+                }
+            }
+
+            var primary = System.Windows.Forms.Screen.PrimaryScreen?.WorkingArea ?? new System.Drawing.Rectangle(0, 0, 1024, 768);
+            var w2 = Math.Min(bounds.Width, primary.Width);
+            var h2 = Math.Min(bounds.Height, primary.Height);
+            var x2 = primary.Left + (primary.Width - w2) / 2;
+            var y2 = primary.Top + (primary.Height - h2) / 2;
+            return new System.Drawing.Rectangle(x2, y2, w2, h2);
         }
 
         public void OnThemeChanged()
@@ -1113,7 +1199,7 @@ namespace folderchat.Forms
             }
         }
 
-        private IChatService GetChatServiceForSummarization()
+        public IChatService GetChatServiceForSummarization()
         {
             var apiProvider = Properties.Settings.Default.API_Provider;
             var chatMethod = Properties.Settings.Default.ChatMethod;
@@ -1222,218 +1308,36 @@ namespace folderchat.Forms
 
         public async Task ToggleApiServer(bool enable)
         {
+            if (_apiServerService == null) return;
+
             if (enable)
             {
                 // Start the API server
-                _ = StartApiServer();
+                _ = _apiServerService.StartApiServer();
             }
             else
             {
                 // Stop the API server
-                await StopApiServer();
+                await _apiServerService.StopApiServer();
             }
         }
 
-        private async Task StopApiServer()
+        public Pages.Chat? GetChatComponent()
         {
-            try
-            {
-                if (_apiServer != null)
-                {
-                    LogSystemMessage("Stopping API server...");
-                    toolStripStatusLabelApiStatus.Text = "API Server: Stopping...";
-                    await _apiServer.StopAsync();
-                    await _apiServer.DisposeAsync();
-                    _apiServer = null;
-                    toolStripStatusLabelApiStatus.Text = "API Server: Stopped";
-                    LogSystemMessage("API server stopped successfully");
-                }
-            }
-            catch (Exception ex)
-            {
-                LogError($"Error stopping API server: {ex.Message}");
-                toolStripStatusLabelApiStatus.Text = "API Server: Error stopping";
-            }
+            return _chatComponent;
         }
 
-        private async Task StartApiServer()
+        public void SetApiStatus(string status)
         {
-            try
+            if (InvokeRequired)
             {
-                // Check if the API server is already running
-                if (_apiServer != null)
-                {
-                    LogSystemMessage("API server is already running");
-                    return;
-                }
-
-                var port = Properties.Settings.Default.APIServerPort;
-                var url = $"http://localhost:{port}";
-
-                LogSystemMessage($"Starting API server on {url}...");
-                toolStripStatusLabelApiStatus.Text = "API Server: Starting...";
-
-                var builder = WebApplication.CreateBuilder();
-
-                // Configure Kestrel to listen on the specified port
-                builder.WebHost.UseUrls(url);
-
-                // Add this form instance as a singleton
-                builder.Services.AddSingleton(this);
-
-                var app = builder.Build();
-
-                // Define the OpenAI compatible endpoint
-                app.MapPost("/v1/chat/completions", async (ChatCompletionRequest request, MainForm mainForm) =>
-                {
-                    // Get the currently configured chat service (without RAG)
-                    var chatService = mainForm.GetChatServiceForSummarization();
-                    var userMessage = request.Messages.LastOrDefault(m => m.Role == "user")?.Content ?? "";
-
-                    if (string.IsNullOrEmpty(userMessage))
-                    {
-                        return Results.BadRequest("User message cannot be empty.");
-                    }
-
-                    // Send the message to the LLM
-                    var result = await chatService.SendMessageAsync(userMessage);
-
-                    // Update the UI on the UI thread
-                    if (mainForm._chatComponent != null)
-                    {
-                        await mainForm.InvokeAsync(async () =>
-                        {
-                            // Log and display the user message
-                            mainForm.LogChatMessage("user (API)", result.ActualUserMessage);
-                            await mainForm._chatComponent.AddMessageToChatAsync(result.ActualUserMessage, true, MessageType.User);
-
-                            // Log and display the assistant response
-                            mainForm.LogChatMessage("assistant (API)", result.AssistantResponse);
-                            await mainForm._chatComponent.AddMessageToChatAsync(result.AssistantResponse, false, MessageType.Assistant);
-                        });
-                    }
-
-                    // Create and return an OpenAI-compatible response with the actual assistant response
-                    var response = new ChatCompletionResponse
-                    {
-                        Id = $"chatcmpl-integrated-{Guid.NewGuid()}",
-                        Object = "chat.completion",
-                        Created = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                        Model = request.Model, // Note: This might not be the actual model used, but it's what the client sent.
-                        Choices = new List<ChatCompletionChoice>
-                        {
-                            new ChatCompletionChoice
-                            {
-                                Index = 0,
-                                Message = new ResponseMessage
-                                {
-                                    Role = "assistant",
-                                    Content = result.AssistantResponse // Use the actual response here
-                                },
-                                FinishReason = "stop"
-                            }
-                        },
-                        Usage = new Usage() // Dummy usage, as token count is not easily available here
-                    };
-
-                    return Results.Ok(response);
-                });
-
-                _apiServer = app;
-                var statusMessage = $"API Server: Running on {url}";
-                LogSystemMessage(statusMessage);
-                if (InvokeRequired)
-                {
-                    Invoke(() => toolStripStatusLabelApiStatus.Text = statusMessage);
-                }
-                else
-                {
-                    toolStripStatusLabelApiStatus.Text = statusMessage;
-                }
-
-                await _apiServer.RunAsync(); // This will run until the application closes
+                Invoke(() => toolStripStatusLabelApiStatus.Text = status);
             }
-            catch (Exception ex)
+            else
             {
-                var errorMessage = "API Server: Error";
-                LogError($"Failed to start internal API server: {ex.Message}");
-                _apiServer = null;
-                if (InvokeRequired)
-                {
-                    Invoke(() => toolStripStatusLabelApiStatus.Text = errorMessage);
-                }
-                else
-                {
-                    toolStripStatusLabelApiStatus.Text = errorMessage;
-                }
+                toolStripStatusLabelApiStatus.Text = status;
             }
         }
-    }
-
-    // --- OpenAI Compatible Models ---
-
-    public record ChatCompletionRequest(
-        [property: JsonPropertyName("model")] string Model,
-        [property: JsonPropertyName("messages")] List<ChatMessage> Messages,
-        [property: JsonPropertyName("stream")] bool? Stream = false
-    );
-
-    public record ChatMessage(
-        [property: JsonPropertyName("role")] string Role,
-        [property: JsonPropertyName("content")] string Content
-    );
-
-    public record ChatCompletionResponse
-    {
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
-
-        [JsonPropertyName("object")]
-        public string Object { get; set; }
-
-        [JsonPropertyName("created")]
-        public long Created { get; set; }
-
-        [JsonPropertyName("model")]
-        public string Model { get; set; }
-
-        [JsonPropertyName("choices")]
-        public List<ChatCompletionChoice> Choices { get; set; }
-
-        [JsonPropertyName("usage")]
-        public Usage Usage { get; set; }
-    }
-
-    public record ChatCompletionChoice
-    {
-        [JsonPropertyName("index")]
-        public int Index { get; set; }
-
-        [JsonPropertyName("message")]
-        public ResponseMessage Message { get; set; }
-
-        [JsonPropertyName("finish_reason")]
-        public string FinishReason { get; set; }
-    }
-
-    public record ResponseMessage
-    {
-        [JsonPropertyName("role")]
-        public string Role { get; set; }
-
-        [JsonPropertyName("content")]
-        public string Content { get; set; }
-    }
-
-    public record Usage
-    {
-        [JsonPropertyName("prompt_tokens")]
-        public int PromptTokens { get; set; }
-
-        [JsonPropertyName("completion_tokens")]
-        public int CompletionTokens { get; set; }
-
-        [JsonPropertyName("total_tokens")]
-        public int TotalTokens { get; set; }
     }
 }
+
