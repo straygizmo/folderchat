@@ -26,7 +26,12 @@ class DocumentIndexer:
             '.bat', '.ps1', '.c', '.cpp', '.h', '.java', '.cs',
             '.go', '.rs', '.rb', '.php', '.swift', '.kt', '.scala',
             # Office documents
-            '.pdf', '.docx', '.xlsx', '.pptx'
+            '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'
+        }
+
+        # Only these extensions will be converted to Markdown (Office/PDF)
+        self.markdown_conversion_extensions = {
+            '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx'
         }
 
         # Load chunk settings from config if available
@@ -46,17 +51,23 @@ class DocumentIndexer:
             return result['encoding'] or 'utf-8'
 
     def read_file(self, file_path: str) -> Optional[Path]:
-        """Convert file to markdown using MarkItDown."""
+        """Return a path to text content. Convert to Markdown only for Office/PDF."""
         try:
             file_path_obj = Path(file_path)
+            ext = file_path_obj.suffix.lower()
 
-            # Convert to markdown using MarkItDown
-            md_path = self.converter.convert_to_markdown(file_path_obj)
-            if md_path:
-                print(f"Successfully converted file to markdown", flush=True)
-            else:
-                print(f"Failed to convert file to markdown", flush=True)
-            return md_path
+            # Convert to Markdown only for Office/PDF files
+            if ext in getattr(self, 'markdown_conversion_extensions', set()):
+                md_path = self.converter.convert_to_markdown(file_path_obj)
+                if md_path:
+                    print(f"Successfully converted file to markdown", flush=True)
+                else:
+                    print(f"Failed to convert file to markdown", flush=True)
+                return md_path
+
+            # For non-Office/PDF files, do not convert; use the original file as content
+            print(f"Skipping conversion for {file_path_obj}, using original file.", flush=True)
+            return file_path_obj
         except Exception as e:
             print(f"Error converting file: {e}", flush=True)
             import traceback
@@ -135,13 +146,15 @@ class DocumentIndexer:
             file_abs_path = os.path.join(folder_path, file_rel_path)
             entry = metadata.get(file_rel_path)
             
-            md_path = Path(file_abs_path).with_suffix('.md')
-            
+            # Determine content path based on conversion policy
+            ext = Path(file_abs_path).suffix.lower()
+            content_path = Path(file_abs_path).with_suffix('.md') if ext in getattr(self, 'markdown_conversion_extensions', set()) else Path(file_abs_path)
+
             if not entry or \
                entry.get('chunk_size') != self.chunk_size or \
                entry.get('chunk_overlap') != self.chunk_overlap or \
                entry.get('original_mtime') != os.path.getmtime(file_abs_path) or \
-               (md_path.exists() and entry.get('md_mtime') != os.path.getmtime(md_path)):
+               (content_path.exists() and entry.get('md_mtime') != os.path.getmtime(content_path)):
                 files_to_process.append(file_abs_path)
             else:
                 files_to_keep.append(file_rel_path)
@@ -174,24 +187,32 @@ class DocumentIndexer:
         new_metadata = {}
 
         if files_to_process:
-            markdown_files = []
+            content_files = []
             for file_path in files_to_process:
-                md_path = self.read_file(file_path)
-                if md_path:
-                    markdown_files.append((file_path, md_path))
+                content_path = self.read_file(file_path)
+                if content_path:
+                    content_files.append((file_path, content_path))
 
             all_chunks = []
-            for original_path, md_path in markdown_files:
+            for original_path, content_path in content_files:
                 try:
-                    with open(md_path, 'r', encoding='utf-8') as f:
-                        content = f.read()
+                    # For Markdown outputs, UTF-8 is safe; otherwise detect encoding.
+                    if Path(content_path).suffix.lower() == '.md':
+                        with open(content_path, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                    else:
+                        enc = self.detect_encoding(content_path)
+                        # Use detected encoding; ignore errors to avoid crashes on odd files.
+                        with open(content_path, 'r', encoding=enc or 'utf-8', errors='ignore') as f:
+                            content = f.read()
                     relative_path = os.path.relpath(original_path, folder_path)
                     chunks = self.chunk_text(content, relative_path)
                     all_chunks.extend(chunks)
                     
                     new_metadata[relative_path] = {
                         "original_mtime": os.path.getmtime(original_path),
-                        "md_mtime": os.path.getmtime(md_path),
+                        # Store mtime of the actual content path (md or original file)
+                        "md_mtime": os.path.getmtime(content_path),
                         "chunk_size": self.chunk_size,
                         "chunk_overlap": self.chunk_overlap,
                         "num_chunks": len(chunks)
