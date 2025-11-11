@@ -5,6 +5,7 @@
 @using Microsoft.JSInterop
 @using System.Text
 @using System.Text.Json
+@using System.Linq
 @inject IChatService ChatService
 @inject MainForm MainForm
 @inject IJSRuntime JSRuntime
@@ -22,6 +23,14 @@
                 <button class="btn btn-sm btn-outline-primary" @onclick="ClearChat">@Localization.GetString("NewChat")</button>
             </div>
         </div>
+        @if (!string.IsNullOrWhiteSpace(pendingPreview))
+        {
+            <div class="text-muted small mt-1">
+                <span class="badge bg-light text-secondary border" style="opacity: 0.6;">
+                    @pendingPreview
+                </span>
+            </div>
+        }
         <div class="d-flex align-items-center mt-2">
             <label class="text-muted small me-2">@Localization.GetString("FontSize"):</label>
             <input type="range" class="form-range flex-grow-1" style="max-width: 200px;"
@@ -122,6 +131,7 @@
     private bool isWaitingForResponse = false;
     private int fontSize = 14;
     private System.Threading.Timer? timer;
+    private string pendingPreview = string.Empty;
     private string apiProvider = "";
     private string modelName = "";
     private List<string> checkedFolders = new List<string>();
@@ -233,19 +243,68 @@
         string userMessage = currentMessage;
         currentMessage = string.Empty;
 
-        // Don't add user message to chat history yet - wait for actual message from service
+        // Determine immediate/temporary display
+        var supportsSystem = GetSupportsSystemMessageForProvider(apiProvider);
+        var isMcpActive = (!useRag && mcpServers.Any(s => s.IsEnabled));
+        var shouldImmediateDisplay = supportsSystem && isMcpActive && !useRag;
+        var pendingInChat = (!supportsSystem) && isMcpActive && !useRag;
+
+        if (shouldImmediateDisplay)
+        {
+            // Immediately add user message to chat
+            chatHistory.Add(new ChatMessageModel { Text = userMessage, IsUser = true, Type = MessageType.Normal });
+        }
+        else if (pendingInChat)
+        {
+            // Add a subtle temporary display to the chat (modest)
+            chatHistory.Add(new ChatMessageModel { Text = userMessage, IsUser = true, Type = MessageType.Pending });
+        }
+        else
+        {
+            // Add a subtle temporary display above the chat area
+            pendingPreview = userMessage;
+        }
+
         isWaitingForResponse = true;
         shouldScrollToBottom = true;
         StateHasChanged();
 
         try
         {
-            var result = await ChatService.SendMessageAsync(userMessage);
+            // Reflect temporary display in UI (non-immediate display case)
+            if (!shouldImmediateDisplay && !string.IsNullOrEmpty(pendingPreview))
+            {
+                await InvokeAsync(StateHasChanged);
+                await Task.Yield();
+            }
+
+            // Start send task first to clear temporary display after sending begins
+            var sendTask = ChatService.SendMessageAsync(userMessage);
+
+            if (!pendingInChat)
+            {
+                // Clear temporary display and update UI
+                pendingPreview = string.Empty;
+                await InvokeAsync(StateHasChanged);
+            }
+
+            // Wait for actual send completion
+            var result = await sendTask;
 
             isWaitingForResponse = false;
 
-            // Add the actual user message that was sent to LLM (may include RAG context)
-            chatHistory.Add(new ChatMessageModel { Text = result.ActualUserMessage, IsUser = true });
+            if (pendingInChat)
+            {
+                // Remove temporary display (Pending) from chat
+                var idx = chatHistory.FindLastIndex(m => m.Type == MessageType.Pending && m.IsUser);
+                if (idx >= 0) chatHistory.RemoveAt(idx);
+            }
+
+            // Add actual user message only if not immediately displayed
+            if (!shouldImmediateDisplay)
+            {
+                chatHistory.Add(new ChatMessageModel { Text = result.ActualUserMessage, IsUser = true });
+            }
 
             // Determine message type based on response content
             var messageType = MessageType.Normal;
@@ -274,11 +333,19 @@
                              $"• {Localization.GetString("ReviewErrorDetails")}";
 
             // Add error message to chat history (use original user input since service failed)
-            chatHistory.Add(new ChatMessageModel {
-                Text = userMessage,
-                IsUser = true,
-                Type = MessageType.Normal
-            });
+            if (pendingInChat)
+            {
+                var idx = chatHistory.FindLastIndex(m => m.Type == MessageType.Pending && m.IsUser);
+                if (idx >= 0) chatHistory.RemoveAt(idx);
+            }
+            if (!shouldImmediateDisplay)
+            {
+                chatHistory.Add(new ChatMessageModel {
+                    Text = userMessage,
+                    IsUser = true,
+                    Type = MessageType.Normal
+                });
+            }
             chatHistory.Add(new ChatMessageModel {
                 Text = errorMessage,
                 IsUser = false,
@@ -357,6 +424,8 @@
             return "border border-danger bg-danger-subtle text-danger";
         if (message.Type == MessageType.Info)
             return message.IsUser ? "border border-info bg-info-subtle text-dark" : "border border-info bg-info-subtle text-dark";
+        if (message.Type == MessageType.Pending)
+            return "bg-light text-secondary border";
 
         return message.IsUser ? "bg-primary" : "bg-secondary";
     }
@@ -367,6 +436,8 @@
             return "border-width: 2px !important;";
         if (message.Type == MessageType.Info)
             return "border-width: 1px !important;";
+        if (message.Type == MessageType.Pending)
+            return "opacity: 0.6;";
         return "";
     }
 
@@ -438,6 +509,21 @@
             "Gemini" => folderchat.Properties.Settings.Default.Gemini_SelectedModel,
             "Claude" => folderchat.Properties.Settings.Default.Claude_SelectedModel,
             _ => folderchat.Properties.Settings.Default.OpenAI_SelectedModel // OpenAI Compatible
+        };
+    }
+
+    private bool GetSupportsSystemMessageForProvider(string provider)
+    {
+        return provider switch
+        {
+            "Claude Code" => folderchat.Properties.Settings.Default.ClaudeCode_SupportsSystemRole,
+            "Azure AI Foundry" => folderchat.Properties.Settings.Default.AzureAI_SupportsSystemRole,
+            "OpenRouter" => folderchat.Properties.Settings.Default.OpenRouter_SupportsSystemRole,
+            "Ollama" => folderchat.Properties.Settings.Default.Ollama_SupportsSystemRole,
+            "OpenAI" => folderchat.Properties.Settings.Default.OpenAIAPI_SupportsSystemRole,
+            "Gemini" => folderchat.Properties.Settings.Default.Gemini_SupportsSystemRole,
+            "Claude" => folderchat.Properties.Settings.Default.Claude_SupportsSystemRole,
+            _ => folderchat.Properties.Settings.Default.OpenAI_SupportsSystemRole
         };
     }
 

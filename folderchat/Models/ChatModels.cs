@@ -6,7 +6,8 @@ namespace folderchat.Models
         Error,
         Info,
         User,       // Added for API
-        Assistant   // Added for API
+        Assistant,   // Added for API
+        Pending      // Pending bubble shown in chat for temporary display
     }
 
     public class ChatMessageModel
