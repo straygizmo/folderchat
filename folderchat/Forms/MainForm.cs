@@ -16,6 +16,8 @@ namespace folderchat.Forms
         private TreeNode? _rightClickedNode;
         private IndexingService? _indexingService;
         private ApiServerService? _apiServerService;
+        private ToolStripMenuItem? menuItemShowFiles;
+        private bool _showFiles = false;
 
         // Event to notify Blazor about theme changes
         public event EventHandler<string>? ThemeChanged;
@@ -118,6 +120,14 @@ namespace folderchat.Forms
 
         private void InitializeContextMenu()
         {
+            // Add "Show Files" menu item
+            menuItemShowFiles = new ToolStripMenuItem("Show Files");
+            menuItemShowFiles.CheckOnClick = true;
+            menuItemShowFiles.Checked = _showFiles;
+            menuItemShowFiles.Click += new System.EventHandler(menuItemShowFiles_Click);
+            contextMenuTreeView.Items.Add(new ToolStripSeparator());
+            contextMenuTreeView.Items.Add(menuItemShowFiles);
+
             // Set up localization for context menu items
             if (Program.LocalizationService != null)
             {
@@ -131,6 +141,16 @@ namespace folderchat.Forms
             }
         }
 
+        private void menuItemShowFiles_Click(object? sender, EventArgs e)
+        {
+            if (menuItemShowFiles != null)
+            {
+                _showFiles = menuItemShowFiles.Checked;
+                SaveTreeState();
+                LoadFolderTree();
+            }
+        }
+
         private void UpdateContextMenuLocalization()
         {
             if (Program.LocalizationService == null) return;
@@ -138,6 +158,10 @@ namespace folderchat.Forms
             menuItemIndexing.Text = Program.LocalizationService.GetString("Indexing");
             menuItemSummarize.Text = Program.LocalizationService.GetString("Summarize");
             menuItemRefresh.Text = Program.LocalizationService.GetString("Refresh");
+            if (menuItemShowFiles != null)
+            {
+                menuItemShowFiles.Text = Program.LocalizationService.GetString("ShowFiles") ?? "Show Files";
+            }
         }
 
         private void InitializeSettingsPanel()
@@ -732,6 +756,24 @@ namespace folderchat.Forms
                     }
                     catch
                     {
+                    }
+                }
+
+                if (_showFiles)
+                {
+                    foreach (var file in directoryInfo.GetFiles())
+                    {
+                        try
+                        {
+                            var fileNode = new TreeNode(file.Name)
+                            {
+                                Tag = file.FullName
+                            };
+                            e.Node.Nodes.Add(fileNode);
+                        }
+                        catch
+                        {
+                        }
                     }
                 }
             }
