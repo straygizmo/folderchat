@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
-using folderchat.Models;
+using folderchat.Models; // For MessageType
+using folderchat.Services; // For SendMessageAsyncResult
 
 namespace folderchat.Services
 {
@@ -12,15 +13,19 @@ namespace folderchat.Services
             _errorMessage = errorMessage;
         }
 
-        public Task<ChatResult> SendMessageAsync(string message, string? systemMessage = null)
+        public Task<SendMessageAsyncResult> SendMessageAsync(string message, string? systemMessage = null)
         {
-            var result = new ChatResult
+            var result = new SendMessageAsyncResult
             {
                 ActualUserMessage = message,
-                AssistantResponse = _errorMessage,
-                FunctionCalls = null
+                AssistantResponse = _errorMessage
             };
             return Task.FromResult(result);
+        }
+
+        public void ClearHistory()
+        {
+            // Dummy service does not maintain history, so nothing to clear.
         }
     }
 }
