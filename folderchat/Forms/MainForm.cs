@@ -137,8 +137,19 @@ namespace folderchat.Forms
                 Program.LocalizationService.CultureChanged += (sender, culture) =>
                 {
                     UpdateContextMenuLocalization();
+                    UpdateTabsLocalization();
                 };
             }
+            UpdateTabsLocalization(); // Initial call to set tab names
+        }
+
+        private void UpdateTabsLocalization()
+        {
+            if (Program.LocalizationService == null) return;
+
+            tabPageDir.Text = Program.LocalizationService.GetString("TabDirToRag");
+            tabPageSettings.Text = Program.LocalizationService.GetString("TabSettings");
+            tabPageChat.Text = Program.LocalizationService.GetString("TabChat");
         }
 
         private void menuItemShowFiles_Click(object? sender, EventArgs e)

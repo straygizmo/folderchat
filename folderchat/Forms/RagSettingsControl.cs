@@ -43,7 +43,7 @@ namespace folderchat.Forms
             lblTopKChunks.Values.Text = $"{loc.GetString("TopKChunks")}:";
             lblTotalMaxContextLength.Values.Text = $"{loc.GetString("TotalMaxContextLength")}:";
             rbEmbeddingAPI.Values.Text = loc.GetString("API");
-            rbEmbeddingGGUF.Values.Text = loc.GetString("GGUF");
+            rbEmbeddingGGUF.Values.Text = loc.GetString("Local");
 
             // Prefer dedicated label if available, otherwise fallback to generic "Test"
             var testText = loc.GetString("TestEmbedding");
@@ -67,7 +67,7 @@ namespace folderchat.Forms
 
             // Load embedding method
             var embeddingMethod = Properties.Settings.Default.EmbeddingMethod;
-            if (embeddingMethod == "GGUF")
+            if (embeddingMethod == "Local")
             {
                 rbEmbeddingGGUF.Checked = true;
             }
@@ -103,7 +103,7 @@ namespace folderchat.Forms
             Properties.Settings.Default.RAG_MaxContextLength = (int)nudMaxContextLength.Value;
 
             // Save embedding method
-            Properties.Settings.Default.EmbeddingMethod = rbEmbeddingGGUF.Checked ? "GGUF" : "API";
+            Properties.Settings.Default.EmbeddingMethod = rbEmbeddingGGUF.Checked ? "Local" : "API";
             Properties.Settings.Default.EmbeddingGGUFModel = cmbGGUFModel.SelectedItem?.ToString() ?? "";
 
             // For backward compatibility, set UseNativeEmbedding based on embedding method

@@ -165,6 +165,12 @@
   <data name="Language" xml:space="preserve">
     <value>言語</value>
   </data>
+  <data name="Theme" xml:space="preserve">
+    <value>テーマ</value>
+  </data>
+  <data name="ChatMethod" xml:space="preserve">
+    <value>チャット方法</value>
+  </data>
   <data name="ClaudeCodePath" xml:space="preserve">
     <value>Claude Code CLIパス</value>
   </data>
@@ -254,6 +260,9 @@
   <data name="LoadMCPServers" xml:space="preserve">
     <value>MCPサーバーを読み込み</value>
   </data>
+  <data name="MaxToolIterations" xml:space="preserve">
+    <value>最大ツール反復回数</value>
+  </data>
   <data name="RAGEnabled" xml:space="preserve">
     <value>RAGを有効にしました。変更を適用するにはアプリケーションを再起動してください。</value>
   </data>
@@ -269,6 +278,12 @@
   <data name="NoDirectoriesSelectedShort" xml:space="preserve">
     <value>ディレクトリなし</value>
   </data>
+  <data name="EnableAPIServer" xml:space="preserve">
+    <value>APIサーバーを有効にする</value>
+  </data>
+  <data name="ServerPort" xml:space="preserve">
+    <value>サーバーポート</value>
+  </data>
 
   <!-- RAG Settings (additional keys) -->
   <data name="EmbeddingMethod" xml:space="preserve">
@@ -277,8 +292,8 @@
   <data name="API" xml:space="preserve">
     <value>API</value>
   </data>
-  <data name="GGUF" xml:space="preserve">
-    <value>GGUF</value>
+  <data name="Local" xml:space="preserve">
+    <value>ローカル</value>
   </data>
   <data name="TestEmbedding" xml:space="preserve">
     <value>埋め込みをテスト</value>

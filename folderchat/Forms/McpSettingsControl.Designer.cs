@@ -31,11 +31,9 @@ namespace folderchat.Forms
             kryptonPanel1 = new Krypton.Toolkit.KryptonPanel();
             lblMaxToolIterations = new Krypton.Toolkit.KryptonLabel();
             numMaxToolIterations = new Krypton.Toolkit.KryptonNumericUpDown();
-            ((System.ComponentModel.ISupportInitialize)kryptonPanel1).BeginInit();
-            kryptonPanel1.SuspendLayout();
             kryptonPanelMCPAll = new Krypton.Toolkit.KryptonPanel();
             kryptonSplitContainer1 = new Krypton.Toolkit.KryptonSplitContainer();
-            kryptonGroupBox1 = new Krypton.Toolkit.KryptonGroupBox();
+            grpMCPServers = new Krypton.Toolkit.KryptonGroupBox();
             dgvMcpServers = new Krypton.Toolkit.KryptonDataGridView();
             kryptonPanel2 = new Krypton.Toolkit.KryptonPanel();
             btnRemoveMcpServer = new Krypton.Toolkit.KryptonButton();
@@ -43,6 +41,8 @@ namespace folderchat.Forms
             btnAddMcpServer = new Krypton.Toolkit.KryptonButton();
             kryptonGroupBox2 = new Krypton.Toolkit.KryptonGroupBox();
             rtbMcpLog = new Krypton.Toolkit.KryptonRichTextBox();
+            ((System.ComponentModel.ISupportInitialize)kryptonPanel1).BeginInit();
+            kryptonPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)kryptonPanelMCPAll).BeginInit();
             kryptonPanelMCPAll.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)kryptonSplitContainer1).BeginInit();
@@ -50,9 +50,9 @@ namespace folderchat.Forms
             kryptonSplitContainer1.Panel1.SuspendLayout();
             (kryptonSplitContainer1.Panel2).BeginInit();
             kryptonSplitContainer1.Panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)kryptonGroupBox1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)kryptonGroupBox1.Panel).BeginInit();
-            kryptonGroupBox1.Panel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)grpMCPServers).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)grpMCPServers.Panel).BeginInit();
+            grpMCPServers.Panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvMcpServers).BeginInit();
             ((System.ComponentModel.ISupportInitialize)kryptonPanel2).BeginInit();
             kryptonPanel2.SuspendLayout();
@@ -75,12 +75,13 @@ namespace folderchat.Forms
             // 
             lblMaxToolIterations.Location = new Point(4, 6);
             lblMaxToolIterations.Name = "lblMaxToolIterations";
-            lblMaxToolIterations.Size = new Size(112, 20);
+            lblMaxToolIterations.Size = new Size(115, 20);
             lblMaxToolIterations.TabIndex = 0;
             lblMaxToolIterations.Values.Text = "Max Tool Iterations";
             // 
             // numMaxToolIterations
             // 
+            numMaxToolIterations.Increment = new decimal(new int[] { 1, 0, 0, 0 });
             numMaxToolIterations.Location = new Point(122, 4);
             numMaxToolIterations.Maximum = new decimal(new int[] { 20, 0, 0, 0 });
             numMaxToolIterations.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -109,7 +110,7 @@ namespace folderchat.Forms
             // 
             // 
             // 
-            kryptonSplitContainer1.Panel1.Controls.Add(kryptonGroupBox1);
+            kryptonSplitContainer1.Panel1.Controls.Add(grpMCPServers);
             // 
             // 
             // 
@@ -118,20 +119,20 @@ namespace folderchat.Forms
             kryptonSplitContainer1.SplitterDistance = 400;
             kryptonSplitContainer1.TabIndex = 0;
             // 
-            // kryptonGroupBox1
+            // grpMCPServers
             // 
-            kryptonGroupBox1.Dock = DockStyle.Fill;
-            kryptonGroupBox1.Location = new Point(0, 0);
-            kryptonGroupBox1.Margin = new Padding(4, 3, 4, 3);
+            grpMCPServers.Dock = DockStyle.Fill;
+            grpMCPServers.Location = new Point(0, 0);
+            grpMCPServers.Margin = new Padding(4, 3, 4, 3);
             // 
             // 
             // 
-            kryptonGroupBox1.Panel.Controls.Add(dgvMcpServers);
-            kryptonGroupBox1.Panel.Controls.Add(kryptonPanel2);
-            kryptonGroupBox1.Panel.Controls.Add(kryptonPanel1);
-            kryptonGroupBox1.Size = new Size(342, 400);
-            kryptonGroupBox1.TabIndex = 0;
-            kryptonGroupBox1.Values.Heading = "MCP Servers";
+            grpMCPServers.Panel.Controls.Add(dgvMcpServers);
+            grpMCPServers.Panel.Controls.Add(kryptonPanel2);
+            grpMCPServers.Panel.Controls.Add(kryptonPanel1);
+            grpMCPServers.Size = new Size(342, 400);
+            grpMCPServers.TabIndex = 0;
+            grpMCPServers.Values.Heading = "MCP Servers";
             // 
             // dgvMcpServers
             // 
@@ -140,11 +141,11 @@ namespace folderchat.Forms
             dgvMcpServers.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvMcpServers.BorderStyle = BorderStyle.None;
             dgvMcpServers.Dock = DockStyle.Fill;
-            dgvMcpServers.Location = new Point(0, 0);
+            dgvMcpServers.Location = new Point(0, 33);
             dgvMcpServers.Margin = new Padding(4, 3, 4, 3);
             dgvMcpServers.Name = "dgvMcpServers";
             dgvMcpServers.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvMcpServers.Size = new Size(338, 339);
+            dgvMcpServers.Size = new Size(338, 306);
             dgvMcpServers.TabIndex = 1;
             dgvMcpServers.CellDoubleClick += DgvMcpServers_CellDoubleClick;
             dgvMcpServers.KeyDown += DgvMcpServers_KeyDown;
@@ -229,6 +230,9 @@ namespace folderchat.Forms
             Margin = new Padding(4, 3, 4, 3);
             Name = "McpSettingsControl";
             Size = new Size(354, 577);
+            ((System.ComponentModel.ISupportInitialize)kryptonPanel1).EndInit();
+            kryptonPanel1.ResumeLayout(false);
+            kryptonPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)kryptonPanelMCPAll).EndInit();
             kryptonPanelMCPAll.ResumeLayout(false);
             (kryptonSplitContainer1.Panel1).EndInit();
@@ -236,18 +240,15 @@ namespace folderchat.Forms
             (kryptonSplitContainer1.Panel2).EndInit();
             kryptonSplitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)kryptonSplitContainer1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)kryptonGroupBox1.Panel).EndInit();
-            kryptonGroupBox1.Panel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)kryptonGroupBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)grpMCPServers.Panel).EndInit();
+            grpMCPServers.Panel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)grpMCPServers).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvMcpServers).EndInit();
             ((System.ComponentModel.ISupportInitialize)kryptonPanel2).EndInit();
             kryptonPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)kryptonGroupBox2.Panel).EndInit();
             kryptonGroupBox2.Panel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)kryptonGroupBox2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)kryptonPanel1).EndInit();
-            kryptonPanel1.ResumeLayout(false);
-            kryptonPanel1.PerformLayout();
             ResumeLayout(false);
 
         }
@@ -256,7 +257,7 @@ namespace folderchat.Forms
 
         private Krypton.Toolkit.KryptonPanel kryptonPanelMCPAll;
         private Krypton.Toolkit.KryptonSplitContainer kryptonSplitContainer1;
-        private Krypton.Toolkit.KryptonGroupBox kryptonGroupBox1;
+        private Krypton.Toolkit.KryptonGroupBox grpMCPServers;
         private Krypton.Toolkit.KryptonDataGridView dgvMcpServers;
         private Krypton.Toolkit.KryptonPanel kryptonPanel2;
         private Krypton.Toolkit.KryptonButton btnRemoveMcpServer;

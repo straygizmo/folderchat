@@ -37,7 +37,7 @@ namespace folderchat.Forms
             cmbAPIProvider = new Krypton.Toolkit.KryptonComboBox();
             lblAPIProvider = new Krypton.Toolkit.KryptonLabel();
             rbChatAPI = new Krypton.Toolkit.KryptonRadioButton();
-            rbChatGGUF = new Krypton.Toolkit.KryptonRadioButton();
+            rbChatLocal = new Krypton.Toolkit.KryptonRadioButton();
             lblChatMethod = new Krypton.Toolkit.KryptonLabel();
             btnSaveChatSettings = new Krypton.Toolkit.KryptonButton();
             tabPageRAG = new TabPage();
@@ -46,7 +46,7 @@ namespace folderchat.Forms
             tabPageGeneral = new TabPage();
             kryptonThemeListBox1 = new Krypton.Toolkit.KryptonThemeListBox();
             kryptonPanel4 = new Krypton.Toolkit.KryptonPanel();
-            kryptonLabel1 = new Krypton.Toolkit.KryptonLabel();
+            lblTheme = new Krypton.Toolkit.KryptonLabel();
             lblLanguage = new Krypton.Toolkit.KryptonLabel();
             cmbLanguage = new Krypton.Toolkit.KryptonComboBox();
             tabPageServer = new TabPage();
@@ -72,7 +72,6 @@ namespace folderchat.Forms
             ((System.ComponentModel.ISupportInitialize)cmbChatGGUFModel).BeginInit();
             ((System.ComponentModel.ISupportInitialize)cmbAPIProvider).BeginInit();
             tabPageRAG.SuspendLayout();
-            tabPageMCP.SuspendLayout();
             tabPageGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)kryptonPanel4).BeginInit();
             kryptonPanel4.SuspendLayout();
@@ -132,7 +131,7 @@ namespace folderchat.Forms
             kPanelChatSettingTop.Controls.Add(cmbAPIProvider);
             kPanelChatSettingTop.Controls.Add(lblAPIProvider);
             kPanelChatSettingTop.Controls.Add(rbChatAPI);
-            kPanelChatSettingTop.Controls.Add(rbChatGGUF);
+            kPanelChatSettingTop.Controls.Add(rbChatLocal);
             kPanelChatSettingTop.Controls.Add(lblChatMethod);
             kPanelChatSettingTop.Dock = DockStyle.Top;
             kPanelChatSettingTop.Location = new Point(3, 2);
@@ -187,15 +186,15 @@ namespace folderchat.Forms
             rbChatAPI.Values.Text = "API";
             rbChatAPI.CheckedChanged += rbChatAPI_CheckedChanged;
             // 
-            // rbChatGGUF
+            // rbChatLocal
             // 
-            rbChatGGUF.Location = new Point(203, 10);
-            rbChatGGUF.Margin = new Padding(3, 2, 3, 2);
-            rbChatGGUF.Name = "rbChatGGUF";
-            rbChatGGUF.Size = new Size(54, 20);
-            rbChatGGUF.TabIndex = 16;
-            rbChatGGUF.Values.Text = "GGUF";
-            rbChatGGUF.CheckedChanged += rbChatGGUF_CheckedChanged;
+            rbChatLocal.Location = new Point(203, 10);
+            rbChatLocal.Margin = new Padding(3, 2, 3, 2);
+            rbChatLocal.Name = "rbChatLocal";
+            rbChatLocal.Size = new Size(51, 20);
+            rbChatLocal.TabIndex = 16;
+            rbChatLocal.Values.Text = "Local";
+            rbChatLocal.CheckedChanged += rbChatLocal_CheckedChanged;
             // 
             // lblChatMethod
             // 
@@ -274,7 +273,7 @@ namespace folderchat.Forms
             // 
             // kryptonPanel4
             // 
-            kryptonPanel4.Controls.Add(kryptonLabel1);
+            kryptonPanel4.Controls.Add(lblTheme);
             kryptonPanel4.Controls.Add(lblLanguage);
             kryptonPanel4.Controls.Add(cmbLanguage);
             kryptonPanel4.Dock = DockStyle.Top;
@@ -283,15 +282,15 @@ namespace folderchat.Forms
             kryptonPanel4.Size = new Size(337, 88);
             kryptonPanel4.TabIndex = 1;
             // 
-            // kryptonLabel1
+            // lblTheme
             // 
-            kryptonLabel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-            kryptonLabel1.Location = new Point(4, 67);
-            kryptonLabel1.Margin = new Padding(3, 2, 3, 2);
-            kryptonLabel1.Name = "kryptonLabel1";
-            kryptonLabel1.Size = new Size(50, 20);
-            kryptonLabel1.TabIndex = 17;
-            kryptonLabel1.Values.Text = "Theme:";
+            lblTheme.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            lblTheme.Location = new Point(4, 67);
+            lblTheme.Margin = new Padding(3, 2, 3, 2);
+            lblTheme.Name = "lblTheme";
+            lblTheme.Size = new Size(50, 20);
+            lblTheme.TabIndex = 17;
+            lblTheme.Values.Text = "Theme:";
             // 
             // lblLanguage
             // 
@@ -450,7 +449,6 @@ namespace folderchat.Forms
             ((System.ComponentModel.ISupportInitialize)cmbChatGGUFModel).EndInit();
             ((System.ComponentModel.ISupportInitialize)cmbAPIProvider).EndInit();
             tabPageRAG.ResumeLayout(false);
-            tabPageMCP.ResumeLayout(false);
             tabPageGeneral.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)kryptonPanel4).EndInit();
             kryptonPanel4.ResumeLayout(false);
@@ -473,7 +471,7 @@ namespace folderchat.Forms
         private Krypton.Toolkit.KryptonComboBox cmbAPIProvider;
         private Krypton.Toolkit.KryptonLabel lblAPIProvider;
         private Krypton.Toolkit.KryptonRadioButton rbChatAPI;
-        private Krypton.Toolkit.KryptonRadioButton rbChatGGUF;
+        private Krypton.Toolkit.KryptonRadioButton rbChatLocal;
         private ProviderSettings.OpenAIProviderSettingsControl openAISettingsControl;
         private ProviderSettings.ClaudeCodeProviderSettingsControl claudeCodeSettingsControl;
         private ProviderSettings.AzureAIFoundryProviderSettingsControl azureAIFoundrySettingsControl;
@@ -490,7 +488,7 @@ namespace folderchat.Forms
         private TabPage tabPageGeneral;
         public Krypton.Toolkit.KryptonThemeListBox kryptonThemeListBox1;
         private Krypton.Toolkit.KryptonPanel kryptonPanel4;
-        private Krypton.Toolkit.KryptonLabel kryptonLabel1;
+        private Krypton.Toolkit.KryptonLabel lblTheme;
         private Krypton.Toolkit.KryptonLabel lblLanguage;
         private Krypton.Toolkit.KryptonComboBox cmbLanguage;
         private TabPage tabPageMCP;

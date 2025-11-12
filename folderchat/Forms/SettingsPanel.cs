@@ -76,7 +76,7 @@ namespace folderchat.Forms
             var chatMethod = Properties.Settings.Default.ChatMethod;
             if (chatMethod == "GGUF")
             {
-                rbChatGGUF.Checked = true;
+                rbChatLocal.Checked = true;
             }
             else
             {
@@ -132,7 +132,7 @@ namespace folderchat.Forms
             ragSettingsControl.SaveSettings();
 
             // Save chat method
-            var newChatMethod = rbChatGGUF.Checked ? "GGUF" : "API";
+            var newChatMethod = rbChatLocal.Checked ? "GGUF" : "API";
             var newChatGGUFModel = cmbChatGGUFModel.SelectedItem?.ToString() ?? "";
             Properties.Settings.Default.ChatMethod = newChatMethod;
             Properties.Settings.Default.ChatGGUFModel = newChatGGUFModel;
@@ -236,6 +236,16 @@ namespace folderchat.Forms
             // Update labels in Settings
             lblAPIProvider.Values.Text = loc.GetString("APIProvider") + ":";
             lblLanguage.Values.Text = loc.GetString("Language") + ":";
+            lblTheme.Values.Text = loc.GetString("Theme") + ":";
+            lblChatMethod.Values.Text = loc.GetString("ChatMethod") + ":";
+            lblServerPort.Values.Text = loc.GetString("ServerPort") + ":";
+
+            // Update checkboxes
+            chkEnableAPIServer.Values.Text = loc.GetString("EnableAPIServer");
+
+            // Update radio buttons
+            rbChatAPI.Values.Text = loc.GetString("API");
+            rbChatLocal.Values.Text = loc.GetString("Local");
 
             // Update button texts
             btnSaveChatSettings.Values.Text = loc.GetString("Save");
@@ -356,7 +366,7 @@ namespace folderchat.Forms
                 // Hide GGUF controls
                 cmbChatGGUFModel.Visible = false;
             }
-            else if (rbChatGGUF.Checked)
+            else if (rbChatLocal.Checked)
             {
                 // Hide API provider controls
                 lblAPIProvider.Text = "Chat GGUF Model:";
@@ -378,9 +388,9 @@ namespace folderchat.Forms
             }
         }
 
-        private void rbChatGGUF_CheckedChanged(object? sender, EventArgs e)
+        private void rbChatLocal_CheckedChanged(object? sender, EventArgs e)
         {
-            if (rbChatGGUF.Checked)
+            if (rbChatLocal.Checked)
             {
                 UpdateChatMethodUI();
             }
