@@ -65,7 +65,7 @@ namespace folderchat.Services
             {
                 foreach (var folder in checkedFolders)
                 {
-                    var embeddingsFile = Path.Combine(folder, "embeddings.jsonl");
+                    var embeddingsFile = Path.Combine(folder, RagService.EmbeddingsFileName);
                     if (!File.Exists(embeddingsFile))
                     {
                         foldersNeedingIndex.Add(folder);
