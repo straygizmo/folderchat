@@ -30,7 +30,7 @@ namespace folderchat.Services
                                                            ".go", ".rs", ".rb", ".php", ".swift", ".kt", ".scala",
                                                            ".pdf", ".docx", ".xlsx", ".pptx", ".doc", ".xls", ".ppt" };
 
-        private const string EmbeddingsFileName = "embeddings.jsonl";
+        internal const string EmbeddingsFileName = ".embeddings.jsonl";
 
         public RagService(string embeddingUrl, string apiKey, string embeddingModel, bool useNativeEmbedding = false, int contextLength = 2048, int chunkSize = 500, int chunkOverlap = 100, string ggufModel = "")
         {
