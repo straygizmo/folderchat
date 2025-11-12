@@ -131,7 +131,7 @@
 
   <!-- Tab Names -->
   <data name="TabDirToRag" xml:space="preserve">
-    <value>RAGディレクトリ</value>
+    <value>RAG対象フォルダ</value>
   </data>
   <data name="TabSettings" xml:space="preserve">
     <value>設定</value>

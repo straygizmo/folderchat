@@ -149,7 +149,6 @@ namespace folderchat.Forms
 
             tabPageDir.Text = Program.LocalizationService.GetString("TabDirToRag");
             tabPageSettings.Text = Program.LocalizationService.GetString("TabSettings");
-            tabPageChat.Text = Program.LocalizationService.GetString("TabChat");
         }
 
         private void menuItemShowFiles_Click(object? sender, EventArgs e)

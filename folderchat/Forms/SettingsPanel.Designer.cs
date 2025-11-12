@@ -339,7 +339,7 @@ namespace folderchat.Forms
             // nudServerPort
             // 
             nudServerPort.Increment = new decimal(new int[] { 1, 0, 0, 0 });
-            nudServerPort.Location = new Point(98, 61);
+            nudServerPort.Location = new Point(109, 61);
             nudServerPort.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
             nudServerPort.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
             nudServerPort.Name = "nudServerPort";

@@ -82,7 +82,7 @@ namespace folderchat.Forms
             // numMaxToolIterations
             // 
             numMaxToolIterations.Increment = new decimal(new int[] { 1, 0, 0, 0 });
-            numMaxToolIterations.Location = new Point(122, 4);
+            numMaxToolIterations.Location = new Point(126, 4);
             numMaxToolIterations.Maximum = new decimal(new int[] { 20, 0, 0, 0 });
             numMaxToolIterations.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numMaxToolIterations.Name = "numMaxToolIterations";
