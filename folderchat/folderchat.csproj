@@ -23,7 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="9.0.120" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.10" />
     <PackageReference Include="LLamaSharp" Version="0.25.0" />
-    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.25.0" />
+    <PackageReference Include="LLamaSharp.Backend.Cpu" Version="0.25.0" ExcludeAssets="native;runtime" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
     <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
     <PackageReference Include="Azure.Identity" Version="1.17.0" />
@@ -64,7 +64,8 @@
 
   <!-- Copy python_tools folder to output directory for Release builds -->
   <ItemGroup>
-    <PythonTools Include="..\python_tools\**\*.*" />
+    <PythonTools Include="..\python_tools\**\*.*"
+                 Exclude="..\python_tools\.venv\**\*.*;..\python_tools\**\__pycache__\**\*.*" />
   </ItemGroup>
 
   <Target Name="CopyPythonTools" AfterTargets="Build">
@@ -83,6 +84,10 @@
   </Target>
 
   <ItemGroup>
+    <ProjectReference Include="..\CopilotIF\CopilotIF.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Forms\McpSettingsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -94,4 +99,52 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <!-- Remove static web assets manifests from Release builds to avoid absolute path issues on other PCs -->
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <StaticWebAssetManifests Include="$(OutputPath)$(AssemblyName).staticwebassets.runtime.json" />
+    <StaticWebAssetEndpointManifests Include="$(OutputPath)$(AssemblyName).staticwebassets.endpoints.json" />
+  </ItemGroup>
+
+  <Target Name="RemoveStaticWebAssetsManifest" AfterTargets="Build" Condition="'$(Configuration)'=='Release'">
+    <Delete Files="@(StaticWebAssetManifests)" ContinueOnError="true" />
+    <Delete Files="@(StaticWebAssetEndpointManifests)" ContinueOnError="true" />
+    <Message Text="Removed static web assets manifests from output for Release build." Importance="high" />
+  </Target>
+
+  <!-- Also remove static web assets manifests from Publish output -->
+  <Target Name="RemoveStaticWebAssetsManifestFromPublish" AfterTargets="Publish" Condition="'$(Configuration)'=='Release'">
+    <ItemGroup>
+      <PublishStaticWebAssetManifests Include="$(PublishDir)$(AssemblyName).staticwebassets.runtime.json" />
+      <PublishStaticWebAssetEndpointManifests Include="$(PublishDir)$(AssemblyName).staticwebassets.endpoints.json" />
+    </ItemGroup>
+    <Delete Files="@(PublishStaticWebAssetManifests)" ContinueOnError="true" />
+    <Delete Files="@(PublishStaticWebAssetEndpointManifests)" ContinueOnError="true" />
+    <Message Text="Removed static web assets manifests from publish output for Release build." Importance="high" />
+  </Target>
+
+  <!-- Copy wwwroot to PublishDir so HostPage resolves relative to the app folder -->
+  <Target Name="CopyWwwRootToPublish" AfterTargets="Publish">
+    <Copy SourceFiles="@(WwwRootFiles)" DestinationFiles="@(WwwRootFiles->'$(PublishDir)wwwroot\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" />
+    <Message Text="Copied wwwroot to publish directory" Importance="high" />
+  </Target>
+
+  <!-- Copy python_tools to PublishDir -->
+  <Target Name="CopyPythonToolsToPublish" AfterTargets="Publish">
+    <Copy SourceFiles="@(PythonTools)" DestinationFiles="@(PythonTools->'$(PublishDir)python_tools\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" />
+    <Message Text="Copied python_tools to publish directory" Importance="high" />
+  </Target>
+  <!-- Manually copy only the LLamaSharp CPU 'noavx' native libs to avoid publish conflicts -->
+  <ItemGroup>
+    <NoAvxNativeLibs Include="$(NuGetPackageRoot)llamasharp.backend.cpu\0.25.0\runtimes\win-x64\native\noavx\*.*" />
+  </ItemGroup>
+
+  <Target Name="CopyNoAvxNativeLibsToOutput" AfterTargets="Build">
+    <Copy SourceFiles="@(NoAvxNativeLibs)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+    <Message Text="Copied LLamaSharp CPU noavx native libs to output" Importance="high" />
+  </Target>
+
+  <Target Name="CopyNoAvxNativeLibsToPublish" AfterTargets="Publish">
+    <Copy SourceFiles="@(NoAvxNativeLibs)" DestinationFolder="$(PublishDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+    <Message Text="Copied LLamaSharp CPU noavx native libs to publish dir" Importance="high" />
+  </Target>
 </Project>
