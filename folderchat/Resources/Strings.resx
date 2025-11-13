@@ -312,4 +312,7 @@
   <data name="OpenInExplorer" xml:space="preserve">
     <value>Open in Explorer</value>
   </data>
+  <data name="VoiceRecognitionError" xml:space="preserve">
+    <value>Voice Recognition Error</value>
+  </data>
 </root>

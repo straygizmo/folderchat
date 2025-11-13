@@ -312,4 +312,7 @@
   <data name="OpenInExplorer" xml:space="preserve">
     <value>エクスプローラーで開く</value>
   </data>
+  <data name="VoiceRecognitionError" xml:space="preserve">
+    <value>音声認識エラー</value>
+  </data>
 </root>

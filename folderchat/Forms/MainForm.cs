@@ -6,6 +6,7 @@ using folderchat.Models;
 using Krypton.Toolkit;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Speech.Recognition;
 
 namespace folderchat.Forms
 {
@@ -19,6 +20,7 @@ namespace folderchat.Forms
         private ToolStripMenuItem? menuItemShowFiles;
         private ToolStripMenuItem? menuItemOpenInExplorer;
         private bool _showFiles = false;
+        private SpeechRecognitionEngine? _speechEngine;
 
         // Event to notify Blazor about theme changes
         public event EventHandler<string>? ThemeChanged;
@@ -340,6 +342,9 @@ namespace folderchat.Forms
 
             //LoadSettings();
             LoadFolderTree();
+
+            // Initialize Speech Recognition
+            InitializeSpeechRecognition();
 
             // Always initialize Blazor WebView so the chat UI renders even before configuration
             LogSystemMessage("Initializing Blazor WebView");
@@ -869,6 +874,8 @@ namespace folderchat.Forms
                     SaveWindowPlacement();
                     SaveTreeState();
         
+                    _speechEngine?.Dispose();
+
                     if (_apiServerService != null && _apiServerService.IsRunning)
                     {
                         await _apiServerService.StopApiServer();
@@ -1484,6 +1491,77 @@ namespace folderchat.Forms
             else
             {
                 toolStripStatusLabelApiStatus.Text = status;
+            }
+        }
+
+        private void InitializeSpeechRecognition()
+        {
+            try
+            {
+                var culture = Program.LocalizationService?.CurrentCulture ?? new System.Globalization.CultureInfo("en-US");
+                _speechEngine = new SpeechRecognitionEngine(culture);
+                _speechEngine.LoadGrammar(new DictationGrammar());
+                _speechEngine.SpeechRecognized += _speechEngine_SpeechRecognized;
+                _speechEngine.SpeechRecognitionRejected += _speechEngine_SpeechRecognitionRejected;
+                _speechEngine.SetInputToDefaultAudioDevice();
+                LogSystemMessage($"Speech recognition initialized for {culture.Name}");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to initialize speech recognition: {ex.Message}");
+                _speechEngine = null;
+            }
+        }
+
+        public void StartVoiceRecognition()
+        {
+            if (_speechEngine == null)
+            {
+                InitializeSpeechRecognition();
+                if (_speechEngine == null) return; // Initialization failed
+            }
+
+            try
+            {
+                _speechEngine.RecognizeAsync(RecognizeMode.Multiple);
+                _chatComponent?.SetRecordingState(true);
+                LogSystemMessage("Voice recognition started.");
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to start voice recognition: {ex.Message}");
+                _chatComponent?.SetRecordingState(false);
+            }
+        }
+
+        public void StopVoiceRecognition()
+        {
+            if (_speechEngine != null)
+            {
+                _speechEngine.RecognizeAsyncStop();
+                _chatComponent?.SetRecordingState(false);
+                LogSystemMessage("Voice recognition stopped.");
+            }
+        }
+
+        private void _speechEngine_SpeechRecognized(object? sender, SpeechRecognizedEventArgs e)
+        {
+            if (e.Result != null && !string.IsNullOrEmpty(e.Result.Text))
+            {
+                LogSystemMessage($"Speech recognized: {e.Result.Text}");
+                _chatComponent?.AppendToChatInput(e.Result.Text);
+            }
+        }
+
+        private void _speechEngine_SpeechRecognitionRejected(object? sender, SpeechRecognitionRejectedEventArgs e)
+        {
+            if (e.Result != null)
+            {
+                LogSystemMessage($"Speech recognition rejected: {e.Result.Text}");
+            }
+            else
+            {
+                LogSystemMessage("Speech recognition rejected: No result.");
             }
         }
     }
