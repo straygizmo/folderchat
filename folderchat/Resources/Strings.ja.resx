@@ -304,4 +304,12 @@
   <data name="ChatServiceInitializationError" xml:space="preserve">
     <value>チャットサービスを初期化できませんでした。設定タブで構成を確認してください。</value>
   </data>
+
+  <!-- コンテキストメニュー項目 -->
+  <data name="ShowFiles" xml:space="preserve">
+    <value>ファイルを表示</value>
+  </data>
+  <data name="OpenInExplorer" xml:space="preserve">
+    <value>エクスプローラーで開く</value>
+  </data>
 </root>

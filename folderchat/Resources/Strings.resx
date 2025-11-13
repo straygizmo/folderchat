@@ -304,4 +304,12 @@
   <data name="ChatServiceInitializationError" xml:space="preserve">
     <value>The chat service could not be initialized. Please check your configuration in the Settings tab.</value>
   </data>
+
+  <!-- Context Menu Items -->
+  <data name="ShowFiles" xml:space="preserve">
+    <value>Show Files</value>
+  </data>
+  <data name="OpenInExplorer" xml:space="preserve">
+    <value>Open in Explorer</value>
+  </data>
 </root>

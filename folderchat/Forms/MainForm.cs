@@ -17,6 +17,7 @@ namespace folderchat.Forms
         private IndexingService? _indexingService;
         private ApiServerService? _apiServerService;
         private ToolStripMenuItem? menuItemShowFiles;
+        private ToolStripMenuItem? menuItemOpenInExplorer;
         private bool _showFiles = false;
 
         // Event to notify Blazor about theme changes
@@ -108,11 +109,11 @@ namespace folderchat.Forms
             {
                 _rightClickedNode = node;
                 ktvFolderTree.SelectedNode = node;
-                LogSystemMessage($"Context menu opening - node: {node.Text}, Tag: {node.Tag}");
+                //LogSystemMessage($"Context menu opening - node: {node.Text}, Tag: {node.Tag}");
             }
             else
             {
-                LogSystemMessage($"Context menu opening - no node at position ({mousePosition.X}, {mousePosition.Y})");
+                //LogSystemMessage($"Context menu opening - no node at position ({mousePosition.X}, {mousePosition.Y})");
                 // Cancel the context menu if no node is found
                 e.Cancel = true;
             }
@@ -120,6 +121,11 @@ namespace folderchat.Forms
 
         private void InitializeContextMenu()
         {
+            // Add "Open in Explorer" menu item
+            menuItemOpenInExplorer = new ToolStripMenuItem("Open in Explorer");
+            menuItemOpenInExplorer.Click += new System.EventHandler(menuItemOpenInExplorer_Click);
+            contextMenuTreeView.Items.Add(menuItemOpenInExplorer);
+
             // Add "Show Files" menu item
             menuItemShowFiles = new ToolStripMenuItem("Show Files");
             menuItemShowFiles.CheckOnClick = true;
@@ -163,15 +169,11 @@ namespace folderchat.Forms
 
         private void UpdateContextMenuLocalization()
         {
-            if (Program.LocalizationService == null) return;
-
             menuItemIndexing.Text = Program.LocalizationService.GetString("Indexing");
             menuItemSummarize.Text = Program.LocalizationService.GetString("Summarize");
             menuItemRefresh.Text = Program.LocalizationService.GetString("Refresh");
-            if (menuItemShowFiles != null)
-            {
-                menuItemShowFiles.Text = Program.LocalizationService.GetString("ShowFiles") ?? "Show Files";
-            }
+            menuItemShowFiles.Text = Program.LocalizationService.GetString("ShowFiles");
+            menuItemOpenInExplorer.Text = Program.LocalizationService.GetString("OpenInExplorer");
         }
 
         private void InitializeSettingsPanel()
@@ -1046,6 +1048,23 @@ namespace folderchat.Forms
         private async void menuItemIndexing_Click(object sender, EventArgs e)
         {
             await Indexing();
+
+            try
+            {
+                var checkedFolders = GetCheckedFolders();
+                if (checkedFolders.Count > 0 && !Properties.Settings.Default.UseRAG)
+                {
+                    Properties.Settings.Default.UseRAG = true;
+                    Properties.Settings.Default.Save();
+                    LogSystemMessage("UseRAG toggled ON automatically after indexing because folders are selected.");
+                    ReinitializeBlazorWebView();
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to auto-enable RAG after indexing: {ex.Message}");
+            }
+
             MessageBox.Show("RAG processing completed successfully!", "Success",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -1058,6 +1077,55 @@ namespace folderchat.Forms
         private async void menuItemSummarize_Click(object sender, EventArgs e)
         {
             await SummarizeSelectedFolder();
+        }
+
+        private void menuItemOpenInExplorer_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                var selectedPath = _rightClickedNode?.Tag?.ToString();
+                if (string.IsNullOrEmpty(selectedPath))
+                {
+                    MessageBox.Show("フォルダまたはファイルが選択されていません。", "エラー",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // 開く対象がファイルかフォルダかを判定
+                if (File.Exists(selectedPath))
+                {
+                    // ファイルを選択状態でエクスプローラーを開く
+                    var psi = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments = $"/select,\"{selectedPath}\"",
+                        UseShellExecute = true
+                    };
+                    System.Diagnostics.Process.Start(psi);
+                }
+                else if (Directory.Exists(selectedPath))
+                {
+                    // フォルダを開く
+                    var psi = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "explorer.exe",
+                        Arguments = $"\"{selectedPath}\"",
+                        UseShellExecute = true
+                    };
+                    System.Diagnostics.Process.Start(psi);
+                }
+                else
+                {
+                    MessageBox.Show($"指定されたパスが存在しません:\n{selectedPath}", "エラー",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError($"Failed to open Explorer: {ex.Message}");
+                MessageBox.Show("エクスプローラーを開けませんでした。", "エラー",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private async Task SummarizeSelectedFolder()
@@ -1420,4 +1488,3 @@ namespace folderchat.Forms
         }
     }
 }
-
