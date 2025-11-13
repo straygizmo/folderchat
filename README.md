@@ -19,8 +19,8 @@ folderchat is a Windows desktop application that provides an AI chat interface e
 
 - Windows 10 or later
 - .NET 9.0 SDK
-- Python 3.x
-- uv
+- Python 3.10+ (target PC)
+- Optional: uv (you can use uv, but pip + requirements.txt is also supported)
 
 ## Installation
 
@@ -39,6 +39,59 @@ dotnet build .\folderchat.sln
 
 3. Output will be in `folderchat\bin\Debug\net9.0-windows\`
 
+## Build for Distribution (Publish)
+
+This project uses Blazor WebView inside a Windows Forms app. To create a distributable build that runs on another machine, publish the app so that all required assets (including wwwroot and python_tools) are copied into a single folder.
+
+- Target OS: Windows x64
+- Framework: .NET 9.0 (desktop)
+- UI runtime: Microsoft Edge WebView2 (Evergreen)
+
+Steps:
+
+1. Clean and publish
+```powershell
+dotnet clean
+dotnet publish -c Release -r win-x64 --self-contained false
+```
+
+2. Publish output
+- Location: `folderchat/bin/Release/net9.0-windows/win-x64/publish/`
+- Copy the entire contents of this `publish` directory to the target PC (e.g., `D:\apps\folderchat\`).
+
+3. Requirements on the target PC
+- Install .NET 9 Desktop Runtime (required when `--self-contained false`)
+- Ensure Edge WebView2 Runtime (Evergreen) is installed. If missing, the app may prompt you to install it on first run.
+
+4. Run
+- Execute `folderchat.exe` from the publish folder
+- The app loads the chat UI from `wwwroot` relative to the executable
+
+5. Optional: Self-contained build (no .NET runtime required)
+```powershell
+dotnet publish -c Release -r win-x64 --self-contained true
+```
+- Produces a larger output folder but removes the need to install .NET runtime on the target PC.
+
+Notes:
+- Static web asset manifests are removed during build/publish to avoid absolute path issues on other PCs; the `wwwroot` folder is copied into the output so Blazor WebView resolves assets relative to the app directory.
+- The `python_tools` folder is copied automatically into both build and publish outputs. Do NOT publish a local `.venv` under `python_tools` (it is excluded). On the target PC, set up Python dependencies by ONE of the following:
+  - pip (recommended when uv is not available):
+    ```
+    py -m venv python_tools\.venv
+    python_tools\.venv\Scripts\pip install -r python_tools\requirements.txt
+    ```
+  - uv (optional):
+    ```
+    cd python_tools
+    uv sync
+    ```
+  - portable Python (optional): bundle a relocatable Python as `python_tools\python.exe` (e.g., WinPython) and then run:
+    ```
+    python_tools\python.exe -m pip install -r python_tools\requirements.txt
+    ```
+- LLamaSharp CPU native DLLs are streamlined to include a compatible `noavx` variant to avoid duplicate publish conflicts. This improves portability across CPUs; for AVX-specific builds, adjust the project configuration as needed.
+
 ## Python Tools Setup (Required)
 
 Python tools are **required** for document processing, chunking, and embedding functionality. folderchat uses Python for:
@@ -48,17 +101,37 @@ Python tools are **required** for document processing, chunking, and embedding f
 
 ### Setup Instructions
 
-1. Navigate to the python_tools directory:
-```bash
-cd python_tools
-```
+Choose ONE of the following ways to prepare Python on the target PC. Do not redistribute a local `.venv` created on your dev PC.
 
-2. Install dependencies using uv:
-```bash
-uv sync
-```
+A) pip (recommended when uv is not available)
+1. Create a venv inside `python_tools`:
+   ```bash
+   py -m venv python_tools\.venv
+   ```
+2. Install dependencies:
+   ```bash
+   python_tools\.venv\Scripts\pip install -r python_tools\requirements.txt
+   ```
 
-This will install all necessary Python dependencies including:
+B) uv (optional)
+1. Navigate to the `python_tools` directory:
+   ```bash
+   cd python_tools
+   ```
+2. Install dependencies:
+   ```bash
+   uv sync
+   ```
+Note: The `.venv` created by uv is NOT portable. Do not copy it to other PCs; always create it on the target PC.
+
+C) Portable Python (optional, no system install)
+1. Bundle a relocatable Python runtime as `python_tools\python.exe` (e.g., WinPython).
+2. Install dependencies with that interpreter:
+   ```bash
+   python_tools\python.exe -m pip install -r python_tools\requirements.txt
+   ```
+
+This installs all required Python dependencies including:
 - MarkItDown for document conversion (PDF, DOCX, etc.)
 - Libraries for text chunking
 - Embedding generation utilities
@@ -232,6 +305,12 @@ Contributions are welcome! Please feel free to submit pull requests or open issu
 1. **API Configuration Required**: Ensure you've configured at least one API provider in Settings
 2. **Document Processing Fails**: Check that selected folders are accessible and contain supported file formats
 3. **Embedding Errors**: Verify embedding API credentials and endpoint configuration
+
+### RAG indexing error on target PC: “did not find executable at ... AppData\\Roaming\\uv\\python\\cpython-3.13.4-...”
+This occurs when a non-portable `.venv` (created on the developer PC) was copied to the target PC and still points to a base interpreter under the developer’s `AppData\Roaming\uv\python\...`. Fix:
+1. Delete `python_tools\.venv` from the publish folder if it exists (we exclude it in publish by default).
+2. Prepare Python on the target PC using one of the methods in “Setup Instructions” (pip/uv/portable).
+3. Re-run indexing.
 
 ### Supported File Formats
 
