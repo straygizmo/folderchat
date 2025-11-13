@@ -115,7 +115,7 @@ class DocumentIndexer:
         return files_to_index
 
     async def index_folder(self, folder_path: str, force_reindex: bool = False, task_id: str = None) -> Dict[str, Any]:
-        vector_file = os.path.join(folder_path, "embeddings.jsonl")
+        vector_file = os.path.join(folder_path, ".embeddings.jsonl")
         metadata_file = os.path.join(folder_path, ".index_metadata.json")
         
         metadata = {}
