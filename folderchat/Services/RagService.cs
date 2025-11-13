@@ -102,9 +102,11 @@ namespace folderchat.Services
                 progress.Report($"DEBUG: Config file: {tempConfigFile}");
                 progress.Report($"DEBUG: Config: {configJson}");
                 
-                if (!File.Exists(_pythonExecutable))
+                // When _pythonExecutable is a command like 'py' or 'python', File.Exists returns false.
+                // PythonPathHelper already validated such commands; only verify if it's a rooted path.
+                if (Path.IsPathRooted(_pythonExecutable) && !File.Exists(_pythonExecutable))
                 {
-                    throw new Exception($"Python executable not found at: {_pythonExecutable}");
+                    throw new Exception($"Python executable not found at path: {_pythonExecutable}");
                 }
                 
                 if (!File.Exists(_ragIndexerScript))

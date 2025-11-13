@@ -59,32 +59,32 @@ namespace folderchat.Services
             // Check if folder selection has changed
             bool foldersChanged = !checkedFolders.SequenceEqual(_lastCheckedFolders);
 
-            // Only check for missing embeddings if folders have changed
+            // Always check for missing embeddings (even if selection didn't change)
             var foldersNeedingIndex = new List<string>();
+            foreach (var folder in checkedFolders)
+            {
+                var embeddingsFile = Path.Combine(folder, RagService.EmbeddingsFileName);
+                if (!File.Exists(embeddingsFile))
+                {
+                    foldersNeedingIndex.Add(folder);
+                }
+            }
+
+            // Index folders if needed
+            if (foldersNeedingIndex.Count > 0)
+            {
+                var progress = new Progress<string>(status =>
+                {
+                    Console.WriteLine($"Indexing: {status}");
+                    _mainForm?.LogRAGMessage(status);
+                });
+
+                await _mainForm.Indexing();
+            }
+
+            // Update last checked folders after indexing if selection changed
             if (foldersChanged)
             {
-                foreach (var folder in checkedFolders)
-                {
-                    var embeddingsFile = Path.Combine(folder, RagService.EmbeddingsFileName);
-                    if (!File.Exists(embeddingsFile))
-                    {
-                        foldersNeedingIndex.Add(folder);
-                    }
-                }
-
-                // Index folders if needed
-                if (foldersNeedingIndex.Count > 0)
-                {
-                    var progress = new Progress<string>(status =>
-                    {
-                        Console.WriteLine($"Indexing: {status}");
-                        _mainForm?.LogRAGMessage(status);
-                    });
-
-                    await _mainForm.Indexing();
-                }
-
-                // Update last checked folders after indexing
                 _lastCheckedFolders = new List<string>(checkedFolders);
             }
 
@@ -193,16 +193,10 @@ namespace folderchat.Services
 
             var messageBuilder = new StringBuilder();
 
-            // Add user message
-            messageBuilder.AppendLine("[User Message]");
-            messageBuilder.AppendLine(userInput);
-
-            // Add context header
-            messageBuilder.AppendLine();
-            messageBuilder.AppendLine("---");
+            // Add context first so providers without system role (e.g., llaco) receive context at the beginning
             messageBuilder.AppendLine("Please use the following context to answer the user's message:");
+            messageBuilder.AppendLine();
 
-            // Add relevant chunks
             foreach (var chunk in relevantChunks)
             {
                 var folderName = Path.GetFileName(chunk.FolderPath);
@@ -212,6 +206,10 @@ namespace folderchat.Services
                 messageBuilder.AppendLine("---");
                 messageBuilder.AppendLine();
             }
+
+            // Then add the user message
+            messageBuilder.AppendLine("[User Message]");
+            messageBuilder.AppendLine(userInput);
 
             return messageBuilder.ToString();
         }

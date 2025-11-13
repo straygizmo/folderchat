@@ -117,6 +117,18 @@ namespace folderchat.Forms
             var oldChatMethod = Properties.Settings.Default.ChatMethod;
             var oldChatGGUFModel = Properties.Settings.Default.ChatGGUFModel;
 
+            // Capture current RAG settings before saving
+            var oldEmbeddingMethod = Properties.Settings.Default.EmbeddingMethod;
+            var oldEmbeddingUrl = Properties.Settings.Default.Embedding_Url;
+            var oldEmbeddingModel = Properties.Settings.Default.Embedding_Model;
+            var oldEmbeddingGGUFModel = Properties.Settings.Default.EmbeddingGGUFModel;
+            var oldUseNativeEmbedding = Properties.Settings.Default.UseNativeEmbedding;
+            var oldRagContextLength = Properties.Settings.Default.RAG_ContextLength;
+            var oldRagChunkSize = Properties.Settings.Default.RAG_ChunkSize;
+            var oldRagChunkOverlap = Properties.Settings.Default.RAG_ChunkOverlap;
+            var oldTopKChunks = Properties.Settings.Default.RAG_TopKChunks;
+            var oldMaxContextLength = Properties.Settings.Default.RAG_MaxContextLength;
+
             // Save API Provider selection
             Properties.Settings.Default.API_Provider = cmbAPIProvider.SelectedItem?.ToString() ?? "OpenAI Compatible";
 
@@ -150,8 +162,20 @@ namespace folderchat.Forms
                                       (newChatMethod == "GGUF" && oldChatGGUFModel != newChatGGUFModel);
 
             // Check if we need to initialize or reinitialize Blazor WebView
+            bool ragSettingsChanged =
+                oldEmbeddingMethod != Properties.Settings.Default.EmbeddingMethod ||
+                oldEmbeddingUrl != Properties.Settings.Default.Embedding_Url ||
+                oldEmbeddingModel != Properties.Settings.Default.Embedding_Model ||
+                oldEmbeddingGGUFModel != Properties.Settings.Default.EmbeddingGGUFModel ||
+                oldUseNativeEmbedding != Properties.Settings.Default.UseNativeEmbedding ||
+                oldRagContextLength != Properties.Settings.Default.RAG_ContextLength ||
+                oldRagChunkSize != Properties.Settings.Default.RAG_ChunkSize ||
+                oldRagChunkOverlap != Properties.Settings.Default.RAG_ChunkOverlap ||
+                oldTopKChunks != Properties.Settings.Default.RAG_TopKChunks ||
+                oldMaxContextLength != Properties.Settings.Default.RAG_MaxContextLength;
+
             bool needsInitialization = _mainForm.NeedsBlazorInitialization();
-            bool needsReinitialization = chatSettingsChanged && !needsInitialization;
+            bool needsReinitialization = (chatSettingsChanged || ragSettingsChanged) && !needsInitialization;
 
             if (needsInitialization || needsReinitialization)
             {
@@ -407,48 +431,24 @@ namespace folderchat.Forms
             _mainForm.OnThemeChanged();
         }
 
-                public IMcpService? GetMcpService()
-
-                {
-
-                    return mcpSettingsControl.GetMcpService();
-
-                }
-
-        
-
-                public List<McpServerConfig> GetMcpServerConfigs()
-
-                {
-
-                    return mcpSettingsControl.GetMcpServerConfigs();
-
-                }
-
-        
-
-                public void SaveMcpServerConfigs()
-
-                {
-
-                    mcpSettingsControl.SaveMcpServerConfigs();
-
-                }
-
-        
-
-                public void RefreshMcpServerUI()
-
-                {
-
-                    mcpSettingsControl.RefreshMcpServerUI();
-
-                }
-
-        
-
-            }
-
+        public IMcpService? GetMcpService()
+        {
+            return mcpSettingsControl.GetMcpService();
         }
 
-        
+        public List<McpServerConfig> GetMcpServerConfigs()
+        {
+            return mcpSettingsControl.GetMcpServerConfigs();
+        }
+
+        public void SaveMcpServerConfigs()
+        {
+            mcpSettingsControl.SaveMcpServerConfigs();
+        }
+
+        public void RefreshMcpServerUI()
+        {
+            mcpSettingsControl.RefreshMcpServerUI();
+        }
+    }
+}
