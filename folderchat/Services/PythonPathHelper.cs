@@ -32,6 +32,90 @@ namespace folderchat.Services
             return scriptPath;
         }
 
+        // New: helpers to validate venv portability on target machines
+        private static string? GetVenvHomePath()
+        {
+            try
+            {
+                var cfg = Path.Combine(_pythonToolsDir, ".venv", "pyvenv.cfg");
+                if (!File.Exists(cfg)) return null;
+                foreach (var line in File.ReadAllLines(cfg))
+                {
+                    var trimmed = line.Trim();
+                    if (trimmed.StartsWith("home", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var idx = trimmed.IndexOf('=');
+                        if (idx >= 0)
+                        {
+                            return trimmed[(idx + 1)..].Trim();
+                        }
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        private static bool IsVenvUsable(string venvPython)
+        {
+            try
+            {
+                // If pyvenv.cfg points to a base interpreter that doesn't exist (e.g. uv-managed path on another PC),
+                // this venv won't be portable.
+                var home = GetVenvHomePath();
+                if (!string.IsNullOrEmpty(home) && !Directory.Exists(home))
+                {
+                    return false;
+                }
+
+                var psi = new ProcessStartInfo
+                {
+                    FileName = venvPython,
+                    Arguments = "-c \"import sys; print('OK')\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WorkingDirectory = _pythonToolsDir
+                };
+                using var p = new Process { StartInfo = psi };
+                p.Start();
+                var output = p.StandardOutput.ReadToEnd();
+                p.WaitForExit(3000);
+                return p.ExitCode == 0 && output.Contains("OK");
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static bool IsCommandUsable(string cmd, string args = "-c \"import sys; print('OK')\"")
+        {
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = cmd,
+                    Arguments = args,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WorkingDirectory = _pythonToolsDir
+                };
+                using var p = new Process { StartInfo = psi };
+                p.Start();
+                var output = p.StandardOutput.ReadToEnd();
+                p.WaitForExit(3000);
+                return p.ExitCode == 0 && output.Contains("OK");
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private static bool IsDebugEnvironment()
         {
             // Check multiple indicators for debug/development environment
@@ -77,7 +161,7 @@ namespace folderchat.Services
         {
             // Check for virtual environment first
             var venvPython = Path.Combine(_pythonToolsDir, ".venv", "Scripts", "python.exe");
-            if (File.Exists(venvPython))
+            if (File.Exists(venvPython) && IsVenvUsable(venvPython))
             {
                 return venvPython;
             }
@@ -89,20 +173,32 @@ namespace folderchat.Services
                 return localPython;
             }
 
+            // Try system Python/py on PATH as a last resort
+            if (IsCommandUsable("py"))
+            {
+                return "py";
+            }
+            if (IsCommandUsable("python"))
+            {
+                return "python";
+            }
+
             // If no local Python found in release mode, throw informative error
             if (!_isDebugMode)
             {
                 throw new FileNotFoundException(
-                    $"Python executable not found. Please ensure python_tools folder with Python environment is in the same directory as {Path.GetFileName(Assembly.GetExecutingAssembly().Location)}. " +
-                    $"Expected locations: {venvPython} or {localPython}");
+                    $"Python executable not found. Expected one of:\n" +
+                    $"1) Virtual environment: {venvPython} (must be portable; pyvenv.cfg 'home' must exist on target PC)\n" +
+                    $"2) Local Python: {localPython}\n" +
+                    $"If a .venv was created using uv or a per-user Python, it may not be portable. Consider bundling a relocatable Python at python_tools\\python.exe.");
             }
 
             // In debug mode, provide more detailed error
             throw new FileNotFoundException(
                 $"Python executable not found at expected locations:\n" +
-                $"1. Virtual environment: {venvPython}\n" +
+                $"1. Virtual environment: {venvPython} (ignored if its base interpreter from pyvenv.cfg is missing)\n" +
                 $"2. Local Python: {localPython}\n" +
-                $"Please run the Python setup script or create virtual environment in python_tools directory.");
+                $"Please bundle a relocatable Python at python_tools\\python.exe, or create a portable environment not tied to uv/AppData.");
         }
 
         private static void ValidatePythonEnvironment()
@@ -118,20 +214,34 @@ namespace folderchat.Services
                         : "Please ensure python_tools folder is deployed alongside the executable."));
             }
 
-            if (!File.Exists(_pythonExecutable))
+            if (Path.IsPathRooted(_pythonExecutable))
             {
-                throw new FileNotFoundException($"Python executable not found at: {_pythonExecutable}");
+                if (!File.Exists(_pythonExecutable))
+                {
+                    throw new FileNotFoundException($"Python executable not found at: {_pythonExecutable}");
+                }
+            }
+            else
+            {
+                // _pythonExecutable is a command like 'py' or 'python'; verify it is usable
+                if (!IsCommandUsable(_pythonExecutable))
+                {
+                    throw new FileNotFoundException($"Python command '{_pythonExecutable}' not found in PATH or not usable");
+                }
             }
         }
 
         public static string GetEnvironmentInfo()
         {
+            var venvHome = GetVenvHomePath();
             return $"Python Environment Info:\n" +
                    $"Mode: {(_isDebugMode ? "Debug/Development" : "Release/Production")}\n" +
                    $"Python Tools Dir: {_pythonToolsDir}\n" +
                    $"Python Executable: {_pythonExecutable}\n" +
                    $"Tools Dir Exists: {Directory.Exists(_pythonToolsDir)}\n" +
-                   $"Python Exists: {File.Exists(_pythonExecutable)}";
+                   $"Python Exists: {File.Exists(_pythonExecutable)}\n" +
+                   $"Venv Home: {(venvHome ?? "(none)")}\n" +
+                   $"Venv Home Exists: {(venvHome != null && Directory.Exists(venvHome))}";
         }
     }
 }
