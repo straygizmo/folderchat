@@ -1,4 +1,4 @@
-# folderchat - One of the easiest ways to chat with your folders
+# [folderchat](https://straygizmo.github.io/folderchat/) - One of the easiest ways to chat with your folders
 
 ![folderchat Screenshot](folderchat_img.png)
 
