@@ -1021,9 +1021,18 @@ namespace folderchat.Forms
             ThemeChanged?.Invoke(this, GetThemeMode());
         }
 
+        public async void UpdateVoiceInputState(string? mode)
+        {
+            if (_chatComponent != null && mode != null)
+            {
+                await _chatComponent.SetMicrophoneEnabled(mode);
+            }
+        }
+
         public void RegisterChatComponent(Pages.Chat chatComponent)
         {
             _chatComponent = chatComponent;
+            UpdateVoiceInputState(Properties.Settings.Default.VoiceInputMode);
         }
 
         public IMcpService? GetMcpService()

@@ -769,13 +769,25 @@ namespace folderchat.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
         public int MCP_MaxToolIterations {
             get {
                 return ((int)(this["MCP_MaxToolIterations"]));
             }
             set {
                 this["MCP_MaxToolIterations"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Disabled")]
+        public string VoiceInputMode {
+            get {
+                return ((string)(this["VoiceInputMode"]));
+            }
+            set {
+                this["VoiceInputMode"] = value;
             }
         }
     }

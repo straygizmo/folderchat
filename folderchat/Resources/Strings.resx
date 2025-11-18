@@ -171,6 +171,9 @@
   <data name="ChatMethod" xml:space="preserve">
     <value>Chat Method</value>
   </data>
+  <data name="VoiceInput" xml:space="preserve">
+    <value>Voice Input</value>
+  </data>
   <data name="ClaudeCodePath" xml:space="preserve">
     <value>Claude Code CLI Path</value>
   </data>

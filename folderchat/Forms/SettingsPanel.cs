@@ -93,6 +93,10 @@ namespace folderchat.Forms
                 cmbChatGGUFModel.SelectedItem = chatGGUFModel;
             }
 
+            // Load Voice Input selection
+            var voiceInputMode = Properties.Settings.Default.VoiceInputMode;
+            cmbVoiceInput.SelectedItem = voiceInputMode;
+
             // Update chat method UI
             UpdateChatMethodUI();
 
@@ -152,8 +156,18 @@ namespace folderchat.Forms
             // Save API Server settings
             Properties.Settings.Default.APIServerPort = (int)nudServerPort.Value;
 
+            // Save Voice Input selection
+            var newVoiceInputMode = cmbVoiceInput.SelectedItem?.ToString() ?? "Disabled";
+            Properties.Settings.Default.VoiceInputMode = newVoiceInputMode;
+
             // Save all settings to ensure they're persisted
             Properties.Settings.Default.Save();
+
+            // Update microphone state in Chat.razor
+            if (_mainForm != null)
+            {
+                _mainForm.UpdateVoiceInputState(newVoiceInputMode);
+            }
 
             // Check if chat settings changed
             var newApiProvider = Properties.Settings.Default.API_Provider;
@@ -262,6 +276,7 @@ namespace folderchat.Forms
             lblLanguage.Values.Text = loc.GetString("Language") + ":";
             lblTheme.Values.Text = loc.GetString("Theme") + ":";
             lblChatMethod.Values.Text = loc.GetString("ChatMethod") + ":";
+            lblVoiceInput.Values.Text = loc.GetString("VoiceInput") + ":";
             lblServerPort.Values.Text = loc.GetString("ServerPort") + ":";
 
             // Update checkboxes
