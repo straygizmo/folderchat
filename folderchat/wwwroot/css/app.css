@@ -283,9 +283,39 @@ body.dark-mode-indigo .bg-light {
 .btn-send-inset {
     position: absolute;
     top: 50%;
-    right: 5px;
+    right: 8px;
     transform: translateY(-50%);
     z-index: 10;
+    color: #1b6ec2; /* Default primary color */
+    background-color: transparent;
+    border: none;
+    padding: 6px;
+    width: 38px;
+    height: 38px;
+}
+
+.btn-send-inset:hover {
+    color: #1861ac; /* Darker primary color */
+}
+
+.send-icon {
+    transform: rotate(45deg);
+}
+
+body.dark-mode .btn-send-inset {
+    color: #4a90e2;
+}
+
+body.dark-mode .btn-send-inset:hover {
+    color: #3a7bc8;
+}
+
+body.dark-mode-indigo .btn-send-inset {
+    color: #5865f2;
+}
+
+body.dark-mode-indigo .btn-send-inset:hover {
+    color: #4752c4;
 }
 
 .btn-mic-inset {
