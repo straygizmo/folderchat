@@ -313,7 +313,7 @@ body.dark-mode-indigo .btn-send-inset:hover {
 .btn-mic-inset {
     position: absolute;
     top: 50%;
-    right: 45px; /* Next to the send button */
+    right: 40px; /* Next to the send button */
     transform: translateY(-50%);
     border: none;
     background-color: transparent;

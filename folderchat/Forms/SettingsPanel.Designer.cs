@@ -276,8 +276,8 @@ namespace folderchat.Forms
             // 
             // kryptonPanel4
             // 
-            kryptonPanel4.Controls.Add(lblVoiceInput);
             kryptonPanel4.Controls.Add(cmbVoiceInput);
+            kryptonPanel4.Controls.Add(lblVoiceInput);
             kryptonPanel4.Controls.Add(lblTheme);
             kryptonPanel4.Controls.Add(lblLanguage);
             kryptonPanel4.Controls.Add(cmbLanguage);

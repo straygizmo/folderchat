@@ -266,8 +266,9 @@ namespace folderchat.Forms
             // 
             // kryptonPanel1
             // 
-            kryptonPanel1.Controls.Add(lblEmbeddingMethod);
             kryptonPanel1.Controls.Add(cmbGGUFModel);
+            kryptonPanel1.Controls.Add(txtEmbeddingModel);
+            kryptonPanel1.Controls.Add(lblEmbeddingMethod);
             kryptonPanel1.Controls.Add(lblEmbeddingModel);
             kryptonPanel1.Controls.Add(nudMaxContextLength);
             kryptonPanel1.Controls.Add(lblEmbeddingUrl);
@@ -283,7 +284,6 @@ namespace folderchat.Forms
             kryptonPanel1.Controls.Add(lblChunkSize);
             kryptonPanel1.Controls.Add(nudModelContextLength);
             kryptonPanel1.Controls.Add(lblModelContextLength);
-            kryptonPanel1.Controls.Add(txtEmbeddingModel);
             kryptonPanel1.Controls.Add(txtEmbeddingUrl);
             kryptonPanel1.Dock = DockStyle.Fill;
             kryptonPanel1.Location = new Point(0, 0);
