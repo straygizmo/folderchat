@@ -8,9 +8,8 @@ using System.Text.Json;
 
 namespace folderchat.Services
 {
-    // SettingsProvider that saves user settings in the same directory as the executable (exe).
-    // If writing is not possible due to permissions, it falls back to LocalAppData\folderchat.
-    public sealed class ExeDirectorySettingsProvider : SettingsProvider
+    // SettingsProvider that saves user settings in %APPDATA%\folderchat
+    public sealed class AppDataRoamingSettingsProvider : SettingsProvider
     {
         private const string FileName = "folderchat.user.settings.json";
         private static readonly object _sync = new();
@@ -26,49 +25,17 @@ namespace folderchat.Services
 
         public override void Initialize(string name, NameValueCollection? config)
         {
-            base.Initialize(name ?? nameof(ExeDirectorySettingsProvider), config ?? new());
+            base.Initialize(name ?? nameof(AppDataRoamingSettingsProvider), config ?? new());
         }
 
-        private static string GetPrimaryFilePath()
-        {
-            var baseDir = AppContext.BaseDirectory?.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) ?? ".";
-            return Path.Combine(baseDir, FileName);
-        }
-
-        private static string GetFallbackFilePath()
-        {
-            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "folderchat");
-            Directory.CreateDirectory(dir);
-            return Path.Combine(dir, FileName);
-        }
-
-        private string ResolveWritablePath()
+        private string GetSettingsFilePath()
         {
             if (_effectivePath != null) return _effectivePath;
-            var primary = GetPrimaryFilePath();
-            try
-            {
-                var dir = Path.GetDirectoryName(primary)!;
-                Directory.CreateDirectory(dir);
-                var testPath = primary + ".write_test";
-                File.WriteAllText(testPath, "ok");
-                File.Delete(testPath);
-                _effectivePath = primary;
-            }
-            catch
-            {
-                _effectivePath = GetFallbackFilePath();
-            }
-            return _effectivePath!;
-        }
 
-        private static string ResolveReadablePath()
-        {
-            var primary = GetPrimaryFilePath();
-            if (File.Exists(primary)) return primary;
-            var fallback = GetFallbackFilePath();
-            if (File.Exists(fallback)) return fallback;
-            return primary; // If not found, return primary (used when creating new)
+            var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "folderchat");
+            Directory.CreateDirectory(dir);
+            _effectivePath = Path.Combine(dir, FileName);
+            return _effectivePath;
         }
 
         private void Load()
@@ -77,7 +44,7 @@ namespace folderchat.Services
             lock (_sync)
             {
                 if (_loaded) return;
-                var path = ResolveReadablePath();
+                var path = GetSettingsFilePath();
                 if (File.Exists(path))
                 {
                     try
@@ -100,7 +67,7 @@ namespace folderchat.Services
         {
             lock (_sync)
             {
-                var path = ResolveWritablePath();
+                var path = GetSettingsFilePath();
                 var json = JsonSerializer.Serialize(_cache, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(path, json);
             }
@@ -151,7 +118,7 @@ namespace folderchat.Services
             }
             if (changed)
             {
-                try { Save(); } catch { /* Writing failure is suppressed (may improve with fallback) */ }
+                try { Save(); } catch { /* Writing failure is suppressed */ }
             }
         }
 
@@ -192,8 +159,6 @@ namespace folderchat.Services
 
 namespace folderchat.Properties
 {
-    // Use existing Properties.Settings.Default.* as is, only switch the save destination to directly under exe
-    // Do not edit the auto-generated Settings.Designer.cs, add attributes to the partial class
-    [global::System.Configuration.SettingsProvider(typeof(folderchat.Services.ExeDirectorySettingsProvider))]
+    [global::System.Configuration.SettingsProvider(typeof(folderchat.Services.AppDataRoamingSettingsProvider))]
     internal sealed partial class Settings { }
 }
