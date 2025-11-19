@@ -265,3 +265,13 @@ body.dark-mode-indigo #chatContainer {
 body.dark-mode-indigo .bg-light {
     background-color: #16213e !important;
 }
+
+.btn-mic {
+    border-radius: 50% !important;
+    width: 38px; /* Same as default button height */
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
