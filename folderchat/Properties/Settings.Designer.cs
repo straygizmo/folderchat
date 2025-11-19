@@ -790,5 +790,17 @@ namespace folderchat.Properties {
                 this["VoiceInputMode"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Disabled")]
+        public string VoiceOutputMode {
+            get {
+                return ((string)(this["VoiceOutputMode"]));
+            }
+            set {
+                this["VoiceOutputMode"] = value;
+            }
+        }
     }
 }

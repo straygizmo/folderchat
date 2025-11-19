@@ -97,6 +97,10 @@ namespace folderchat.Forms
             var voiceInputMode = Properties.Settings.Default.VoiceInputMode;
             cmbVoiceInput.SelectedItem = voiceInputMode;
 
+            // Load Voice Output selection
+            var voiceOutputMode = Properties.Settings.Default.VoiceOutputMode;
+            cmbVoiceOutput.SelectedItem = voiceOutputMode;
+
             // Update chat method UI
             UpdateChatMethodUI();
 
@@ -159,6 +163,10 @@ namespace folderchat.Forms
             // Save Voice Input selection
             var newVoiceInputMode = cmbVoiceInput.SelectedItem?.ToString() ?? "Disabled";
             Properties.Settings.Default.VoiceInputMode = newVoiceInputMode;
+
+            // Save Voice Output selection
+            var newVoiceOutputMode = cmbVoiceOutput.SelectedItem?.ToString() ?? "Disabled";
+            Properties.Settings.Default.VoiceOutputMode = newVoiceOutputMode;
 
             // Save all settings to ensure they're persisted
             Properties.Settings.Default.Save();
@@ -277,6 +285,7 @@ namespace folderchat.Forms
             lblTheme.Values.Text = loc.GetString("Theme") + ":";
             lblChatMethod.Values.Text = loc.GetString("ChatMethod") + ":";
             lblVoiceInput.Values.Text = loc.GetString("VoiceInput") + ":";
+            lblVoiceOutput.Values.Text = loc.GetString("VoiceOutput") + ":";
             lblServerPort.Values.Text = loc.GetString("ServerPort") + ":";
 
             // Update checkboxes
@@ -475,6 +484,11 @@ namespace folderchat.Forms
             Properties.Settings.Default.Save();
 
             _mainForm.UpdateVoiceInputState(newVoiceInputMode);
+        }
+
+        private void kryptonPanel4_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

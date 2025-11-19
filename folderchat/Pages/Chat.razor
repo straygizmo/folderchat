@@ -349,6 +349,7 @@
             }
 
             chatHistory.Add(new ChatMessageModel { Text = result.AssistantResponse, IsUser = false, Type = messageType });
+            MainForm.Speak(result.AssistantResponse);
         }
         catch (Exception ex)
         {
@@ -716,6 +717,7 @@
             }
 
             chatHistory.Add(new ChatMessageModel { Text = result.AssistantResponse, IsUser = false, Type = messageType });
+            MainForm.Speak(result.AssistantResponse);
 
             // Log the assistant's response with its role
             MainForm.LogChatMessage("assistant", result.AssistantResponse);
@@ -790,6 +792,7 @@
             }
 
             chatHistory.Add(new ChatMessageModel { Text = result.AssistantResponse, IsUser = false, Type = messageType });
+            MainForm.Speak(result.AssistantResponse);
 
             // Log the assistant's response with its role
             MainForm.LogChatMessage("assistant", result.AssistantResponse);

@@ -65,6 +65,8 @@ namespace folderchat.Forms
             openAIAPISettingsControl = new folderchat.Forms.ProviderSettings.OpenAIAPIProviderSettingsControl();
             geminiSettingsControl = new folderchat.Forms.ProviderSettings.GeminiProviderSettingsControl();
             claudeSettingsControl = new folderchat.Forms.ProviderSettings.ClaudeProviderSettingsControl();
+            cmbVoiceOutput = new Krypton.Toolkit.KryptonComboBox();
+            lblVoiceOutput = new Krypton.Toolkit.KryptonLabel();
             tabSettings.SuspendLayout();
             tabPageChat.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)kPanelGGUFProviderSettings).BeginInit();
@@ -82,6 +84,7 @@ namespace folderchat.Forms
             tabPageServer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)kPanelAPI).BeginInit();
             kPanelAPI.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)cmbVoiceOutput).BeginInit();
             SuspendLayout();
             // 
             // tabSettings
@@ -268,14 +271,16 @@ namespace folderchat.Forms
             // 
             kryptonThemeListBox1.DefaultPalette = Krypton.Toolkit.PaletteMode.Microsoft365Blue;
             kryptonThemeListBox1.Dock = DockStyle.Fill;
-            kryptonThemeListBox1.Location = new Point(0, 100);
+            kryptonThemeListBox1.Location = new Point(0, 172);
             kryptonThemeListBox1.Name = "kryptonThemeListBox1";
-            kryptonThemeListBox1.Size = new Size(337, 425);
+            kryptonThemeListBox1.Size = new Size(337, 353);
             kryptonThemeListBox1.TabIndex = 0;
             kryptonThemeListBox1.SelectedIndexChanged += KryptonThemeListBox1_SelectedIndexChanged;
             // 
             // kryptonPanel4
             // 
+            kryptonPanel4.Controls.Add(cmbVoiceOutput);
+            kryptonPanel4.Controls.Add(lblVoiceOutput);
             kryptonPanel4.Controls.Add(cmbVoiceInput);
             kryptonPanel4.Controls.Add(lblVoiceInput);
             kryptonPanel4.Controls.Add(lblTheme);
@@ -284,12 +289,13 @@ namespace folderchat.Forms
             kryptonPanel4.Dock = DockStyle.Top;
             kryptonPanel4.Location = new Point(0, 0);
             kryptonPanel4.Name = "kryptonPanel4";
-            kryptonPanel4.Size = new Size(337, 100);
+            kryptonPanel4.Size = new Size(337, 172);
             kryptonPanel4.TabIndex = 1;
+            kryptonPanel4.Paint += kryptonPanel4_Paint;
             // 
             // lblVoiceInput
             // 
-            lblVoiceInput.Location = new Point(3, 43);
+            lblVoiceInput.Location = new Point(3, 39);
             lblVoiceInput.Margin = new Padding(3, 2, 3, 2);
             lblVoiceInput.Name = "lblVoiceInput";
             lblVoiceInput.Size = new Size(72, 20);
@@ -302,9 +308,9 @@ namespace folderchat.Forms
             cmbVoiceInput.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbVoiceInput.DropDownWidth = 178;
             cmbVoiceInput.Items.AddRange(new object[] { "Disabled", "System.Speech.Recognition" });
-            cmbVoiceInput.Location = new Point(76, 41);
+            cmbVoiceInput.Location = new Point(95, 37);
             cmbVoiceInput.Name = "cmbVoiceInput";
-            cmbVoiceInput.Size = new Size(247, 24);
+            cmbVoiceInput.Size = new Size(228, 24);
             cmbVoiceInput.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbVoiceInput.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbVoiceInput.TabIndex = 18;
@@ -313,7 +319,7 @@ namespace folderchat.Forms
             // lblTheme
             // 
             lblTheme.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-            lblTheme.Location = new Point(3, 77);
+            lblTheme.Location = new Point(3, 147);
             lblTheme.Margin = new Padding(3, 2, 3, 2);
             lblTheme.Name = "lblTheme";
             lblTheme.Size = new Size(50, 20);
@@ -334,10 +340,10 @@ namespace folderchat.Forms
             cmbLanguage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             cmbLanguage.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbLanguage.DropDownWidth = 289;
-            cmbLanguage.Location = new Point(76, 8);
+            cmbLanguage.Location = new Point(95, 8);
             cmbLanguage.Margin = new Padding(3, 2, 3, 2);
             cmbLanguage.Name = "cmbLanguage";
-            cmbLanguage.Size = new Size(247, 24);
+            cmbLanguage.Size = new Size(228, 24);
             cmbLanguage.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbLanguage.TabIndex = 16;
             cmbLanguage.SelectedIndexChanged += cmbLanguage_SelectedIndexChanged;
@@ -460,6 +466,28 @@ namespace folderchat.Forms
             claudeSettingsControl.Size = new Size(550, 240);
             claudeSettingsControl.TabIndex = 8;
             // 
+            // cmbVoiceOutput
+            // 
+            cmbVoiceOutput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            cmbVoiceOutput.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbVoiceOutput.DropDownWidth = 178;
+            cmbVoiceOutput.Items.AddRange(new object[] { "Disabled", "Windows.Media.SpeechSynthesis" });
+            cmbVoiceOutput.Location = new Point(95, 67);
+            cmbVoiceOutput.Name = "cmbVoiceOutput";
+            cmbVoiceOutput.Size = new Size(228, 24);
+            cmbVoiceOutput.StateCommon.ComboBox.Border.Rounding = 4F;
+            cmbVoiceOutput.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
+            cmbVoiceOutput.TabIndex = 20;
+            // 
+            // lblVoiceOutput
+            // 
+            lblVoiceOutput.Location = new Point(3, 69);
+            lblVoiceOutput.Margin = new Padding(3, 2, 3, 2);
+            lblVoiceOutput.Name = "lblVoiceOutput";
+            lblVoiceOutput.Size = new Size(82, 20);
+            lblVoiceOutput.TabIndex = 21;
+            lblVoiceOutput.Values.Text = "VoiceOutput:";
+            // 
             // SettingsPanel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -487,6 +515,7 @@ namespace folderchat.Forms
             ((System.ComponentModel.ISupportInitialize)kPanelAPI).EndInit();
             kPanelAPI.ResumeLayout(false);
             kPanelAPI.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)cmbVoiceOutput).EndInit();
             ResumeLayout(false);
         }
 
@@ -529,5 +558,7 @@ namespace folderchat.Forms
         private Krypton.Toolkit.KryptonButton btnSaveAPIServerSettings;
         private Krypton.Toolkit.KryptonComboBox cmbVoiceInput;
         private Krypton.Toolkit.KryptonLabel lblVoiceInput;
+        private Krypton.Toolkit.KryptonComboBox cmbVoiceOutput;
+        private Krypton.Toolkit.KryptonLabel lblVoiceOutput;
     }
 }

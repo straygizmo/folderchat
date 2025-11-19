@@ -7,6 +7,7 @@ using Krypton.Toolkit;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Speech.Recognition;
+using System.Speech.Synthesis;
 
 namespace folderchat.Forms
 {
@@ -21,6 +22,7 @@ namespace folderchat.Forms
         private ToolStripMenuItem? menuItemOpenInExplorer;
         private bool _showFiles = false;
         private SpeechRecognitionEngine? _speechEngine;
+        private SpeechSynthesizer? _speechSynthesizer;
 
         // Event to notify Blazor about theme changes
         public event EventHandler<string>? ThemeChanged;
@@ -79,7 +81,22 @@ namespace folderchat.Forms
             InitializeTreeViewEvents();
             InitializeIndexingService();
             _apiServerService = new ApiServerService(this);
+            _speechSynthesizer = new SpeechSynthesizer();
         }
+
+        public void Speak(string text)
+        {
+            if (Properties.Settings.Default.VoiceOutputMode == "Windows.Media.SpeechSynthesis")
+            {
+                if (_speechSynthesizer != null)
+                {
+                    var culture = Program.LocalizationService?.CurrentCulture ?? new System.Globalization.CultureInfo("en-US");
+                    _speechSynthesizer.SelectVoiceByHints(VoiceGender.Female, VoiceAge.Adult, 0, culture);
+                    _speechSynthesizer.SpeakAsync(text);
+                }
+            }
+        }
+
 
         private void InitializeIndexingService()
         {
@@ -875,6 +892,7 @@ namespace folderchat.Forms
                     SaveTreeState();
         
                     _speechEngine?.Dispose();
+                    _speechSynthesizer?.Dispose();
 
                     if (_apiServerService != null && _apiServerService.IsRunning)
                     {
