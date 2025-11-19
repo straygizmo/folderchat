@@ -270,15 +270,7 @@ body.dark-mode-indigo .bg-light {
     position: relative;
 }
 
-.btn-mic {
-    border-radius: 50% !important;
-    width: 38px;
-    height: 38px;
-    padding: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
+
 
 .btn-send-inset {
     position: absolute;
@@ -326,36 +318,52 @@ body.dark-mode-indigo .btn-send-inset:hover {
     border: none;
     background-color: transparent;
     z-index: 10;
+    color: #6c757d; /* Bootstrap secondary color */
+    padding: 6px;
+    width: 38px;
+    height: 38px;
 }
 
 .btn-mic-inset:hover, .btn-mic-inset:focus {
-    background-color: rgba(0, 0, 0, 0.1);
+    color: #5a6268;
 }
 
-.btn-mic-inset.btn-danger {
-    background-color: rgba(220, 53, 69, 0.2);
+.btn-mic-inset.is-recording {
+    color: #dc3545; /* Bootstrap danger color */
+}
+
+.btn-mic-inset.is-recording:hover, .btn-mic-inset.is-recording:focus {
+    color: #c82333;
 }
 
 body.dark-mode .btn-mic-inset {
-    color: #e0e0e0;
+    color: #a0a0a0;
 }
 
 body.dark-mode .btn-mic-inset:hover, body.dark-mode .btn-mic-inset:focus {
-    background-color: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
 }
 
-body.dark-mode .btn-mic-inset.btn-danger {
-    background-color: rgba(220, 53, 69, 0.3);
+body.dark-mode .btn-mic-inset.is-recording {
+    color: #e74c3c;
+}
+
+body.dark-mode .btn-mic-inset.is-recording:hover, body.dark-mode .btn-mic-inset.is-recording:focus {
+    color: #ff6b5b;
 }
 
 body.dark-mode-indigo .btn-mic-inset {
-    color: #e0e6f0;
+    color: #8892b0;
 }
 
 body.dark-mode-indigo .btn-mic-inset:hover, body.dark-mode-indigo .btn-mic-inset:focus {
-    background-color: rgba(255, 255, 255, 0.1);
+    color: #e0e6f0;
 }
 
-body.dark-mode-indigo .btn-mic-inset.btn-danger {
-    background-color: rgba(220, 53, 69, 0.3);
+body.dark-mode-indigo .btn-mic-inset.is-recording {
+    color: #e74c3c;
+}
+
+body.dark-mode-indigo .btn-mic-inset.is-recording:hover, body.dark-mode-indigo .btn-mic-inset.is-recording:focus {
+    color: #ff6b5b;
 }
