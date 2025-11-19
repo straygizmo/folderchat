@@ -308,6 +308,7 @@ namespace folderchat.Forms
             cmbVoiceInput.StateCommon.ComboBox.Border.Rounding = 4F;
             cmbVoiceInput.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             cmbVoiceInput.TabIndex = 18;
+            cmbVoiceInput.SelectedIndexChanged += cmbVoiceInput_SelectedIndexChanged;
             // 
             // lblTheme
             // 

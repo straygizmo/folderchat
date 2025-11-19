@@ -465,5 +465,16 @@ namespace folderchat.Forms
         {
             mcpSettingsControl.RefreshMcpServerUI();
         }
+
+        private void cmbVoiceInput_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_mainForm == null) return;
+
+            var newVoiceInputMode = cmbVoiceInput.SelectedItem?.ToString() ?? "Disabled";
+            Properties.Settings.Default.VoiceInputMode = newVoiceInputMode;
+            Properties.Settings.Default.Save();
+
+            _mainForm.UpdateVoiceInputState(newVoiceInputMode);
+        }
     }
 }
