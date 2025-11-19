@@ -280,10 +280,18 @@ body.dark-mode-indigo .bg-light {
     justify-content: center;
 }
 
+.btn-send-inset {
+    position: absolute;
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
 .btn-mic-inset {
     position: absolute;
     top: 50%;
-    right: 50px; /* Adjust as needed */
+    right: 50px; /* Next to the send button */
     transform: translateY(-50%);
     border: none;
     background-color: transparent;
